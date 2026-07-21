@@ -1,0 +1,36 @@
+.topbar-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.connection-badge { padding: 7px 9px; border-radius: 999px; font-size: .64rem; font-weight: 900; letter-spacing: .08em; border: 1px solid var(--line); background: white; }
+.connection-badge.online { color: var(--success); border-color: #86efac; background: #f0fdf4; }
+.connection-badge.connecting { color: #92400e; border-color: #fcd34d; background: #fffbeb; }
+.connection-badge.offline { color: var(--danger); border-color: #fda29b; background: #fff5f4; }
+.online-lobby { width: min(820px, 100%); }
+.server-field { margin-top: 18px; }
+.room-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; align-items: end; margin-top: 14px; }
+.compact-button { margin-top: 0; height: 46px; }
+.join-box { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+#roomCodeInput { text-transform: uppercase; letter-spacing: .18em; font-weight: 900; }
+.room-panel { margin-top: 16px; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: #fbfcfe; }
+.hidden { display: none !important; }
+.room-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.room-heading > div { display: flex; flex-direction: column; }
+.room-heading span { font-size: .66rem; font-weight: 900; color: var(--muted); letter-spacing: .1em; }
+.room-heading strong { font-size: 2rem; letter-spacing: .18em; font-variant-numeric: tabular-nums; }
+.team-capacity { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.capacity-card { padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: white; display: flex; justify-content: space-between; gap: 8px; font-size: .75rem; }
+.capacity-card b { font-variant-numeric: tabular-nums; }
+.roster-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 190px; overflow: auto; }
+.roster-card { padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: white; min-width: 0; }
+.roster-card strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .78rem; }
+.roster-card small { color: var(--muted); font-size: .66rem; }
+.roster-card.disconnected { opacity: .55; }
+.roster-card.team-0 { border-left: 5px solid var(--cyan); border-top: 1px solid var(--line); }
+.roster-card.team-1 { border-left: 5px solid var(--magenta); border-top: 1px solid var(--line); }
+.roster-card.team-2 { border-left: 5px solid var(--amber); border-top: 1px solid var(--line); }
+#startMatchButton:disabled { cursor: not-allowed; opacity: .45; }
+@media (max-width: 760px) {
+  .room-actions, .form-grid { grid-template-columns: 1fr; }
+  .roster-list, .team-capacity { grid-template-columns: 1fr; }
+  .scoreboard { grid-template-columns: repeat(3, 108px); }
+  .player-panel { width: 250px; }
+  .minimap-panel { display: none; }
+}

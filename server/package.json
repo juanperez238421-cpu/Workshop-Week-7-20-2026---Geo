@@ -1,0 +1,19 @@
+{
+  "name": "triad-territory-rush-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Authoritative WebSocket server for a 9-player classroom territory game.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --check server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}

@@ -1,64 +1,141 @@
-# Triad Territory Rush — GitHub Pages Build
+# Triad Territory Rush — Real Online Multiplayer
 
-A complete browser game for a 5-minute classroom activity:
+This repository now contains two deployable components:
 
-- 9 total players.
-- 3 teams with 3 players per team.
-- One human-controlled player and 8 autonomous players in the static GitHub Pages build.
-- Random, widely separated starting positions.
-- Territory capture, projectiles, dash movement, elimination particles, minimap, and live team scoreboard.
-- Every eliminated player must answer a trigonometry question correctly before respawning.
-- The winner is determined **only by the largest territory** at the end of 5 minutes.
-- A final assessment report compiles every answer for all 9 players.
-- Reports can be downloaded as CSV or JSON.
+1. **GitHub Pages client** in the repository root.
+2. **Authoritative Node.js WebSocket server** in `server/`.
 
-## Play locally
+The online edition is designed for **exactly nine real student computers**, divided into **three teams of three**. There are no gameplay bots in the real multiplayer room.
 
-Use a local HTTP server; do not open `index.html` with `file://` because the game loads its compressed source through `fetch`.
+## Match rules
 
-```bash
-python -m http.server 8000
-```
+- One student creates a room and becomes the host.
+- The host shares a six-character room code with the other eight computers.
+- Each team has exactly three seats.
+- The server starts a five-minute authoritative timer only when all nine players are connected.
+- Movement, firing, dashing, projectile collisions, eliminations, territory ownership, questions, respawns, and the final winner are validated by the server.
+- An eliminated player cannot move, fire, dash, or capture territory.
+- The eliminated player receives an individual trigonometry question.
+- Only a correct server-validated answer allows respawn.
+- Incorrect answers and timeouts keep the player eliminated and generate another question.
+- The winner is determined strictly by the largest territory when the five-minute timer reaches zero.
+- Every client receives the final nine-player questionnaire report and can download CSV and JSON files.
 
-Then open:
+## 1. Deploy the multiplayer server
+
+The included `render.yaml` can deploy the server on Render.
+
+1. Create a Render account.
+2. Choose **New → Blueprint**.
+3. Select this GitHub repository.
+4. Render detects `render.yaml` and creates `triad-territory-rush-server`.
+5. Set the `ALLOWED_ORIGINS` environment variable to your GitHub Pages origin:
 
 ```text
-http://localhost:8000
+https://juanperez238421-cpu.github.io
 ```
+
+6. Deploy and copy the public HTTPS address, for example:
+
+```text
+https://triad-territory-rush-server.onrender.com
+```
+
+The browser game automatically converts an `https://` server address to `wss://`.
+
+### Alternative local server
+
+```bash
+cd server
+npm install
+npm start
+```
+
+The local server runs at:
+
+```text
+ws://localhost:8080
+```
+
+All nine computers must be able to reach the machine running that address. For a school LAN, use the host computer's LAN IP instead of `localhost`, and allow port `8080` through the firewall.
+
+## 2. Configure the GitHub Pages client
+
+Either paste the deployed server address into the game's **Multiplayer server URL** field, or set it permanently in `config.js`:
+
+```js
+window.TRIAD_CONFIG = Object.freeze({
+  serverUrl: "wss://triad-territory-rush-server.onrender.com"
+});
+```
+
+Commit the change to `main` so GitHub Pages republishes it.
+
+## 3. Enable GitHub Pages
+
+In the repository:
+
+```text
+Settings → Pages → Build and deployment → Source → GitHub Actions
+```
+
+Then run the **Deploy GitHub Pages** workflow from the Actions tab. The expected client address is:
+
+```text
+https://juanperez238421-cpu.github.io/Workshop-Week-7-20-2026---Geo/
+```
+
+## 4. Start a nine-computer classroom match
+
+On computer 1:
+
+1. Open the GitHub Pages game.
+2. Enter the server URL, student name, and team.
+3. Select **CREATE ROOM**.
+4. Share the displayed room code.
+
+On computers 2–9:
+
+1. Open the same GitHub Pages game.
+2. Enter the same server URL.
+3. Enter the student name and assigned team.
+4. Enter the room code and select **JOIN ROOM**.
+
+The room enforces three students per team. When the lobby shows **9/9 connected** and **3/3** for each team, computer 1 selects **START 5-MINUTE MATCH**.
 
 ## Controls
 
-- `W`, `A`, `S`, `D` or arrow keys: move.
-- Mouse: aim.
-- `Space` or left click: fire.
-- `Shift`: dash.
+- `W`, `A`, `S`, `D` or arrow keys: move
+- Mouse: aim
+- `Space` or left click: fire
+- `Shift`: dash
 
-## GitHub Pages
+## Reconnection
 
-The workflow in `.github/workflows/pages.yml` validates and publishes the repository root.
+Each browser stores a temporary room session token. If Wi-Fi briefly disconnects or a tab reloads, the client attempts to reconnect to the same player seat for up to 60 seconds.
 
-In the repository settings, select:
+## Assessment data
 
-```text
-Settings → Pages → Source → GitHub Actions
-```
+At match end, both exports include per-player totals and the complete answer history:
 
-After the workflow completes, use the Pages URL shown in the deployment.
+- player and team;
+- territory, eliminations, and deaths;
+- attempts, correct answers, incorrect answers, and timeouts;
+- accuracy and average response time;
+- question type and prompt;
+- selected option and correct option;
+- outcome and response time.
 
 ## Validation
+
+From the repository root:
 
 ```bash
 npm test
 ```
 
-The automated smoke test verifies that:
+From the server directory after installing dependencies:
 
-- the loader and decompressed game source parse successfully;
-- every DOM element requested by the game exists in `index.html`;
-- the required 5-minute, 9-player, 3-team, trigonometry-respawn, territory-winner, CSV, and JSON logic is present.
-
-## Deployment architecture
-
-GitHub Pages is static hosting and cannot run an authoritative WebSocket server. This version is intentionally self-contained: one student controls one player and eight autonomous players complete the 9-player arena. It works immediately from the Pages URL and produces a full 9-player questionnaire report.
-
-A true 9-browser synchronous multiplayer edition requires a separately hosted backend service.
+```bash
+npm test
+```

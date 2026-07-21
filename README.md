@@ -1,141 +1,70 @@
-# Triad Territory Rush — Real Online Multiplayer
+# Triad Territory Rush — Teacher-Controlled Real Multiplayer
 
-This repository now contains two deployable components:
+This repository deploys three coordinated components:
 
-1. **GitHub Pages client** in the repository root.
-2. **Authoritative Node.js WebSocket server** in `server/`.
+1. **Student game client** on GitHub Pages: `index.html`
+2. **Teacher master console** on GitHub Pages: `master.html`
+3. **Authoritative Node.js WebSocket server** on Render: `server/server-v2.js`
 
-The online edition is designed for **exactly nine real student computers**, divided into **three teams of three**. There are no gameplay bots in the real multiplayer room.
+The Render URL is an API/WebSocket endpoint. Opening it directly shows JSON; it is **not** the visual game. Students must open the GitHub Pages student link.
+
+## Live URLs
+
+- Student game: `https://juanperez238421-cpu.github.io/Workshop-Week-7-20-2026---Geo/`
+- Teacher console: `https://juanperez238421-cpu.github.io/Workshop-Week-7-20-2026---Geo/master.html`
+- Render server: `https://triad-territory-rush-server.onrender.com`
+
+## Classroom workflow
+
+1. Teacher opens `master.html` and selects **CREATE MASTER ROOM**.
+2. The server creates a six-character room code and a student entry link.
+3. Teacher shares the student link with the nine computers.
+4. Each student enters a group name and selects a team preference, then selects **REGISTER AND WAIT FOR TEACHER**.
+5. Registrations appear in the teacher console as pending.
+6. Teacher approves each registration and assigns the final team.
+7. Approved students select **I AM READY**.
+8. Start is enabled only with exactly nine connected and ready students, balanced 3–3–3.
+9. Teacher selects **START 5-MINUTE MATCH**.
+10. Teacher monitors territory, eliminations, connection state, and trigonometry status from the master console.
+
+The teacher controller is not counted as one of the nine players.
 
 ## Match rules
 
-- One student creates a room and becomes the host.
-- The host shares a six-character room code with the other eight computers.
-- Each team has exactly three seats.
-- The server starts a five-minute authoritative timer only when all nine players are connected.
-- Movement, firing, dashing, projectile collisions, eliminations, territory ownership, questions, respawns, and the final winner are validated by the server.
-- An eliminated player cannot move, fire, dash, or capture territory.
-- The eliminated player receives an individual trigonometry question.
-- Only a correct server-validated answer allows respawn.
-- Incorrect answers and timeouts keep the player eliminated and generate another question.
-- The winner is determined strictly by the largest territory when the five-minute timer reaches zero.
-- Every client receives the final nine-player questionnaire report and can download CSV and JSON files.
+- Exactly 9 real student browsers.
+- Exactly 3 players per team.
+- Five-minute server-authoritative timer.
+- Movement, shooting, dashing, collisions, territory and winner are validated by the server.
+- Eliminated students remain blocked until they answer an individual trigonometry question correctly.
+- Wrong answers and timeouts keep the player eliminated and generate another question.
+- The winner is determined only by largest territory.
+- Teacher and students receive CSV/JSON reports at match end.
 
-## 1. Deploy the multiplayer server
+## Render deployment
 
-The included `render.yaml` can deploy the server on Render.
+The existing Render Blueprint uses `render.yaml` and the current service:
 
-1. Create a Render account.
-2. Choose **New → Blueprint**.
-3. Select this GitHub repository.
-4. Render detects `render.yaml` and creates `triad-territory-rush-server`.
-5. Set the `ALLOWED_ORIGINS` environment variable to your GitHub Pages origin:
+`https://triad-territory-rush-server.onrender.com`
+
+Environment variable:
 
 ```text
-https://juanperez238421-cpu.github.io
+ALLOWED_ORIGINS=https://juanperez238421-cpu.github.io
 ```
 
-6. Deploy and copy the public HTTPS address, for example:
+Render automatically deploys updates from `main`. The server health endpoint is `/health` and protocol information is available at `/`.
 
-```text
-https://triad-territory-rush-server.onrender.com
+## Local validation
+
+```bash
+npm test
 ```
 
-The browser game automatically converts an `https://` server address to `wss://`.
-
-### Alternative local server
+Server only:
 
 ```bash
 cd server
 npm install
+npm test
 npm start
-```
-
-The local server runs at:
-
-```text
-ws://localhost:8080
-```
-
-All nine computers must be able to reach the machine running that address. For a school LAN, use the host computer's LAN IP instead of `localhost`, and allow port `8080` through the firewall.
-
-## 2. Configure the GitHub Pages client
-
-Either paste the deployed server address into the game's **Multiplayer server URL** field, or set it permanently in `config.js`:
-
-```js
-window.TRIAD_CONFIG = Object.freeze({
-  serverUrl: "wss://triad-territory-rush-server.onrender.com"
-});
-```
-
-Commit the change to `main` so GitHub Pages republishes it.
-
-## 3. Enable GitHub Pages
-
-In the repository:
-
-```text
-Settings → Pages → Build and deployment → Source → GitHub Actions
-```
-
-Then run the **Deploy GitHub Pages** workflow from the Actions tab. The expected client address is:
-
-```text
-https://juanperez238421-cpu.github.io/Workshop-Week-7-20-2026---Geo/
-```
-
-## 4. Start a nine-computer classroom match
-
-On computer 1:
-
-1. Open the GitHub Pages game.
-2. Enter the server URL, student name, and team.
-3. Select **CREATE ROOM**.
-4. Share the displayed room code.
-
-On computers 2–9:
-
-1. Open the same GitHub Pages game.
-2. Enter the same server URL.
-3. Enter the student name and assigned team.
-4. Enter the room code and select **JOIN ROOM**.
-
-The room enforces three students per team. When the lobby shows **9/9 connected** and **3/3** for each team, computer 1 selects **START 5-MINUTE MATCH**.
-
-## Controls
-
-- `W`, `A`, `S`, `D` or arrow keys: move
-- Mouse: aim
-- `Space` or left click: fire
-- `Shift`: dash
-
-## Reconnection
-
-Each browser stores a temporary room session token. If Wi-Fi briefly disconnects or a tab reloads, the client attempts to reconnect to the same player seat for up to 60 seconds.
-
-## Assessment data
-
-At match end, both exports include per-player totals and the complete answer history:
-
-- player and team;
-- territory, eliminations, and deaths;
-- attempts, correct answers, incorrect answers, and timeouts;
-- accuracy and average response time;
-- question type and prompt;
-- selected option and correct option;
-- outcome and response time.
-
-## Validation
-
-From the repository root:
-
-```bash
-npm test
-```
-
-From the server directory after installing dependencies:
-
-```bash
-npm test
 ```

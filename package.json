@@ -1,0 +1,12 @@
+{
+  "name": "triad-territory-rush-pages",
+  "version": "20.0.0",
+  "private": true,
+  "description": "Static 9-player territory game with trigonometry-gated respawns and assessment reports.",
+  "scripts": {
+    "test": "node --check game.js && node scripts/smoke-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

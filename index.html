@@ -4,23 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f7f9fc" />
-  <title>Triad Territory Rush</title>
+  <title>Triad Territory Rush — Online</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="online.css" />
 </head>
 <body>
   <main id="app">
-    <canvas id="gameCanvas" aria-label="Triad Territory Rush game arena"></canvas>
+    <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>5-minute trigonometry arena</span>
+        <span>Real-time 9-player classroom match</span>
       </div>
       <div class="match-status">
-        <span id="phaseLabel">LOBBY</span>
+        <span id="phaseLabel">OFFLINE</span>
         <strong id="clockLabel">05:00</strong>
       </div>
-      <button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button>
+      <div class="topbar-actions">
+        <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
+        <button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button>
+      </div>
     </header>
 
     <section class="scoreboard" aria-label="Team scoreboard">
@@ -46,13 +50,15 @@
         <span id="playerTeamDot" class="team-dot"></span>
         <div>
           <strong id="playerNameLabel">PLAYER</strong>
-          <small id="playerStateLabel">Waiting in lobby</small>
+          <small id="playerStateLabel">Not connected</small>
         </div>
       </div>
       <div class="stat-grid">
+        <div><span>Room</span><b id="roomCodeLabel">—</b></div>
         <div><span>Territory</span><b id="playerTerritoryLabel">0</b></div>
         <div><span>Eliminations</span><b id="playerKillsLabel">0</b></div>
         <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div>
+        <div><span>Questions</span><b id="playerQuestionsLabel">0</b></div>
         <div><span>Accuracy</span><b id="playerAccuracyLabel">—</b></div>
       </div>
       <div class="cooldown-row">
@@ -65,25 +71,30 @@
 
     <aside class="minimap-panel">
       <canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas>
-      <small>Territory overview</small>
+      <small>Authoritative server territory</small>
     </aside>
 
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
-      <div class="modal lobby-modal">
-        <p class="eyebrow">CLASSROOM BUILD · STATIC GITHUB PAGES MODE</p>
+      <div class="modal lobby-modal online-lobby">
+        <p class="eyebrow">REAL ONLINE MULTIPLAYER · 9 COMPUTERS</p>
         <h1>Triad Territory Rush</h1>
-        <p class="lead">Nine players. Three teams. One territory winner. Every elimination requires a correct trigonometry answer before respawning.</p>
+        <p class="lead">Create one classroom room, share its six-character code, and connect exactly nine real students in three teams of three.</p>
+
+        <label class="server-field">
+          Multiplayer server URL
+          <input id="serverUrlInput" autocomplete="url" spellcheck="false" placeholder="wss://your-service.onrender.com" />
+        </label>
 
         <div class="form-grid">
           <label>
-            Player name
+            Student name
             <input id="playerNameInput" maxlength="18" autocomplete="off" value="Student 1" />
           </label>
           <label>
-            Human team
+            Team
             <select id="teamSelect">
               <option value="0">Cyan Circuit</option>
               <option value="1">Magenta Pulse</option>
@@ -92,18 +103,35 @@
           </label>
         </div>
 
+        <div class="room-actions">
+          <button id="createRoomButton" class="primary-button compact-button" type="button">CREATE ROOM</button>
+          <div class="join-box">
+            <input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ROOM CODE" />
+            <button id="joinRoomButton" class="secondary-button" type="button">JOIN ROOM</button>
+          </div>
+        </div>
+
+        <div id="lobbyStatus" class="notice">Deploy the included WebSocket server, paste its secure URL above, then create or join a room.</div>
+
+        <section id="roomPanel" class="room-panel hidden" aria-live="polite">
+          <div class="room-heading">
+            <div>
+              <span>ROOM CODE</span>
+              <strong id="roomCodeLarge">------</strong>
+            </div>
+            <button id="copyRoomCodeButton" class="secondary-button" type="button">COPY CODE</button>
+          </div>
+          <div id="teamCapacity" class="team-capacity"></div>
+          <div id="rosterList" class="roster-list"></div>
+          <button id="startMatchButton" class="primary-button" type="button" disabled>HOST: START WHEN 9/9 ARE READY</button>
+        </section>
+
         <div class="rule-grid">
-          <div><b>9</b><span>players total</span></div>
-          <div><b>3 × 3</b><span>balanced teams</span></div>
-          <div><b>05:00</b><span>match duration</span></div>
+          <div><b>9</b><span>real browsers</span></div>
+          <div><b>3 × 3</b><span>locked teams</span></div>
+          <div><b>05:00</b><span>server timer</span></div>
           <div><b>TRIG</b><span>respawn gate</span></div>
         </div>
-
-        <div class="notice">
-          This GitHub Pages build runs one human-controlled player plus eight autonomous players, so it works immediately without a backend. The assessment report still records all nine players.
-        </div>
-
-        <button id="startButton" class="primary-button" type="button">START 5-MINUTE MATCH</button>
       </div>
     </section>
 
@@ -111,7 +139,7 @@
       <div class="modal question-modal">
         <div class="question-header">
           <div>
-            <p class="eyebrow">RESPAWN PROTOCOL</p>
+            <p class="eyebrow">SERVER-VALIDATED RESPAWN</p>
             <h2 id="questionTitle">Solve to return</h2>
           </div>
           <div id="questionTimer" class="question-timer">20</div>
@@ -125,7 +153,7 @@
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
       <div class="modal end-modal">
-        <p class="eyebrow">FINAL TERRITORY REPORT</p>
+        <p class="eyebrow">FINAL SERVER REPORT</p>
         <h2 id="endTitle">Match complete</h2>
         <p id="winnerSummary" class="lead"></p>
         <div id="finalRanking" class="final-ranking"></div>
@@ -133,7 +161,7 @@
         <div class="report-toolbar">
           <div>
             <strong>Questionnaire data</strong>
-            <span>Every trigonometry attempt for all nine players</span>
+            <span>Every trigonometry attempt for all nine real players</span>
           </div>
           <div class="button-row">
             <button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button>
@@ -145,27 +173,20 @@
           <table>
             <thead>
               <tr>
-                <th>Player</th>
-                <th>Team</th>
-                <th>Territory</th>
-                <th>Deaths</th>
-                <th>Attempts</th>
-                <th>Correct</th>
-                <th>Wrong</th>
-                <th>Timeouts</th>
-                <th>Accuracy</th>
-                <th>Avg. response</th>
+                <th>Player</th><th>Team</th><th>Territory</th><th>Deaths</th>
+                <th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th>
+                <th>Accuracy</th><th>Avg. response</th>
               </tr>
             </thead>
             <tbody id="reportTableBody"></tbody>
           </table>
         </div>
-
-        <button id="playAgainButton" class="primary-button" type="button">PLAY AGAIN</button>
+        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO LOBBY</button>
       </div>
     </section>
   </main>
 
-  <script src="game.js"></script>
+  <script src="config.js"></script>
+  <script src="online-client.js"></script>
 </body>
 </html>

@@ -1,38 +1,33 @@
 "use strict";
-
 const fs = require("node:fs");
 const assert = require("node:assert/strict");
 const vm = require("node:vm");
 
-const html = fs.readFileSync("index.html", "utf8");
-const client = fs.readFileSync("online-client.js", "utf8");
-const server = fs.readFileSync("server/server.js", "utf8");
-const config = fs.readFileSync("config.js", "utf8");
-const css = fs.readFileSync("online.css", "utf8");
+const files = ["student-v2.js", "master.js", "config.js", "server/server-v2.js"];
+for (const file of files) new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 
-new vm.Script(client, { filename: "online-client.js" });
-new vm.Script(server, { filename: "server/server.js" });
-new vm.Script(config, { filename: "config.js" });
+const studentHtml = fs.readFileSync("index.html", "utf8");
+const masterHtml = fs.readFileSync("master.html", "utf8");
+const studentJs = fs.readFileSync("student-v2.js", "utf8");
+const masterJs = fs.readFileSync("master.js", "utf8");
+const serverJs = fs.readFileSync("server/server-v2.js", "utf8");
 
-const htmlIds = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
-const clientIds = new Set([...client.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
-const missingIds = [...clientIds].filter((id) => !htmlIds.has(id));
+function ids(html) { return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])); }
+function jsIds(js) { return new Set([...js.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1])); }
+for (const [name, html, js] of [["student", studentHtml, studentJs], ["master", masterHtml, masterJs]]) {
+  const missing = [...jsIds(js)].filter((id) => !ids(html).has(id));
+  assert.deepEqual(missing, [], `${name} page missing IDs: ${missing.join(", ")}`);
+}
 
-assert.deepEqual(missingIds, [], `Missing HTML ids: ${missingIds.join(", ")}`);
-assert.match(server, /MATCH_DURATION_MS\s*=\s*5\s*\*\s*60\s*\*\s*1000/);
-assert.match(server, /MAX_PLAYERS\s*=\s*9/);
-assert.match(server, /PLAYERS_PER_TEAM\s*=\s*3/);
-assert.match(server, /winnerRule:\s*"largest-territory"/);
-assert.match(server, /currentQuestion/);
-assert.match(server, /handleAnswer/);
-assert.match(server, /WebSocketServer/);
-assert.match(server, /sessionToken/);
-assert.match(client, /create_room/);
-assert.match(client, /join_room/);
-assert.match(client, /reportToCsv/);
-assert.match(html, /9 COMPUTERS/);
-assert.match(html, /DOWNLOAD CSV/);
-assert.match(html, /DOWNLOAD JSON/);
-assert.match(css, /\.room-panel/);
-
-console.log(`Smoke test passed: ${htmlIds.size} DOM ids, ${clientIds.size} client references, authoritative 9-player server rules present.`);
+assert.match(serverJs, /create_control_room/);
+assert.match(serverJs, /register_student/);
+assert.match(serverJs, /approve_registration/);
+assert.match(serverJs, /set_ready/);
+assert.match(serverJs, /teacher-controller-plus-nine-students/);
+assert.match(serverJs, /MATCH_DURATION_MS\s*=\s*5\s*\*\s*60\s*\*\s*1000/);
+assert.match(serverJs, /winnerRule:\s*"largest-territory"/);
+assert.match(masterHtml, /Teacher \/ master console/);
+assert.match(studentHtml, /REGISTER AND WAIT FOR TEACHER/);
+assert.match(studentJs, /reconnect_student/);
+assert.match(masterHtml, /START 5-MINUTE MATCH/);
+console.log("Smoke test passed: teacher control, student registration, approvals, ready gate, and multiplayer protocol are present.");

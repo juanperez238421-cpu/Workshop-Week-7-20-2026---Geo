@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f9fc" />
+  <title>Triad Territory Rush — Teacher Control</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="master.css" />
+</head>
+<body>
+  <main class="master-shell">
+    <header class="master-topbar">
+      <div><p class="eyebrow">AUTHORITATIVE CLASSROOM CONTROL</p><h1>Triad Territory Rush</h1><span>Teacher / master console</span></div>
+      <div class="master-status"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><a href="index.html">Student page</a></div>
+    </header>
+
+    <section id="setupPanel" class="master-card setup-card">
+      <div class="section-heading"><div><h2>Create the online match</h2><p>The teacher controller is not one of the nine players.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
+      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE MASTER ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS CONTROL</button></div>
+      <div id="setupStatus" class="notice">Create a room, then share the generated student link.</div>
+    </section>
+
+    <section id="controlPanel" class="hidden">
+      <section class="master-grid summary-grid">
+        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="secondary-button" type="button">COPY CODE</button><button id="copyLinkButton" class="primary-button compact-button" type="button">COPY STUDENT LINK</button></div></article>
+        <article class="master-card"><span>APPROVED</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
+        <article class="master-card"><span>PENDING</span><strong id="pendingCount">0</strong><small>awaiting teacher decision</small></article>
+        <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
+      </section>
+
+      <section class="master-card join-link-card">
+        <div><span>STUDENT ENTRY LINK</span><strong id="studentLink">—</strong><small>Open this link on all nine student computers. Different IP addresses are supported.</small></div>
+      </section>
+
+      <section class="master-columns">
+        <section class="master-card">
+          <div class="section-heading"><div><h2>Pending registrations</h2><p>Approve each group and assign its final team.</p></div></div>
+          <div id="pendingList" class="pending-list"><div class="empty-state">No pending registrations.</div></div>
+        </section>
+
+        <section class="master-card">
+          <div class="section-heading"><div><h2>Approved roster</h2><p>Exactly three players per team and all nine ready are required.</p></div></div>
+          <div id="teamCapacity" class="team-capacity"></div>
+          <div id="rosterList" class="master-roster"></div>
+        </section>
+      </section>
+
+      <section class="master-card start-console">
+        <div><span id="startReadiness">WAITING FOR 9 APPROVED PLAYERS</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">05:00</small></div>
+        <div class="button-row"><button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
+      </section>
+
+      <section id="livePanel" class="master-card live-panel hidden">
+        <div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry from all nine computers.</p></div></div>
+        <div id="liveTeams" class="live-teams"></div>
+        <div id="livePlayers" class="live-players"></div>
+      </section>
+
+      <section id="reportPanel" class="master-card hidden">
+        <div class="section-heading"><div><h2>Final classroom report</h2><p id="winnerSummary"></p></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
+        <div id="finalRanking" class="final-ranking"></div>
+        <div class="table-wrap"><table><thead><tr><th>Player</th><th>Team</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+      </section>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="master.js"></script>
+</body>
+</html>

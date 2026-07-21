@@ -1,12 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "21.0.0",
+  "version": "22.0.0",
   "private": true,
-  "description": "GitHub Pages client plus authoritative Node/WebSocket backend for nine real classroom players.",
+  "description": "Teacher-controlled GitHub Pages client plus authoritative Node/WebSocket backend for nine real classroom players.",
   "scripts": {
-    "test": "node --check online-client.js && node --check config.js && node --check server/server.js && node scripts/smoke-test.js"
+    "test": "node --check student-v2.js && node --check master.js && node --check config.js && node --check server/server-v2.js && node scripts/smoke-test.js"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": { "node": ">=20" }
 }

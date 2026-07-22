@@ -112,6 +112,13 @@ function patchServerSource(input) {
     "room PIN message handler"
   );
 
+  source = replaceRequired(
+    source,
+    'case "set_registration_lock": rooms.get(ws.roomCode)?.setRegistrationLock(ws, message.locked); break;',
+    'case "set_registration_lock": { const room = rooms.get(ws.roomCode); if (message.newRoomCode) room?.changeRoomCode(ws, message.newRoomCode); else room?.setRegistrationLock(ws, message.locked); break; }',
+    "authenticated room PIN transport"
+  );
+
   return source;
 }
 

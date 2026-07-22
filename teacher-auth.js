@@ -12,6 +12,7 @@
     "move_player",
     "remove_player",
     "set_registration_lock",
+    "set_player_ready",
     "fill_with_bots",
     "remove_bots",
     "start_match",
@@ -115,7 +116,7 @@
     if (controlScriptLoaded || document.querySelector('script[data-teacher-controls="true"]')) return;
     controlScriptLoaded = true;
     const script = document.createElement("script");
-    script.src = "master-v3.js";
+    script.src = "master-v3.js?v=20260722-smooth2";
     script.dataset.teacherControls = "true";
     script.addEventListener("error", () => {
       controlScriptLoaded = false;

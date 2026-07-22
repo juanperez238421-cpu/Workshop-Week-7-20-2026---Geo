@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "27.0.0",
+  "version": "28.0.0",
   "private": true,
-  "description": "Nine PC players across three teams with fluid multiplayer, three lives, five ammo charges, supply powers and a geometry respawn bank covering sine/cosine ratios, unknown right-triangle sides and Thales height problems.",
+  "description": "Nine PC players across three teams with reliable right-click mouse aiming, Space-only shooting, player-selected team names, human-only kill announcements, explosion effects and geometry respawn challenges.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check gameplay-v6.js && node --check question-bank-ui.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-live-v6.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/runtime-v6.js && node --check server/runtime-v7.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/gameplay-v6-test.js && node scripts/question-bank-v7-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check gameplay-v6.js && node --check gameplay-v8.js && node --check team-selection-v8.js && node --check question-bank-ui.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-live-v6.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/runtime-v6.js && node --check server/runtime-v7.js && node --check server/runtime-v8.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/gameplay-v6-test.js && node scripts/gameplay-v8-test.js && node scripts/question-bank-v7-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 const assert = require("node:assert/strict");
 const realCrypto = require("node:crypto");
-const { MUSIC_TEAM_NAMES, patchServerSource } = require("../server/runtime-patch.js");
+const { MUSIC_TEAM_NAMES, RANDOM_PC_TITLES, patchServerSource } = require("../server/runtime-patch.js");
 
 const sent = [];
 class FakeWss { constructor(){ this.clients=[]; } on(){} handleUpgrade(){} }
@@ -32,7 +32,7 @@ const context = {
 context.globalThis = context;
 let source = patchServerSource(fs.readFileSync("server/server-v3.js", "utf8"));
 source += "\nglobalThis.__triadTest = { Room, containsBannedLanguage };";
-vm.runInNewContext(source, context, { filename: "server-v3.music-mode.js" });
+vm.runInNewContext(source, context, { filename: "server-v3.smooth-mode.js" });
 const { Room, containsBannedLanguage } = context.__triadTest;
 
 assert.equal(containsBannedLanguage("Mierda Team"), true);
@@ -52,17 +52,18 @@ assert.ok(room.teamNames.every((name) => MUSIC_TEAM_NAMES.includes(name)));
 assert.equal(room.teamNamesFinalized.every(Boolean), true);
 
 const studentWs = socket();
-room.registerStudent(studentWs, { pcLabel: "PC Player 1", students: ["Ana", "Luis", "Sara"], preferredTeam: 0 });
+room.registerStudent(studentWs, { pcLabel: "AUTO", students: ["Ana", "Luis", "Sara"], preferredTeam: 0 });
 assert.equal(room.pending.size, 1);
-assert.ok(sent.some((message) => message.type === "registration_pending" && message.pcLabel === "PC Player 1" && message.pendingCount === 1));
-assert.ok(sent.some((message) => message.type === "registration_received" && message.pcLabel === "PC Player 1"));
 const registration = [...room.pending.values()][0];
+assert.ok(RANDOM_PC_TITLES.includes(registration.pcLabel) || /^Triad Unit /.test(registration.pcLabel));
+assert.ok(sent.some((message) => message.type === "registration_pending" && message.pcLabel === registration.pcLabel && message.pendingCount === 1));
+assert.ok(sent.some((message) => message.type === "registration_received" && message.pcLabel === registration.pcLabel));
 assert.equal(registration.students.length, 3);
 
 room.approveRegistration(controller, registration.id, 0);
 assert.equal(room.players.size, 1);
 const human = [...room.players.values()].find((player) => !player.isBot);
-assert.equal(human.pcLabel, "PC Player 1");
+assert.equal(human.pcLabel, registration.pcLabel);
 assert.deepEqual(Array.from(human.students), ["Ana", "Luis", "Sara"]);
 assert.equal(human.proposalsSubmitted, true);
 assert.equal(human.votesSubmitted, true);
@@ -74,6 +75,10 @@ assert.ok([...room.players.values()].every((player) => player.students.length ==
 assert.equal([...room.players.values()].filter((player) => !player.isBot).length, 1);
 assert.equal([...room.players.values()].filter((player) => player.isBot).length, 8);
 
+room.setPlayerReady(controller, human.id, true);
+assert.equal(human.ready, true);
+room.setPlayerReady(controller, human.id, false);
+assert.equal(human.ready, false);
 room.setReady(human.id, true);
 assert.equal(human.ready, true);
 assert.equal(room.canStart(), true);
@@ -82,4 +87,4 @@ assert.equal(room.phase, "playing");
 room.updateBots(Date.now());
 assert.ok([...room.players.values()].filter((player) => player.isBot).every((bot) => Number.isFinite(bot.input.angle)));
 
-console.log("Runtime test passed: student registration is acknowledged to the player and broadcast directly to the teacher, one PC creates one of 9 players, every player contains 3 student names, teams remain 3x3, and music team names require no voting.");
+console.log("Runtime test passed: server-assigned PC titles, teacher readiness overrides, three-student registration, 9-player 3×3 teams, music team names and smooth large-map bot input are active.");

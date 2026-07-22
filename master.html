@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="master.css" />
   <link rel="stylesheet" href="master-v3.css" />
   <link rel="stylesheet" href="teacher-auth.css" />
+  <link rel="stylesheet" href="master-layout-fix.css" />
 </head>
 <body class="teacher-auth-locked">
   <section id="teacherAuthOverlay" class="teacher-auth-screen" aria-modal="true" role="dialog" aria-labelledby="teacherAuthTitle">
@@ -28,18 +29,35 @@
 
   <main id="teacherApp" class="master-shell teacher-app" hidden>
     <header class="master-topbar">
-      <div><p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>9 PC players · 3 teams · 3 players per team · 3 student names per player</span></div>
-      <div class="master-status teacher-session-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="teacherLogoutButton" class="teacher-logout-button" type="button">LOG OUT</button></div>
+      <div>
+        <p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3</p>
+        <h1>Triad Territory Rush</h1>
+        <span>9 PC players · 3 teams · 3 players per team · 3 student names per player</span>
+      </div>
+      <div class="master-status teacher-session-actions">
+        <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
+        <a id="pendingJumpButton" class="teacher-jump-button" href="#registrationInbox">VIEW REGISTRATIONS</a>
+        <button id="teacherLogoutButton" class="teacher-logout-button" type="button">LOG OUT</button>
+      </div>
     </header>
 
     <section id="setupPanel" class="master-card setup-card">
-      <div class="section-heading"><div><h2>Create the classroom room</h2><p>Each approved PC registration becomes exactly one of the nine arena players. Give students only the six-character room code.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <div class="section-heading">
+        <div>
+          <h2>Create the classroom room</h2>
+          <p>Each approved PC registration becomes exactly one of the nine arena players. Give students only the six-character room code.</p>
+        </div>
+        <span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span>
+      </div>
       <details>
         <summary>Classroom server connection</summary>
         <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
       </details>
-      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS ROOM</button></div>
-      <div id="setupStatus" class="notice">Create a room. The code will appear at the top of the panel.</div>
+      <div class="setup-actions">
+        <button id="createRoomButton" class="primary-button" type="button">CREATE ROOM</button>
+        <button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS ROOM</button>
+      </div>
+      <div id="setupStatus" class="notice" aria-live="polite">Create a room. The code will appear at the top of the panel.</div>
     </section>
 
     <section id="controlPanel" class="hidden">
@@ -64,6 +82,19 @@
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
 
+      <section id="registrationInbox" class="master-card registration-inbox-card" aria-labelledby="registrationInboxTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="registrationInboxTitle">Student registration requests</h2>
+            <p>Every submitted PC appears here immediately with exactly three student names. Review the names, then approve or reject that single player slot.</p>
+          </div>
+          <span id="pendingInboxBadge" class="registration-state-pill"><b id="pendingInboxCount">0</b> WAITING</span>
+        </div>
+        <div id="pendingList" class="pending-list" role="status" aria-live="polite" aria-atomic="false">
+          <div class="empty-state">Waiting for PC-player registrations.</div>
+        </div>
+      </section>
+
       <section class="master-card ai-control-card">
         <div class="section-heading">
           <div>
@@ -80,16 +111,24 @@
       </section>
 
       <section class="master-card">
-        <div class="section-heading"><div><h2>Fixed match structure</h2><p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names are assigned automatically from a randomized list of famous song titles.</p></div></div>
+        <div class="section-heading">
+          <div>
+            <h2>Fixed match structure</h2>
+            <p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names are assigned automatically from a randomized list of famous song titles.</p>
+          </div>
+        </div>
       </section>
 
-      <section class="master-columns">
-        <section class="master-card"><div class="section-heading"><div><h2>Live player registrations</h2><p>Each submitted PC appears here as one pending player with three student names. Verify the names, then approve that single player slot.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for PC-player registrations.</div></div></section>
-        <section class="master-card">
-          <div class="section-heading"><div><h2>Player list — real and AI</h2><p id="playerListSummary">0/9 total players · 0 real · 0 AI</p><p>Every bot appears here as a normal player card with an AI label, assigned team and three virtual student names.</p></div></div>
-          <div id="teamCapacity" class="team-capacity"></div>
-          <div id="rosterList" class="master-roster"></div>
-        </section>
+      <section class="master-card master-roster-card">
+        <div class="section-heading">
+          <div>
+            <h2>Player list — real and AI</h2>
+            <p id="playerListSummary">0/9 total players · 0 real · 0 AI</p>
+            <p>Every bot appears here as a normal player card with an AI label, assigned team and three virtual student names.</p>
+          </div>
+        </div>
+        <div id="teamCapacity" class="team-capacity"></div>
+        <div id="rosterList" class="master-roster"></div>
       </section>
 
       <section class="master-card start-console">
@@ -97,10 +136,17 @@
         <div class="button-row"><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
       </section>
 
-      <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry for the nine PC-player slots.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
+      <section id="livePanel" class="master-card live-panel hidden">
+        <div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry for the nine PC-player slots.</p></div></div>
+        <div id="liveTeams" class="live-teams"></div>
+        <div id="livePlayers" class="live-players"></div>
+      </section>
 
       <section id="reportPanel" class="master-card hidden">
-        <div class="section-heading"><div><h2>Final classroom report</h2><p id="winnerSummary"></p></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
+        <div class="section-heading">
+          <div><h2>Final classroom report</h2><p id="winnerSummary"></p></div>
+          <div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div>
+        </div>
         <div id="finalRanking" class="final-ranking"></div>
         <div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
       </section>

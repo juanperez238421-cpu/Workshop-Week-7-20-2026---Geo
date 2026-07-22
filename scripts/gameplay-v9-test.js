@@ -8,7 +8,8 @@ for (const file of [
   "gameplay-v9.js",
   "master-live-v9.js",
   "music-mode-ui.js",
-  "server/runtime-v9.js"
+  "server/runtime-v9.js",
+  "server/runtime-v10.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -61,6 +62,6 @@ assert.match(patchedGateway, /perMessageDeflate: false/);
 
 assert.match(musicMode, /gameplay-v9\.js/);
 assert.match(musicMode, /master-live-v9\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v9.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v10.js secure-gateway.js");
 
-console.log("Gameplay v9 test passed: runtime patches compile and equal visual sizes, enlarged and swept hitboxes, 10-second ammo regeneration, delta snapshots, interpolation and light master rendering are configured.");
+console.log("Gameplay v9 compatibility test passed under runtime v10: equal visual sizes, swept hitboxes, ammo regeneration, delta snapshots, interpolation and light master rendering remain configured.");

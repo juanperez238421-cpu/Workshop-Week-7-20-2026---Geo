@@ -12,10 +12,18 @@
 
   function rewriteText(node) {
     if (!node || typeof node.textContent !== "string") return;
-    let value = node.textContent;
+    const value = node.textContent;
     let next = value;
     for (const [from, to] of replacements) next = next.replaceAll(from, to);
     if (next !== value) node.textContent = next;
+  }
+
+  function removeStudentVotingControls() {
+    if (!document.getElementById("gameCanvas")) return;
+    ["proposalPanel", "votePanel", "teamNamingStatus"].forEach((id) => {
+      const element = document.getElementById(id);
+      if (element?.isConnected) element.remove();
+    });
   }
 
   function refresh() {
@@ -27,6 +35,7 @@
       "startReadiness",
       "setupStatus"
     ].forEach((id) => rewriteText(document.getElementById(id)));
+    removeStudentVotingControls();
   }
 
   function start() {

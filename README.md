@@ -1,4 +1,4 @@
-# Triad Territory Rush — Protocol 3 + Secure Teacher Gateway
+# Triad Territory Rush — Protocol 3 + Secure Master Gateway
 
 [![Validate classroom game](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml/badge.svg)](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml)
 
@@ -7,47 +7,51 @@ A real-time classroom territory game for **nine PC-player slots**. Each real PC 
 ## Live pages
 
 - **Student game:** `index.html`
-- **Teacher control:** `teacher.html`
-- **Legacy teacher URL:** `master.html` redirects to `teacher.html`
+- **Master teacher control:** `master.html`
+- **Teacher alias:** `teacher.html` redirects to `master.html`
 - **Secure public gateway:** `server/secure-gateway.js`
 - **Authoritative game engine:** `server/server-v3.js`
 - **Match:** 5 minutes, 3 teams × 3 player slots
 - **Winner:** largest server-counted territory
 
-The student page does not display a teacher-console link. The teacher password is verified by the Render WebSocket gateway before the console is unlocked. The browser receives a temporary random teacher token; every privileged command includes that token and is rejected by the gateway when the token is missing, invalid, or expired.
+The student page contains no link to the master console. The password is verified by the Render WebSocket gateway before the console is unlocked. The browser receives a temporary random teacher token; privileged commands are rejected when the token is missing, invalid, or expired.
 
 The classroom password is currently `9109`. It is not stored by the browser. Reloading or logging out requires entering it again.
 
-## Protected teacher actions
+## Protected master actions
 
 The gateway requires a valid teacher token for:
 
 - creating or restoring a master room;
 - approving or rejecting registrations;
-- moving or removing player groups;
+- removing player groups;
 - locking registration;
 - adding or removing AI replacements;
 - starting, ending, or resetting a match.
 
 Student registration, team-name voting, movement, shooting, and trigonometry answers continue to be processed by the authoritative engine.
 
+## Random team assignment
+
+Students do not choose or request a team. After the teacher verifies a pending PC group and selects **APPROVE · RANDOM TEAM**, the master console chooses randomly among teams that still have an open slot. Once approved, the team assignment is locked in the console. Filling all nine slots still produces the required 3–3–3 structure because no team can exceed three player slots.
+
 ## Real-test launch sequence
 
-1. Open `teacher.html` on the teacher computer and enter `9109`.
+1. Open `master.html` on the teacher computer and enter `9109`.
 2. Wait until the server accepts the password and the status reads **PROTOCOL 3 ONLINE**.
 3. Select **CREATE MASTER ROOM**.
 4. Copy the generated student link and open it on each student PC.
 5. Each PC registers exactly three students and waits for teacher approval.
-6. Approve registrations and balance teams at 3–3–3.
+6. Verify each group and select **APPROVE · RANDOM TEAM**.
 7. Complete team-name suggestions, voting, and ready confirmation.
-8. Start only when the teacher console reports that all gates are complete.
+8. Start only when the master console reports that all gates are complete.
 9. After the match, download the CSV or JSON report before resetting the room.
 
 ## Registration workflow
 
 1. The teacher creates a master room and shares the generated student link.
-2. Every real PC registers a PC/group label, exactly three different student names, and a preferred team slot.
-3. The teacher verifies the names, approves the PC, and assigns its final team.
+2. Every real PC registers a PC/group label and exactly three different student names.
+3. The teacher verifies the names and approves the PC; the team is selected randomly from available slots.
 4. Each student on that PC submits one team-name suggestion.
 5. When all nine students in a team have suggested names, each student casts one vote.
 6. The highest-vote proposal becomes the team name. Ties use the earliest valid proposal.
@@ -102,4 +106,4 @@ Expected health response:
 npm test
 ```
 
-The validation suite checks JavaScript syntax, student/teacher page separation, server-verified teacher authentication, protected teacher commands, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates, and the largest-territory winner rule.
+The validation suite checks JavaScript syntax, student/master separation, server-verified teacher authentication, protected master commands, hidden team preference, random locked assignment, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates, and the largest-territory winner rule.

@@ -111,7 +111,7 @@ assert.match(masterHtml, /teacherPassword/);
 assert.match(masterHtml, /SERVER-VERIFIED MASTER PAGE/);
 assert.match(masterHtml, /9 PC players/);
 assert.match(masterHtml, /3 players per team/);
-assert.match(masterHtml, /3 student names per player/);
+assert.match(masterHtml, /3 student names per player|exactly three student names/i);
 assert.match(masterHtml, /3 lives/);
 assert.match(masterHtml, /5 ammo charges/);
 assert.match(masterHtml, /supply boxes/);

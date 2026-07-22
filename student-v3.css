@@ -1,0 +1,17 @@
+.registration-modal{width:min(1080px,100%)}
+.registration-top-row{grid-template-columns:.75fr 1.15fr 1fr}
+.student-registration-grid,.student-ballot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.registered-students{margin-top:10px;padding:11px;border:1px solid #eaecf0;border-radius:10px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.registered-students span{font-size:.65rem;font-weight:900;letter-spacing:.09em;color:#667085}
+.registered-students strong{font-size:.78rem}
+.assigned-team-card{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px;border:1px solid #eaecf0;border-radius:12px;background:#f8fafc}
+.assigned-team-card>div{display:flex;flex-direction:column;gap:3px}.assigned-team-card small{font-size:.64rem;font-weight:900;letter-spacing:.1em;color:#667085}.assigned-team-card strong{font-size:1.1rem}.assigned-team-card span:last-child{font-size:.72rem;color:#667085}
+.large-color-dot{width:34px;height:34px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 1px #d0d5dd;flex:0 0 auto}
+.ballot-panel{margin-top:12px;padding:14px;border:1px solid #d0d5dd;border-radius:12px;background:#fff}
+.ballot-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.ballot-heading h2{margin:0;font-size:.95rem}.ballot-heading p{margin:4px 0 0;color:#667085;font-size:.72rem}.ballot-heading>span{padding:5px 8px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:.64rem;font-weight:900;white-space:nowrap}
+.ballot-panel button{width:auto;margin-top:2px}.disabled-panel{background:#f9fafb}.disabled-panel .student-ballot-grid,.disabled-panel .candidate-board{opacity:.72}
+.candidate-board{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.candidate-card{padding:9px;border:1px solid #eaecf0;border-radius:9px;background:#f8fafc;display:flex;justify-content:space-between;gap:8px}.candidate-card strong{font-size:.72rem}.candidate-card span{font-size:.65rem;color:#667085;white-space:nowrap}
+.roster-card .member-line{font-size:.62rem;color:#667085}.bot-badge{display:inline-flex;padding:2px 5px;border-radius:999px;background:#eef4ff;color:#3538cd;font-size:.56rem;font-weight:900;margin-left:4px}
+.team-card{border-left:5px solid var(--team-color,#98a2b3)!important}.capacity-card{border-left:4px solid var(--team-color,#98a2b3)!important}.roster-card{border-left:4px solid var(--team-color,#98a2b3)!important}
+#playerMembersLabel{display:block;margin-top:2px;color:#667085}
+@media(max-width:820px){.registration-top-row,.student-registration-grid,.student-ballot-grid,.candidate-board{grid-template-columns:1fr}.ballot-heading{flex-direction:column}.registration-modal{width:min(96vw,1080px)}}

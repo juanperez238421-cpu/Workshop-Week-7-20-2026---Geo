@@ -2,13 +2,30 @@
 
 A real-time classroom territory game for **nine PC-player slots**. Each real PC represents **exactly three registered students**, so a complete all-human match can involve 27 students.
 
-## Live architecture
+## Live pages
 
-- **Student game:** GitHub Pages root (`index.html`)
-- **Teacher control:** `master.html`
+- **Student game:** `index.html`
+- **Teacher control:** `teacher.html`
+- **Legacy teacher URL:** `master.html` redirects to `teacher.html`
 - **Authoritative server:** Render, using `server/server-v3.js`
 - **Match:** 5 minutes, 3 teams × 3 player slots
 - **Winner:** largest server-counted territory
+
+The student page does not display a teacher-console link. The teacher page is protected by a four-digit classroom password and keeps access only in the current browser tab through `sessionStorage`. The password is verified against a SHA-256 hash in `teacher-auth.js`; the plain password is not stored in the repository.
+
+> Important: GitHub Pages is a static host. This password gate prevents casual or accidental student access, but it is not equivalent to server-side authentication. A technically skilled user with source-code access could still bypass it. The authoritative room token and match actions remain controlled by the multiplayer server.
+
+## Real-test launch sequence
+
+1. Open `teacher.html` on the teacher computer and enter the teacher password.
+2. Wait until the status reads **PROTOCOL 3 ONLINE**.
+3. Select **CREATE MASTER ROOM**.
+4. Copy the generated student link and open it on each student PC.
+5. Each PC registers exactly three students and waits for teacher approval.
+6. Approve registrations and balance teams at 3–3–3.
+7. Complete team-name suggestions, voting and ready confirmation.
+8. Start only when the teacher console reports that all gates are complete.
+9. After the match, download the CSV or JSON report before resetting the room.
 
 ## Registration workflow
 
@@ -86,4 +103,4 @@ Expected server response after deployment:
 npm test
 ```
 
-The test suite checks JavaScript syntax, HTML/JS DOM contracts, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates and the largest-territory winner rule.
+The test suite checks JavaScript syntax, student/teacher page separation, teacher authentication DOM contracts, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates and the largest-territory winner rule.

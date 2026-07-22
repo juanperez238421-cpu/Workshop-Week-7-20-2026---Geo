@@ -1,0 +1,72 @@
+#masterArenaShell {
+  position: relative;
+  background: #e8eef6 !important;
+}
+
+#masterRealtimeCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: #e8eef6;
+  border-radius: inherit;
+}
+
+#masterGameCanvas {
+  opacity: 0;
+}
+
+.master-live-meta {
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+}
+
+.master-live-meta > div {
+  position: relative;
+  overflow: hidden;
+}
+
+.master-live-meta > div::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: #98a2b3;
+  content: "";
+}
+
+#masterNetworkCard[data-quality="excellent"]::before {
+  background: #12b76a;
+}
+
+#masterNetworkCard[data-quality="good"]::before {
+  background: #2e90fa;
+}
+
+#masterNetworkCard[data-quality="fair"]::before {
+  background: #f79009;
+}
+
+#masterNetworkCard[data-quality="poor"]::before {
+  background: #f04438;
+}
+
+#masterNetworkCard small {
+  color: #667085;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+#masterNetworkQuality {
+  font-variant-numeric: tabular-nums;
+}
+
+.master-arena-shell {
+  background: #e8eef6 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 12px 30px rgba(16, 24, 40, 0.08);
+}

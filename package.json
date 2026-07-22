@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "23.0.0",
+  "version": "24.0.0",
   "private": true,
-  "description": "Teacher-controlled nine-slot classroom game with three students per PC, team-name voting, random colors and AI replacement players.",
+  "description": "Separate student and password-protected teacher pages for a nine-slot classroom territory game.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check master-v3.js && node --check config.js && node --check server/server-v3.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check master-v3.js && node --check teacher-v4.js && node --check config.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/smoke-test.js && node scripts/runtime-test.js && node scripts/gateway-test.js"
   },
   "engines": { "node": ">=20" }
 }

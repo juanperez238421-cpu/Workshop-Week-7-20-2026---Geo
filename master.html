@@ -55,6 +55,20 @@
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
 
+      <section class="master-card ai-control-card">
+        <div class="section-heading">
+          <div>
+            <h2>AI bot players</h2>
+            <p>Add bots to fill every empty player slot until the room reaches 9 total players. Bots are distributed automatically to preserve 3 teams with 3 players each.</p>
+          </div>
+          <strong><span id="botCountSummary">Use only for missing players</span></strong>
+        </div>
+        <div class="button-row">
+          <button id="fillBotsButton" class="primary-button" type="button">ADD AI BOTS TO FILL MISSING SLOTS</button>
+          <button id="removeBotsButton" class="secondary-button" type="button">REMOVE ALL AI BOTS</button>
+        </div>
+      </section>
+
       <section class="master-card">
         <div class="section-heading"><div><h2>Fixed match structure</h2><p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names are assigned automatically from a randomized list of famous song titles.</p></div></div>
       </section>
@@ -62,11 +76,6 @@
       <section class="master-columns">
         <section class="master-card"><div class="section-heading"><div><h2>Live player registrations</h2><p>Each submitted PC appears here as one pending player with three student names. Verify the names, then approve that single player slot.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for PC-player registrations.</div></div></section>
         <section class="master-card"><div class="section-heading"><div><h2>Approved players</h2><p>Approved players move here immediately. Assignment is random, locked and limited to three players per team.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
-      </section>
-
-      <section class="master-card ai-control-card">
-        <div class="section-heading"><div><h2>Fill missing player slots</h2><p>Use AI only when fewer than nine real PC players are available. Each AI occupies one player slot and contains three virtual student names.</p></div></div>
-        <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE AI</button></div>
       </section>
 
       <section class="master-card start-console">

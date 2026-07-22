@@ -1,0 +1,150 @@
+/* Master-page layout overrides.
+   The shared game stylesheet intentionally locks viewport scrolling for the arena.
+   The teacher dashboard is a document page, so it must restore normal vertical flow. */
+
+html {
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+}
+
+body.teacher-auth-locked {
+  overflow: hidden !important;
+}
+
+.master-shell,
+.teacher-app,
+#controlPanel {
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+}
+
+.teacher-jump-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #344054;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+.teacher-jump-button:hover,
+.teacher-jump-button:focus-visible {
+  border-color: #98a2b3;
+  background: #f2f4f7;
+  outline: none;
+}
+
+.registration-inbox-card {
+  margin-top: 12px;
+  border-left: 6px solid #98a2b3;
+  scroll-margin-top: 18px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.registration-inbox-card.has-pending {
+  border-left-color: #f79009;
+  background: #fffdf8;
+  box-shadow: 0 10px 30px rgba(181, 71, 8, 0.12);
+}
+
+.registration-inbox-card.registration-pulse {
+  animation: registrationPulse 900ms ease-out;
+}
+
+.registration-state-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f2f4f7;
+  color: #475467;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.registration-state-pill.has-pending {
+  background: #fef0c7;
+  color: #b54708;
+}
+
+.registration-state-pill b {
+  font-size: 0.82rem;
+}
+
+#pendingList {
+  min-height: 82px;
+}
+
+.pending-card {
+  border-left-width: 6px !important;
+}
+
+.pending-card-head strong,
+.pending-card .student-list {
+  overflow-wrap: anywhere;
+}
+
+.master-roster-card {
+  margin-top: 12px;
+}
+
+@keyframes registrationPulse {
+  0% { box-shadow: 0 0 0 0 rgba(247, 144, 9, 0.35); }
+  100% { box-shadow: 0 0 0 14px rgba(247, 144, 9, 0); }
+}
+
+@media (max-width: 780px) {
+  .master-shell {
+    width: min(100% - 20px, 1500px);
+    padding-top: 10px;
+  }
+
+  .master-topbar {
+    align-items: flex-start;
+  }
+
+  .teacher-session-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .teacher-jump-button,
+  .teacher-logout-button {
+    flex: 1 1 180px;
+  }
+
+  .registration-inbox-card .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .registration-inbox-card { transition: none; }
+  .registration-inbox-card.registration-pulse { animation: none; }
+}

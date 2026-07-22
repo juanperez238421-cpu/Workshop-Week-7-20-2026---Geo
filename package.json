@@ -4,7 +4,7 @@
   "private": true,
   "description": "Nine PC players across three teams, with a 9600×6000 smooth camera-follow arena, right-click aim guides, Space-only shooting, random PC titles, proximity volleys, teacher readiness controls and live match supervision.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js",
+    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

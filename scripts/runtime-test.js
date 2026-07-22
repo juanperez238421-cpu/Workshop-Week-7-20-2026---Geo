@@ -34,8 +34,12 @@ source += "\nglobalThis.__triadTest = { Room, containsBannedLanguage };";
 vm.runInNewContext(source, context, { filename: "server-v3.js" });
 const { Room, containsBannedLanguage } = context.__triadTest;
 assert.equal(containsBannedLanguage("Mierda Team"), true);
+assert.equal(containsBannedLanguage("m.i.e.r.d.a"), true);
+assert.equal(containsBannedLanguage("f u c k"), true);
 assert.equal(containsBannedLanguage("Geometry Masters"), false);
-assert.equal(containsBannedLanguage("Computer Team"), false);
+assert.equal(containsBannedLanguage("Computadora Team"), false);
+assert.equal(containsBannedLanguage("Maricarmen"), false);
+assert.equal(containsBannedLanguage("Dickson Geometry"), false);
 
 function socket(){ return { readyState: 1, role: "", roomCode: "", send(payload){ sent.push(JSON.parse(payload)); }, close(){} }; }
 const room = new Room("ABC234");

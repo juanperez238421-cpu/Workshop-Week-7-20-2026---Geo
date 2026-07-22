@@ -29,9 +29,23 @@ jobs:
           set +e
           npm test > test-output.txt 2>&1
           status=$?
-          if [ $status -ne 0 ]; then
-            echo "--- final test diagnostics ---"
-            tail -n 65 test-output.txt
-            exit $status
+          echo "$status" > test-status.txt
+          tail -n 65 test-output.txt
+          exit 0
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gameplay-test-diagnostics
+          path: |
+            test-output.txt
+            test-status.txt
+          retention-days: 3
+      - name: Enforce test result
+        shell: bash
+        run: |
+          status=$(cat test-status.txt)
+          if [ "$status" != "0" ]; then
+            echo "Gameplay integration tests failed. See the uploaded diagnostics artifact."
+            exit "$status"
           fi
-          tail -n 25 test-output.txt

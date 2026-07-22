@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "25.3.0",
+  "version": "25.4.0",
   "private": true,
-  "description": "Nine PC players across three teams, with a live teacher arena, embedded master player station, server-confirmed student registration, automatic music team names and AI roster controls.",
+  "description": "Nine PC players across three teams, with a large camera-follow arena, three-student shared controls, proximity volley combat, detailed elimination feeds, a live teacher arena and AI roster controls.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v4.js && node --check combat-feed.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v4-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

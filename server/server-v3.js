@@ -53,8 +53,23 @@ function originAllowed(origin) { return ALLOWED_ORIGINS.includes("*") || Boolean
 function id(prefix = "id") { return `${prefix}_${crypto.randomBytes(10).toString("hex")}`; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function sanitizeText(value, fallback = "", max = 28) { return String(value || fallback).replace(/[<>\r\n\t]/g, " ").replace(/\s+/g, " ").trim().slice(0, max); }
-function canonicalText(value) { return sanitizeText(value, "", 80).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/0/g, "o").replace(/[1!|]/g, "i").replace(/3/g, "e").replace(/4|@/g, "a").replace(/5|\$/g, "s").replace(/7/g, "t").replace(/[^a-z]/g, ""); }
-function containsBannedLanguage(value) { const compact = canonicalText(value); return BANNED_WORDS.some((word) => compact.includes(canonicalText(word))); }
+function normalizedLeetspeak(value) { return sanitizeText(value, "", 80).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/0/g, "o").replace(/[1!|]/g, "i").replace(/3/g, "e").replace(/[4@]/g, "a").replace(/[5$]/g, "s").replace(/7/g, "t"); }
+function canonicalText(value) { return normalizedLeetspeak(value).replace(/[^a-z]/g, ""); }
+function canonicalNameTokens(value) {
+  const tokens = normalizedLeetspeak(value).split(/[^a-z]+/g).filter(Boolean);
+  const collapsedShortRuns = [];
+  let run = "";
+  for (const token of tokens) {
+    if (token.length <= 2) { run += token; if (run.length > 18) run = token; }
+    else { if (run) collapsedShortRuns.push(run); run = ""; }
+  }
+  if (run) collapsedShortRuns.push(run);
+  return [...tokens, ...collapsedShortRuns];
+}
+function containsBannedLanguage(value) {
+  const banned = new Set(BANNED_WORDS.map(canonicalText));
+  return canonicalNameTokens(value).some((token) => banned.has(token));
+}
 function assertSafeName(value, label, min = 2, max = 28) { const clean = sanitizeText(value, "", max); if (clean.length < min) throw new Error(`${label} must contain at least ${min} characters.`); if (containsBannedLanguage(clean)) throw new Error(`${label} contains prohibited language. Choose a respectful name.`); return clean; }
 function parseStudentNames(values) { if (!Array.isArray(values) || values.length !== STUDENTS_PER_PC) throw new Error("Register exactly three students on this PC."); const names = values.map((value, index) => assertSafeName(value, `Student ${index + 1} name`, 2, 24)); if (new Set(names.map((name) => name.toLowerCase())).size !== STUDENTS_PER_PC) throw new Error("The three registered student names must be different."); return names; }
 function validTeam(value) { const team = Number(value); if (![0, 1, 2].includes(team)) throw new Error("Choose a valid team slot."); return team; }

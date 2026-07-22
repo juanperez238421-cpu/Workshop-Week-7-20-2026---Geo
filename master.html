@@ -9,12 +9,12 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-live1" />
-  <link rel="stylesheet" href="master.css?v=20260722-live1" />
-  <link rel="stylesheet" href="master-v3.css?v=20260722-live1" />
-  <link rel="stylesheet" href="teacher-auth.css?v=20260722-live1" />
-  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-live1" />
-  <link rel="stylesheet" href="master-live-game.css?v=20260722-live1" />
+  <link rel="stylesheet" href="styles.css?v=20260722-smooth2" />
+  <link rel="stylesheet" href="master.css?v=20260722-smooth2" />
+  <link rel="stylesheet" href="master-v3.css?v=20260722-smooth2" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260722-smooth2" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-smooth2" />
+  <link rel="stylesheet" href="master-live-game.css?v=20260722-smooth2" />
   <style id="master-critical-scroll-fix">
     html,
     body {
@@ -44,6 +44,10 @@
       height: auto !important;
       max-height: none !important;
       overflow: visible !important;
+    }
+    .teacher-ready-toggle[data-ready="true"] {
+      border-color: #f04438;
+      color: #b42318;
     }
   </style>
 </head>
@@ -174,7 +178,7 @@
           <div class="master-player-station-head">
             <div>
               <h3>Master browser player station</h3>
-              <p>Register this browser as a normal PC player with three represented names. Approve the request in the registration inbox, mark it ready, then click inside the game frame to use WASD, mouse, Space and Shift.</p>
+              <p>Register this browser as a normal PC player with three represented names. Approve it in the registration inbox, then use WASD and Shift for movement, hold right click to aim, and press Space to shoot.</p>
             </div>
             <div class="button-row">
               <button id="masterResetPlayerButton" class="secondary-button" type="button">RESET PLAYER SESSION</button>
@@ -192,7 +196,7 @@
         <div class="section-heading">
           <div>
             <h2>Fixed match structure</h2>
-            <p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names are assigned automatically from a randomized list of famous song titles.</p>
+            <p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names and PC titles are assigned automatically.</p>
           </div>
         </div>
       </section>
@@ -202,7 +206,7 @@
           <div>
             <h2>Player list — real and AI</h2>
             <p id="playerListSummary">0/9 total players · 0 real · 0 AI</p>
-            <p>Every approved player and every bot is listed below with its team, connection state, readiness and three represented names.</p>
+            <p>Every approved player and every bot is listed below. The teacher may change each real player between ready and not ready before starting the match.</p>
           </div>
         </div>
         <div id="teamCapacity" class="team-capacity"></div>
@@ -232,12 +236,12 @@
       </section>
     </section>
   </main>
-  <script src="config.js?v=20260722-live1"></script>
-  <script src="master-registration-sync.js?v=20260722-live1"></script>
-  <script src="master-enhancements.js?v=20260722-live1"></script>
-  <script src="master-live-game.js?v=20260722-live1"></script>
-  <script src="teacher-auth.js?v=20260722-live1"></script>
-  <script src="music-mode-ui.js?v=20260722-cohesion1"></script>
-  <script src="master-scroll-guard.js?v=20260722-live1"></script>
+  <script src="config.js?v=20260722-smooth2"></script>
+  <script src="master-registration-sync.js?v=20260722-smooth2"></script>
+  <script src="master-enhancements.js?v=20260722-smooth2"></script>
+  <script src="master-live-game.js?v=20260722-smooth2"></script>
+  <script src="teacher-auth.js?v=20260722-smooth2"></script>
+  <script src="music-mode-ui.js?v=20260722-smooth2"></script>
+  <script src="master-scroll-guard.js?v=20260722-smooth2"></script>
 </body>
 </html>

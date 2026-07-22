@@ -5,14 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f7f9fc" />
   <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="master.css" />
-  <link rel="stylesheet" href="master-v3.css" />
-  <link rel="stylesheet" href="teacher-auth.css" />
-  <link rel="stylesheet" href="master-layout-fix.css" />
+  <link rel="stylesheet" href="styles.css?v=20260722-scroll3" />
+  <link rel="stylesheet" href="master.css?v=20260722-scroll3" />
+  <link rel="stylesheet" href="master-v3.css?v=20260722-scroll3" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260722-scroll3" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-scroll3" />
+  <style id="master-critical-scroll-fix">
+    html {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+    }
+    body.master-page {
+      width: 100% !important;
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      position: static !important;
+    }
+    body.master-page.teacher-auth-locked {
+      overflow: hidden !important;
+    }
+    body.master-page #teacherApp,
+    body.master-page #controlPanel {
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+  </style>
 </head>
-<body class="teacher-auth-locked">
+<body class="teacher-auth-locked master-page">
   <section id="teacherAuthOverlay" class="teacher-auth-screen" aria-modal="true" role="dialog" aria-labelledby="teacherAuthTitle">
     <form id="teacherAuthForm" class="teacher-auth-card">
       <span class="teacher-auth-mark">SERVER-VERIFIED MASTER PAGE</span>
@@ -82,7 +112,7 @@
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
 
-      <section id="registrationInbox" class="master-card registration-inbox-card" aria-labelledby="registrationInboxTitle">
+      <section id="registrationInbox" class="master-card registration-inbox-card" aria-labelledby="registrationInboxTitle" tabindex="-1">
         <div class="section-heading">
           <div>
             <h2 id="registrationInboxTitle">Student registration requests</h2>
@@ -152,10 +182,11 @@
       </section>
     </section>
   </main>
-  <script src="config.js"></script>
-  <script src="master-registration-sync.js"></script>
-  <script src="master-enhancements.js"></script>
-  <script src="teacher-auth.js"></script>
-  <script src="music-mode-ui.js"></script>
+  <script src="config.js?v=20260722-scroll3"></script>
+  <script src="master-registration-sync.js?v=20260722-scroll3"></script>
+  <script src="master-enhancements.js?v=20260722-scroll3"></script>
+  <script src="teacher-auth.js?v=20260722-scroll3"></script>
+  <script src="music-mode-ui.js?v=20260722-scroll3"></script>
+  <script src="master-scroll-guard.js?v=20260722-scroll3"></script>
 </body>
 </html>

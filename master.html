@@ -9,34 +9,38 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-scroll3" />
-  <link rel="stylesheet" href="master.css?v=20260722-scroll3" />
-  <link rel="stylesheet" href="master-v3.css?v=20260722-scroll3" />
-  <link rel="stylesheet" href="teacher-auth.css?v=20260722-scroll3" />
-  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-scroll3" />
+  <link rel="stylesheet" href="styles.css?v=20260722-scroll4" />
+  <link rel="stylesheet" href="master.css?v=20260722-scroll4" />
+  <link rel="stylesheet" href="master-v3.css?v=20260722-scroll4" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260722-scroll4" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-scroll4" />
   <style id="master-critical-scroll-fix">
-    html {
+    html,
+    body {
       width: 100% !important;
-      height: auto !important;
+      height: 100% !important;
       min-height: 100% !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-    }
-    body.master-page {
-      width: 100% !important;
-      height: auto !important;
-      min-height: 100vh !important;
-      overflow-x: hidden !important;
-      overflow-y: visible !important;
-      position: static !important;
-    }
-    body.master-page.teacher-auth-locked {
+      margin: 0 !important;
       overflow: hidden !important;
     }
-    body.master-page #teacherApp,
-    body.master-page #controlPanel {
-      height: auto !important;
+    body.master-page:not(.teacher-auth-locked) #teacherApp {
+      position: fixed !important;
+      inset: 0 !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100vh !important;
+      height: 100dvh !important;
       min-height: 0 !important;
+      max-height: 100dvh !important;
+      margin: 0 !important;
+      overflow-x: hidden !important;
+      overflow-y: scroll !important;
+      scrollbar-gutter: stable;
+    }
+    body.master-page #controlPanel,
+    body.master-page #pendingList,
+    body.master-page #rosterList {
+      height: auto !important;
       max-height: none !important;
       overflow: visible !important;
     }
@@ -154,11 +158,13 @@
           <div>
             <h2>Player list — real and AI</h2>
             <p id="playerListSummary">0/9 total players · 0 real · 0 AI</p>
-            <p>Every bot appears here as a normal player card with an AI label, assigned team and three virtual student names.</p>
+            <p>Every approved player and every bot is listed below with its team, connection state, readiness and three represented names.</p>
           </div>
         </div>
         <div id="teamCapacity" class="team-capacity"></div>
-        <div id="rosterList" class="master-roster"></div>
+        <div id="rosterList" class="master-roster">
+          <div class="empty-state">No approved real or AI players yet.</div>
+        </div>
       </section>
 
       <section class="master-card start-console">
@@ -182,11 +188,11 @@
       </section>
     </section>
   </main>
-  <script src="config.js?v=20260722-scroll3"></script>
-  <script src="master-registration-sync.js?v=20260722-scroll3"></script>
-  <script src="master-enhancements.js?v=20260722-scroll3"></script>
-  <script src="teacher-auth.js?v=20260722-scroll3"></script>
-  <script src="music-mode-ui.js?v=20260722-scroll3"></script>
-  <script src="master-scroll-guard.js?v=20260722-scroll3"></script>
+  <script src="config.js?v=20260722-scroll4"></script>
+  <script src="master-registration-sync.js?v=20260722-scroll4"></script>
+  <script src="master-enhancements.js?v=20260722-scroll4"></script>
+  <script src="teacher-auth.js?v=20260722-scroll4"></script>
+  <script src="music-mode-ui.js?v=20260722-scroll4"></script>
+  <script src="master-scroll-guard.js?v=20260722-scroll4"></script>
 </body>
 </html>

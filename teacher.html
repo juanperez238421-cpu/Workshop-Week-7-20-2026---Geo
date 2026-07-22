@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f9fc" />
+  <meta name="robots" content="noindex" />
+  <title>Triad Territory Rush — Teacher Page</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="master.css" />
+  <link rel="stylesheet" href="master-v3.css" />
+  <link rel="stylesheet" href="teacher-v4.css" />
+</head>
+<body>
+  <main class="master-shell">
+    <header class="master-topbar">
+      <div><p class="eyebrow">PASSWORD-PROTECTED TEACHER PAGE · SECURE GATEWAY</p><h1>Triad Territory Rush</h1><span>Teacher console · 9 PC-player slots · 3 students per PC</span></div>
+      <div class="master-status"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="lockTeacherButton" class="secondary-button topbar-lock hidden" type="button">LOCK</button><a href="student.html">Student page</a></div>
+    </header>
+
+    <section id="loginPanel" class="master-card teacher-login-card" aria-labelledby="teacherLoginTitle">
+      <div class="login-layout">
+        <div>
+          <p class="eyebrow">TEACHER AUTHENTICATION</p>
+          <h2 id="teacherLoginTitle">Unlock the teacher console</h2>
+          <p>Enter the four-digit teacher password. The password is checked by the multiplayer server and is not stored in browser storage.</p>
+        </div>
+        <div class="pin-panel">
+          <label>Teacher password<input id="teacherPasswordInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password" aria-describedby="loginStatus" /></label>
+          <button id="unlockTeacherButton" class="primary-button" type="button">UNLOCK TEACHER PAGE</button>
+        </div>
+      </div>
+      <div id="loginStatus" class="notice" aria-live="polite">Enter the teacher password to continue.</div>
+    </section>
+
+    <section id="setupPanel" class="master-card setup-card hidden">
+      <div class="section-heading"><div><h2>Create the online match</h2><p>The teacher controller is separate from the nine player slots.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
+      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE MASTER ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS CONTROL</button></div>
+      <div id="setupStatus" class="notice">Authenticate, create a room, then share the generated student link.</div>
+    </section>
+
+    <section id="controlPanel" class="hidden">
+      <section class="master-grid summary-grid summary-grid-v3">
+        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="secondary-button" type="button">COPY CODE</button><button id="copyLinkButton" class="primary-button compact-button" type="button">COPY STUDENT LINK</button></div></article>
+        <article class="master-card"><span>PLAYER SLOTS</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
+        <article class="master-card"><span>REAL PC GROUPS</span><strong id="realPcCount">0</strong><small>three students per PC</small></article>
+        <article class="master-card"><span>AI BOTS</span><strong id="botCount">0</strong><small>optional replacements</small></article>
+        <article class="master-card"><span>PENDING</span><strong id="pendingCount">0</strong><small>awaiting approval</small></article>
+        <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
+      </section>
+
+      <section class="master-card join-link-card"><div><span>STUDENT ENTRY LINK</span><strong id="studentLink">—</strong><small>Open this link on every real student PC. Each PC must register exactly three students.</small></div></section>
+
+      <section class="master-card ai-control-card">
+        <div class="section-heading"><div><h2>AI replacement players</h2><p>Use bots only when fewer than nine real PC groups are available. Bots automatically register three virtual students, propose names, vote, mark ready and play.</p></div></div>
+        <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL ALL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE ALL AI BOTS</button></div>
+      </section>
+
+      <section class="master-card team-voting-card">
+        <div class="section-heading"><div><h2>Random colors and team-name voting</h2><p>Each team receives a random color. Every registered student proposes one respectful name and casts one vote. Highest votes win; ties use the earliest valid proposal.</p></div></div>
+        <div id="teamVotingList" class="team-voting-list"></div>
+      </section>
+
+      <section class="master-columns">
+        <section class="master-card"><div class="section-heading"><div><h2>Pending PC registrations</h2><p>Verify the three students, approve the PC group and assign its final team.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">No pending registrations.</div></div></section>
+        <section class="master-card"><div class="section-heading"><div><h2>Approved roster</h2><p>Three PC-player slots per team. AI slots are clearly identified.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
+      </section>
+
+      <section class="master-card start-console">
+        <div><span id="startReadiness">WAITING FOR PLAYER REGISTRATION</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">05:00</small></div>
+        <div class="button-row"><button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
+      </section>
+
+      <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry from real PC groups and AI players.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
+
+      <section id="reportPanel" class="master-card hidden">
+        <div class="section-heading"><div><h2>Final classroom report</h2><p id="winnerSummary"></p></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
+        <div id="finalRanking" class="final-ranking"></div>
+        <div class="table-wrap"><table><thead><tr><th>PC group</th><th>Students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+      </section>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="teacher-v4.js"></script>
+</body>
+</html>

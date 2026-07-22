@@ -1,0 +1,17 @@
+#masterArenaShell {
+  position: relative;
+}
+
+#masterSupplyCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.master-live-meta {
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+}

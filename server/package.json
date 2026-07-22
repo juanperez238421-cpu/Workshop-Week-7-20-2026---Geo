@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "25.0.0",
+  "version": "26.0.0",
   "private": true,
-  "description": "Secure classroom gateway for nine PC players, three teams and automatic music-based team names.",
+  "description": "Secure classroom gateway with 40 Hz simulation, 15 Hz compressed snapshots, three lives, five ammo charges, supply boxes and server-side backpressure control.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-patch.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v6.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

@@ -21,4 +21,18 @@ jobs:
         with:
           node-version: "20"
       - name: Run validation suite
-        run: npm test
+        id: validation
+        shell: bash
+        run: |
+          set +e
+          npm test > validation-output.log 2>&1
+          status=$?
+          cat validation-output.log
+          exit $status
+      - name: Upload validation output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-output
+          path: validation-output.log
+          retention-days: 7

@@ -1,33 +1,56 @@
-/* Master-page layout overrides.
-   The shared game stylesheet intentionally locks viewport scrolling for the arena.
-   The teacher dashboard is a document page, so it must restore normal vertical flow. */
+/* Dedicated teacher-dashboard viewport.
+   The shared student arena stylesheet locks html/body to a fixed game viewport.
+   The master console therefore owns its own reliable vertical scroll container. */
 
-html {
-  min-height: 100%;
-  height: auto;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-
+html,
 body {
-  min-height: 100vh;
-  height: auto;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: auto;
-}
-
-body.teacher-auth-locked {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
   overflow: hidden !important;
 }
 
-.master-shell,
-.teacher-app,
-#controlPanel {
+body.master-page:not(.teacher-auth-locked) #teacherApp {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1;
+  display: block;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding: 22px max(18px, calc((100vw - 1500px) / 2)) 110px !important;
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  background: var(--paper, #f4f7fb);
+}
+
+body.master-page.teacher-auth-locked #teacherApp {
+  overflow: hidden !important;
+}
+
+body.master-page #controlPanel,
+body.master-page .master-grid,
+body.master-page .master-columns,
+body.master-page .master-card,
+body.master-page .pending-list,
+body.master-page .master-roster,
+body.master-page #pendingList,
+body.master-page #rosterList {
+  height: auto !important;
   min-height: 0;
-  height: auto;
-  overflow: visible;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+body.master-page #controlPanel {
+  padding-bottom: 48px;
 }
 
 .teacher-jump-button {
@@ -54,8 +77,13 @@ body.teacher-auth-locked {
   outline: none;
 }
 
-.registration-inbox-card {
+.registration-inbox-card,
+.master-roster-card {
   margin-top: 12px;
+  min-height: 190px;
+}
+
+.registration-inbox-card {
   border-left: 6px solid #98a2b3;
   scroll-margin-top: 18px;
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
@@ -95,8 +123,20 @@ body.teacher-auth-locked {
   font-size: 0.82rem;
 }
 
-#pendingList {
-  min-height: 82px;
+#pendingList,
+#rosterList {
+  display: grid !important;
+  align-content: start;
+  gap: 10px;
+  min-height: 110px !important;
+  padding-bottom: 8px;
+}
+
+.pending-card,
+.player-admin-card {
+  flex: none;
+  min-height: max-content;
+  overflow: visible !important;
 }
 
 .pending-card {
@@ -104,12 +144,9 @@ body.teacher-auth-locked {
 }
 
 .pending-card-head strong,
-.pending-card .student-list {
+.pending-card .student-list,
+.player-admin-card .student-list {
   overflow-wrap: anywhere;
-}
-
-.master-roster-card {
-  margin-top: 12px;
 }
 
 @keyframes registrationPulse {
@@ -118,9 +155,8 @@ body.teacher-auth-locked {
 }
 
 @media (max-width: 780px) {
-  .master-shell {
-    width: min(100% - 20px, 1500px);
-    padding-top: 10px;
+  body.master-page:not(.teacher-auth-locked) #teacherApp {
+    padding: 10px 10px 96px !important;
   }
 
   .master-topbar {
@@ -144,7 +180,6 @@ body.teacher-auth-locked {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   .registration-inbox-card { transition: none; }
   .registration-inbox-card.registration-pulse { animation: none; }
 }

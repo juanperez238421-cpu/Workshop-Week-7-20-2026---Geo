@@ -5,14 +5,19 @@ const vm = require("node:vm");
 
 const files = [
   "student-v3.js",
+  "gameplay-v5.js",
+  "gameplay-v6.js",
   "master-v3.js",
   "master-enhancements.js",
   "master-live-game.js",
+  "master-live-v6.js",
+  "master-ready-control.js",
   "master-scroll-guard.js",
   "teacher-auth.js",
   "music-mode-ui.js",
   "config.js",
   "server/runtime-patch.js",
+  "server/runtime-v6.js",
   "server/server-v3.js",
   "server/secure-gateway.js"
 ];
@@ -22,11 +27,14 @@ const studentHtml = fs.readFileSync("index.html", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
 const teacherAliasHtml = fs.readFileSync("teacher.html", "utf8");
 const studentJs = fs.readFileSync("student-v3.js", "utf8");
+const gameplayV6Js = fs.readFileSync("gameplay-v6.js", "utf8");
 const masterJs = fs.readFileSync("master-v3.js", "utf8");
 const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
 const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
+const masterLiveV6Js = fs.readFileSync("master-live-v6.js", "utf8");
 const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
 const runtimePatchJs = fs.readFileSync("server/runtime-patch.js", "utf8");
+const runtimeV6Js = fs.readFileSync("server/runtime-v6.js", "utf8");
 const serverJs = fs.readFileSync("server/server-v3.js", "utf8");
 const gatewayJs = fs.readFileSync("server/secure-gateway.js", "utf8");
 
@@ -64,14 +72,26 @@ assert.match(runtimePatchJs, /changeRoomCode/);
 assert.match(runtimePatchJs, /newRoomCode/);
 assert.match(runtimePatchJs, /before any player registers/);
 
+assert.match(runtimeV6Js, /MAX_LIVES = 3/);
+assert.match(runtimeV6Js, /MAX_AMMO = 5/);
+assert.match(runtimeV6Js, /MAX_PICKUPS = 14/);
+assert.match(runtimeV6Js, /spawnPickup/);
+assert.match(runtimeV6Js, /pickup_collected/);
+assert.match(runtimeV6Js, /life_lost/);
+assert.match(runtimeV6Js, /STATE_BACKPRESSURE_BYTES/);
+assert.match(runtimeV6Js, /perMessageDeflate/);
+
 assert.match(studentHtml, /Register one of the nine PC players/);
 assert.match(studentHtml, /one arena player/);
 assert.match(studentHtml, /Student 1 full name/);
 assert.match(studentHtml, /Student 2 full name/);
 assert.match(studentHtml, /Student 3 full name/);
-assert.match(studentHtml, /9 PC players total/);
-assert.match(studentHtml, /3 students per player/);
-assert.match(studentHtml, /3 teams total/);
+assert.match(studentHtml, /9 PC players/);
+assert.match(studentHtml, /exactly three students/i);
+assert.match(studentHtml, /3 teams/);
+assert.match(studentHtml, /3 lives/);
+assert.match(studentHtml, /5 ammo charges/);
+assert.match(studentHtml, /random supply boxes|random boxes/);
 assert.match(studentHtml, /3 players per team/);
 assert.match(studentHtml, /proposalPanel" class="ballot-panel hidden" hidden/);
 assert.match(studentHtml, /votePanel" class="ballot-panel hidden" hidden/);
@@ -79,12 +99,22 @@ assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
 assert.doesNotMatch(studentHtml, />Preferred team</);
 assert.match(studentHtml, /teamSelect" hidden/);
 
+assert.match(gameplayV6Js, /resource-hud/);
+assert.match(gameplayV6Js, /lifeDisplay/);
+assert.match(gameplayV6Js, /ammoDisplay/);
+assert.match(gameplayV6Js, /pickupLegend/);
+assert.match(gameplayV6Js, /predictedDashUntil/);
+assert.match(gameplayV6Js, /droppedSnapshots/);
+
 assert.match(masterHtml, /teacherAuthOverlay/);
 assert.match(masterHtml, /teacherPassword/);
 assert.match(masterHtml, /SERVER-VERIFIED MASTER PAGE/);
-assert.match(masterHtml, /9 PC players total/);
-assert.match(masterHtml, /3 PC players per team/);
-assert.match(masterHtml, /exactly <strong>3 student names<\/strong>/);
+assert.match(masterHtml, /9 PC players/);
+assert.match(masterHtml, /3 players per team/);
+assert.match(masterHtml, /3 student names per player/);
+assert.match(masterHtml, /3 lives/);
+assert.match(masterHtml, /5 ammo charges/);
+assert.match(masterHtml, /supply boxes/);
 assert.match(masterHtml, /teamVotingList" hidden/);
 assert.match(masterHtml, /newRoomCodeInput/);
 assert.match(masterHtml, /changeRoomCodeButton/);
@@ -112,6 +142,9 @@ assert.match(masterLiveGameJs, /type === "state"/);
 assert.match(masterLiveGameJs, /territoryCounts/);
 assert.match(masterLiveGameJs, /JOIN AS PLAYER HERE|Teacher Player/);
 assert.match(masterLiveGameJs, /iframe|masterPlayerFrame/);
+assert.match(masterLiveV6Js, /masterSupplyCanvas/);
+assert.match(masterLiveV6Js, /masterNetworkQuality/);
+assert.match(masterLiveV6Js, /view\.pickups/);
 assert.match(teacherAuthJs, /authenticate_teacher/);
 assert.match(teacherAuthJs, /teacherAuthToken/);
 assert.doesNotMatch(teacherAuthJs, /["']9109["']/);
@@ -122,4 +155,4 @@ assert.match(masterJs, /randomAvailableTeam/);
 assert.match(masterJs, /APPROVE · RANDOM TEAM/);
 assert.doesNotMatch(masterJs, /type:\s*"move_player"/);
 
-console.log("Smoke test passed: secure teacher access, live authoritative arena, embedded master player station, editable player PIN, visible AI roster, prominent start control, 9-player 3×3 structure and automatic music team names are present.");
+console.log("Smoke test passed: secure teacher access, live arena, embedded master player, three lives, five ammo charges, supply powers, predicted rendering, network telemetry, editable room PIN, AI roster and automatic team names are present.");

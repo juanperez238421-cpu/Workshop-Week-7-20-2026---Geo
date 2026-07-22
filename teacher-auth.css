@@ -1,0 +1,201 @@
+.teacher-auth-locked {
+  overflow: hidden;
+}
+
+.teacher-auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(31, 119, 180, 0.12), transparent 34%),
+    radial-gradient(circle at 85% 80%, rgba(44, 160, 44, 0.10), transparent 32%),
+    #f7f9fc;
+}
+
+.teacher-auth-screen[hidden],
+.teacher-app[hidden] {
+  display: none !important;
+}
+
+.teacher-auth-card {
+  width: min(460px, 100%);
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid #d0d5dd;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 24px 70px rgba(16, 24, 40, 0.16);
+}
+
+.teacher-auth-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #1849a9;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.teacher-auth-card h1 {
+  margin: 0;
+  color: #101828;
+  font-size: clamp(1.8rem, 5vw, 2.55rem);
+  line-height: 1.05;
+}
+
+.teacher-auth-card > p {
+  margin: 14px 0 24px;
+  color: #475467;
+  line-height: 1.55;
+}
+
+.teacher-auth-card label {
+  display: grid;
+  gap: 8px;
+  color: #344054;
+  font-weight: 700;
+}
+
+.teacher-auth-card input {
+  width: 100%;
+  min-height: 58px;
+  box-sizing: border-box;
+  border: 1px solid #98a2b3;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: #ffffff;
+  color: #101828;
+  font: inherit;
+  font-size: 1.35rem;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+
+.teacher-auth-card input:focus {
+  outline: 3px solid rgba(47, 128, 237, 0.22);
+  border-color: #2f80ed;
+}
+
+.teacher-auth-card button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 14px;
+}
+
+.teacher-auth-message {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: #b42318;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.teacher-auth-message.success {
+  color: #067647;
+}
+
+.teacher-auth-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #eaecf0;
+  color: #667085;
+  font-size: 0.82rem;
+}
+
+.teacher-auth-footer a {
+  color: #175cd3;
+  font-weight: 700;
+}
+
+.teacher-session-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teacher-logout-button {
+  min-height: 38px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #344054;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.teacher-logout-button:hover {
+  background: #f2f4f7;
+}
+
+.preflight-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.preflight-strip div {
+  padding: 12px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.preflight-strip b,
+.preflight-strip span {
+  display: block;
+}
+
+.preflight-strip b {
+  color: #101828;
+  font-size: 0.82rem;
+}
+
+.preflight-strip span {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 780px) {
+  .preflight-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teacher-session-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-auth-screen {
+    padding: 12px;
+  }
+
+  .teacher-auth-card {
+    border-radius: 18px;
+  }
+
+  .teacher-auth-footer {
+    flex-direction: column;
+  }
+
+  .preflight-strip {
+    grid-template-columns: 1fr;
+  }
+}

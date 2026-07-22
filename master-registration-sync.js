@@ -26,6 +26,35 @@
     status.style.borderLeftColor = kind === "error" ? "#b42318" : kind === "success" ? "#067647" : "#344054";
   }
 
+  function setPendingVisuals(value, pulse = false) {
+    const count = Math.max(0, Number(value) || 0);
+    const summaryCount = $("pendingCount");
+    const inboxCount = $("pendingInboxCount");
+    const inbox = $("registrationInbox");
+    const badge = $("pendingInboxBadge");
+    const jump = $("pendingJumpButton");
+
+    if (summaryCount) summaryCount.textContent = String(count);
+    if (inboxCount) inboxCount.textContent = String(count);
+    if (inbox) inbox.classList.toggle("has-pending", count > 0);
+    if (badge) {
+      badge.classList.toggle("has-pending", count > 0);
+      badge.setAttribute("aria-label", `${count} registration request${count === 1 ? "" : "s"} waiting`);
+    }
+    if (jump) {
+      jump.textContent = count > 0
+        ? `VIEW ${count} REGISTRATION${count === 1 ? "" : "S"}`
+        : "VIEW REGISTRATIONS";
+    }
+
+    if (pulse && inbox) {
+      inbox.classList.remove("registration-pulse");
+      void inbox.offsetWidth;
+      inbox.classList.add("registration-pulse");
+      window.setTimeout(() => inbox.classList.remove("registration-pulse"), 1000);
+    }
+  }
+
   function synchronizeServer() {
     if (!configuredServer) return;
     localStorage.setItem("triadServerUrl", configuredServer);
@@ -47,15 +76,20 @@
       try { message = JSON.parse(event.data); } catch { return; }
 
       if (message.type === "registration_pending") {
-        const pending = Number(message.pendingCount) || 1;
-        const pendingCount = $("pendingCount");
-        if (pendingCount) pendingCount.textContent = String(pending);
-        setStatus(`${message.pcLabel || "A PC player"} registered successfully. The pending-player list is updating.`, "success");
+        const pending = Math.max(1, Number(message.pendingCount) || 1);
+        setPendingVisuals(pending, true);
+        setStatus(`${message.pcLabel || "A PC player"} submitted a registration. ${pending} request${pending === 1 ? " is" : "s are"} waiting for approval.`, "success");
       } else if (message.type === "lobby") {
         const pending = Array.isArray(message.pending) ? message.pending.length : 0;
-        if (pending > 0) setStatus(`${pending} PC player registration${pending === 1 ? " is" : "s are"} waiting for teacher approval.`, "success");
+        setPendingVisuals(pending);
+        if (pending > 0) {
+          setStatus(`${pending} PC player registration${pending === 1 ? " is" : "s are"} waiting for teacher approval.`, "success");
+        }
+      } else if (message.type === "controller_joined") {
+        setPendingVisuals(0);
       } else if (message.type === "error" && /room not found/i.test(String(message.message || ""))) {
         localStorage.removeItem("triadMasterSession");
+        setPendingVisuals(0);
         setStatus("This room no longer exists on the active server. Create a new room and give students the new PIN.", "error");
       }
     });
@@ -73,6 +107,7 @@
 
   function start() {
     synchronizeServer();
+    setPendingVisuals(0);
     const summary = document.querySelector("#setupPanel details summary");
     if (summary) summary.textContent = "Classroom server connection";
   }

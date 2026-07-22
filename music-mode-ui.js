@@ -10,7 +10,8 @@
     ["VOTING COMPLETE", "3 TEAMS · 9 PLAYERS"],
     ["team-name voting incomplete", "automatic team names pending"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
-    ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"]
+    ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"],
+    ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"]
   ];
 
   function rewriteText(node) {
@@ -79,6 +80,7 @@
       "setupStatus"
     ].forEach((id) => rewriteText(document.getElementById(id)));
     rewriteText(document.querySelector(".controls-hint"));
+    rewriteText(document.querySelector("#questionOverlay .eyebrow"));
     removeStudentVotingControls();
   }
 

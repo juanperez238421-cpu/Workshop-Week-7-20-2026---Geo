@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "25.0.0",
+  "version": "25.1.0",
   "private": true,
-  "description": "Nine PC players across three teams, with three student names per player and automatic music-based team names.",
+  "description": "Nine PC players across three teams, with three student names per player, automatic music team names, AI roster controls and teacher-managed player PINs.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check master-v3.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check master-v3.js && node --check master-enhancements.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

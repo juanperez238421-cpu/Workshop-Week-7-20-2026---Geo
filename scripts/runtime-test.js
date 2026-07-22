@@ -35,7 +35,7 @@ vm.runInNewContext(source, context, { filename: "server-v3.js" });
 const { Room, containsBannedLanguage } = context.__triadTest;
 assert.equal(containsBannedLanguage("Mierda Team"), true);
 assert.equal(containsBannedLanguage("Geometry Masters"), false);
-assert.equal(containsBannedLanguage("Computadora Team"), false);
+assert.equal(containsBannedLanguage("Computer Team"), false);
 
 function socket(){ return { readyState: 1, role: "", roomCode: "", send(payload){ sent.push(JSON.parse(payload)); }, close(){} }; }
 const room = new Room("ABC234");
@@ -62,4 +62,4 @@ room.start(controller);
 assert.equal(room.phase, "playing");
 room.updateBots(Date.now());
 assert.ok([...room.players.values()].filter((player) => player.isBot).every((bot) => Number.isFinite(bot.input.angle)));
-console.log("Runtime test passed: 3-student registration, profanity filter, 9-slot AI fill, voting finalization and start gate work.");
+console.log("Runtime test passed: 3-student registration, profanity filter, 9-slot simple-bot fill, voting finalization and start gate work.");

@@ -7,6 +7,8 @@ const files = [
   "student-v3.js",
   "gameplay-v5.js",
   "gameplay-v6.js",
+  "gameplay-v8.js",
+  "team-selection-v8.js",
   "master-v3.js",
   "master-enhancements.js",
   "master-live-game.js",
@@ -18,6 +20,8 @@ const files = [
   "config.js",
   "server/runtime-patch.js",
   "server/runtime-v6.js",
+  "server/runtime-v7.js",
+  "server/runtime-v8.js",
   "server/server-v3.js",
   "server/secure-gateway.js"
 ];
@@ -28,6 +32,8 @@ const masterHtml = fs.readFileSync("master.html", "utf8");
 const teacherAliasHtml = fs.readFileSync("teacher.html", "utf8");
 const studentJs = fs.readFileSync("student-v3.js", "utf8");
 const gameplayV6Js = fs.readFileSync("gameplay-v6.js", "utf8");
+const gameplayV8Js = fs.readFileSync("gameplay-v8.js", "utf8");
+const teamSelectionV8Js = fs.readFileSync("team-selection-v8.js", "utf8");
 const masterJs = fs.readFileSync("master-v3.js", "utf8");
 const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
 const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
@@ -35,6 +41,7 @@ const masterLiveV6Js = fs.readFileSync("master-live-v6.js", "utf8");
 const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
 const runtimePatchJs = fs.readFileSync("server/runtime-patch.js", "utf8");
 const runtimeV6Js = fs.readFileSync("server/runtime-v6.js", "utf8");
+const runtimeV8Js = fs.readFileSync("server/runtime-v8.js", "utf8");
 const serverJs = fs.readFileSync("server/server-v3.js", "utf8");
 const gatewayJs = fs.readFileSync("server/secure-gateway.js", "utf8");
 
@@ -81,6 +88,11 @@ assert.match(runtimeV6Js, /life_lost/);
 assert.match(runtimeV6Js, /STATE_BACKPRESSURE_BYTES/);
 assert.match(runtimeV6Js, /perMessageDeflate/);
 
+assert.match(runtimeV8Js, /selectTeam\(playerId, value\)/);
+assert.match(runtimeV8Js, /humanVersusHuman/);
+assert.match(runtimeV8Js, /!killer\.isBot && !victim\.isBot/);
+assert.match(runtimeV8Js, /case \"select_team\"/);
+
 assert.match(studentHtml, /Register one of the nine PC players/);
 assert.match(studentHtml, /one arena player/);
 assert.match(studentHtml, /Student 1 full name/);
@@ -91,8 +103,9 @@ assert.match(studentHtml, /exactly three students/i);
 assert.match(studentHtml, /3 teams/);
 assert.match(studentHtml, /3 lives/);
 assert.match(studentHtml, /5 ammo charges/);
-assert.match(studentHtml, /random supply boxes|random boxes/);
+assert.match(studentHtml, /supply boxes|explosion effects/);
 assert.match(studentHtml, /players per team/);
+assert.match(studentHtml, /select any team name|choose one of the available team names/i);
 assert.match(studentHtml, /proposalPanel" class="ballot-panel hidden" hidden/);
 assert.match(studentHtml, /votePanel" class="ballot-panel hidden" hidden/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
@@ -105,6 +118,14 @@ assert.match(gameplayV6Js, /ammoDisplay/);
 assert.match(gameplayV6Js, /pickupLegend/);
 assert.match(gameplayV6Js, /predictedDashUntil/);
 assert.match(gameplayV6Js, /droppedSnapshots/);
+
+assert.match(gameplayV8Js, /AIMING WITH MOUSE/);
+assert.match(gameplayV8Js, /message\.shoot = spacePressed/);
+assert.match(gameplayV8Js, /spawnExplosion/);
+assert.match(gameplayV8Js, /globalCompositeOperation = "lighter"/);
+assert.match(gameplayV8Js, /pickupLegend/);
+assert.match(teamSelectionV8Js, /Choose an available team name/);
+assert.match(teamSelectionV8Js, /type: "select_team"/);
 
 assert.match(masterHtml, /teacherAuthOverlay/);
 assert.match(masterHtml, /teacherPassword/);
@@ -155,4 +176,4 @@ assert.match(masterJs, /randomAvailableTeam/);
 assert.match(masterJs, /APPROVE · RANDOM TEAM/);
 assert.doesNotMatch(masterJs, /type:\s*"move_player"/);
 
-console.log("Smoke test passed: secure teacher access, live arena, embedded master player, three lives, five ammo charges, supply powers, predicted rendering, network telemetry, editable room PIN, AI roster and automatic team names are present.");
+console.log("Smoke test passed: secure teacher access, geometry questions, reliable mouse aim, Space-only shooting, player team selection, human-only kill announcements, explosions, supply powers and live arena supervision are present.");

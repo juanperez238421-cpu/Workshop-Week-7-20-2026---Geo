@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "24.0.0",
+  "version": "24.1.0",
   "private": true,
-  "description": "Separated student and password-gated teacher pages for a teacher-controlled nine-slot classroom game.",
+  "description": "Separated student and server-authenticated teacher pages for a teacher-controlled nine-slot classroom game.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check master-v3.js && node --check teacher-auth.js && node --check config.js && node --check server/server-v3.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check master-v3.js && node --check teacher-auth.js && node --check config.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

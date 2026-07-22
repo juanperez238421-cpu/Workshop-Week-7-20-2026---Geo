@@ -1,4 +1,4 @@
-# Triad Territory Rush — Protocol 3
+# Triad Territory Rush — Protocol 3 + Secure Teacher Gateway
 
 [![Validate classroom game](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml/badge.svg)](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml)
 
@@ -9,93 +9,90 @@ A real-time classroom territory game for **nine PC-player slots**. Each real PC 
 - **Student game:** `index.html`
 - **Teacher control:** `teacher.html`
 - **Legacy teacher URL:** `master.html` redirects to `teacher.html`
-- **Authoritative server:** Render, using `server/server-v3.js`
+- **Secure public gateway:** `server/secure-gateway.js`
+- **Authoritative game engine:** `server/server-v3.js`
 - **Match:** 5 minutes, 3 teams × 3 player slots
 - **Winner:** largest server-counted territory
 
-The student page does not display a teacher-console link. The teacher page is protected by a four-digit classroom password and keeps access only in the current browser tab through `sessionStorage`. The password is verified against a SHA-256 hash in `teacher-auth.js`; the plain password is not stored in the repository.
+The student page does not display a teacher-console link. The teacher password is verified by the Render WebSocket gateway before the console is unlocked. The browser receives a temporary random teacher token; every privileged command includes that token and is rejected by the gateway when the token is missing, invalid, or expired.
 
-> Important: GitHub Pages is a static host. This password gate prevents casual or accidental student access, but it is not equivalent to server-side authentication. A technically skilled user with source-code access could still bypass it. The authoritative room token and match actions remain controlled by the multiplayer server.
+The classroom password is currently `9109`. It is not stored by the browser. Reloading or logging out requires entering it again.
+
+## Protected teacher actions
+
+The gateway requires a valid teacher token for:
+
+- creating or restoring a master room;
+- approving or rejecting registrations;
+- moving or removing player groups;
+- locking registration;
+- adding or removing AI replacements;
+- starting, ending, or resetting a match.
+
+Student registration, team-name voting, movement, shooting, and trigonometry answers continue to be processed by the authoritative engine.
 
 ## Real-test launch sequence
 
-1. Open `teacher.html` on the teacher computer and enter the teacher password.
-2. Wait until the status reads **PROTOCOL 3 ONLINE**.
+1. Open `teacher.html` on the teacher computer and enter `9109`.
+2. Wait until the server accepts the password and the status reads **PROTOCOL 3 ONLINE**.
 3. Select **CREATE MASTER ROOM**.
 4. Copy the generated student link and open it on each student PC.
 5. Each PC registers exactly three students and waits for teacher approval.
 6. Approve registrations and balance teams at 3–3–3.
-7. Complete team-name suggestions, voting and ready confirmation.
+7. Complete team-name suggestions, voting, and ready confirmation.
 8. Start only when the teacher console reports that all gates are complete.
 9. After the match, download the CSV or JSON report before resetting the room.
 
 ## Registration workflow
 
 1. The teacher creates a master room and shares the generated student link.
-2. Every real PC registers:
-   - a PC/group label;
-   - exactly three different student names;
-   - a preferred team slot.
-3. The teacher verifies the three names, approves the PC, and assigns its final team.
-4. Each of the three students on that PC submits one team-name suggestion.
+2. Every real PC registers a PC/group label, exactly three different student names, and a preferred team slot.
+3. The teacher verifies the names, approves the PC, and assigns its final team.
+4. Each student on that PC submits one team-name suggestion.
 5. When all nine students in a team have suggested names, each student casts one vote.
 6. The highest-vote proposal becomes the team name. Ties use the earliest valid proposal.
-7. The server rejects prohibited or disguised profanity in student, PC-group and team names.
+7. The server rejects prohibited or disguised profanity in student, PC-group, and team names.
 8. Each team receives a unique random color when the room is created.
 
 ## AI replacement players
 
-The teacher can select **FILL ALL MISSING SLOTS WITH AI** when fewer than nine real PCs are available.
-
-AI players:
-
-- fill each team to exactly three slots;
-- register three virtual students;
-- submit safe team-name suggestions and votes;
-- remain ready automatically;
-- move, target opponents, shoot, dash, capture territory and respawn automatically;
-- are marked clearly as AI in the lobby, live monitor and final report.
-
-Bots can be removed from the lobby before the match.
+The teacher can select **FILL ALL MISSING SLOTS WITH AI** when fewer than nine real PCs are available. AI players fill teams to 3–3–3, register virtual students, vote, remain ready, play automatically, and are identified in the lobby, live monitor, and final report.
 
 ## Start gate
 
-The teacher can start only when:
-
-- all 9 player slots are filled by real PCs and/or AI;
-- teams are balanced 3–3–3;
-- all real PCs are connected;
-- every real PC has completed its three suggestions and three votes;
-- all team names are finalized;
-- every real PC is ready.
+The teacher can start only when all nine slots are filled, teams are balanced 3–3–3, all real PCs are connected and ready, and all team-name suggestions and votes are complete.
 
 ## Gameplay and assessment
 
 - Real eliminated PC groups must solve a server-validated trigonometry question to respawn.
 - AI players reboot automatically after elimination.
-- The final CSV/JSON report includes PC-group labels, all three student names, real/AI status, voted team names, territory, eliminations, deaths and trigonometry response history.
+- The final CSV/JSON report includes PC-group labels, student names, real/AI status, team names, territory, eliminations, deaths, and trigonometry response history.
 
-## Deployment
+## Render deployment
 
-The current Render service is reused. Render reads `server/package.json`, whose start command runs:
+Render uses `server/package.json`, whose start command runs:
 
 ```bash
-node server-v3.js
+node secure-gateway.js
 ```
 
-The existing environment variable remains:
+Recommended environment variables:
 
 ```text
 ALLOWED_ORIGINS=https://juanperez238421-cpu.github.io
+TEACHER_PASSWORD=9109
 ```
 
-Expected server response after deployment:
+For immediate compatibility, the gateway falls back to `9109` when `TEACHER_PASSWORD` is not configured.
+
+Expected health response:
 
 ```json
 {
   "status": "ok",
   "protocol": 3,
-  "architecture": "teacher-controller-nine-pc-groups-voting-and-ai"
+  "gatewayProtocol": 1,
+  "teacherAuthRequired": true
 }
 ```
 
@@ -105,4 +102,4 @@ Expected server response after deployment:
 npm test
 ```
 
-The test suite checks JavaScript syntax, student/teacher page separation, teacher authentication DOM contracts, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates and the largest-territory winner rule.
+The validation suite checks JavaScript syntax, student/teacher page separation, server-verified teacher authentication, protected teacher commands, three-student registration, profanity filtering, team voting, random colors, AI fill, ready gates, and the largest-territory winner rule.

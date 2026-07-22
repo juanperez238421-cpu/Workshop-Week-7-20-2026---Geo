@@ -43,8 +43,7 @@
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · REAL ONLINE MULTIPLAYER · PC GROUP REGISTRATION</p><h1>Register three students on this PC</h1><p class="lead">This computer controls one arena player. Exactly three students must be registered before the teacher can approve this PC group.</p></div>
-          <span class="master-link" aria-label="Student game page">STUDENT PAGE</span>
+          <div><p class="eyebrow">STUDENT GAME · REAL ONLINE MULTIPLAYER · PC GROUP REGISTRATION</p><h1>Register three students on this PC</h1><p class="lead">This computer controls one arena player. Exactly three students must be registered before teacher approval. The team is assigned randomly.</p></div>
         </div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
@@ -54,8 +53,9 @@
           <div class="registration-grid registration-top-row">
             <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
             <label>PC / group label<input id="pcLabelInput" maxlength="24" autocomplete="off" placeholder="Example: Table 4" /></label>
-            <label>Preferred team<select id="teamSelect"><option value="0">Team slot 1</option><option value="1">Team slot 2</option><option value="2">Team slot 3</option></select></label>
           </div>
+          <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
+          <p class="approval-note">This PC group is assigned to an available team at random after teacher approval.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
@@ -67,7 +67,7 @@
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC group</span><b id="waitingPcLabel">—</b></div><div><span>Preferred team</span><b id="waitingTeam">Preference only</b></div></div>
+          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC group</span><b id="waitingPcLabel">—</b></div><div><span>Team</span><b>Random assignment</b><b id="waitingTeam" hidden aria-hidden="true"></b></div></div>
           <div class="registered-students"><span>REGISTERED STUDENTS</span><strong id="waitingStudents">—</strong></div>
         </section>
 
@@ -79,7 +79,7 @@
 
           <section class="assigned-team-card">
             <span id="assignedTeamColor" class="large-color-dot"></span>
-            <div><small>ASSIGNED TEAM</small><strong id="assignedTeamName">Team voting in progress</strong><span id="teamNamingStatus">0/9 suggestions · 0/9 votes</span></div>
+            <div><small>RANDOMLY ASSIGNED TEAM</small><strong id="assignedTeamName">Team voting in progress</strong><span id="teamNamingStatus">0/9 suggestions · 0/9 votes</span></div>
           </section>
 
           <section id="proposalPanel" class="ballot-panel">
@@ -108,7 +108,7 @@
           <p class="approval-note">The teacher may fill missing PC-player slots with AI bots. The match starts only after teams are 3–3–3, team-name voting is complete, and every real PC group is ready.</p>
         </section>
 
-        <div class="rule-grid"><div><b>9</b><span>PC-player slots</span></div><div><b>3</b><span>students per PC</span></div><div><b>VOTE</b><span>team name</span></div><div><b>AI</b><span>optional bots</span></div></div>
+        <div class="rule-grid"><div><b>9</b><span>PC-player slots</span></div><div><b>3</b><span>students per PC</span></div><div><b>RANDOM</b><span>team assignment</span></div><div><b>AI</b><span>optional bots</span></div></div>
       </div>
     </section>
 

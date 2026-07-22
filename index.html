@@ -4,136 +4,123 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f7f9fc" />
-  <title>Triad Territory Rush — Student</title>
+  <title>Triad Territory Rush — Student PC</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="student-v2.css" />
+  <link rel="stylesheet" href="online.css" />
+  <link rel="stylesheet" href="student-v3.css" />
 </head>
 <body>
   <main id="app">
     <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
-      <div class="brand">
-        <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Student multiplayer client</span>
-      </div>
-      <div class="match-status">
-        <span id="phaseLabel">LOBBY</span>
-        <strong id="clockLabel">05:00</strong>
-      </div>
-      <div class="topbar-actions">
-        <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
-        <button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button>
-      </div>
+      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>One PC · three registered students</span></div>
+      <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
+      <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
     </header>
 
     <section class="scoreboard" aria-label="Team scoreboard">
-      <article class="team-card team-0"><span>CYAN CIRCUIT</span><strong id="team0Territory">0%</strong><small><b id="team0Kills">0</b> eliminations</small></article>
-      <article class="team-card team-1"><span>MAGENTA PULSE</span><strong id="team1Territory">0%</strong><small><b id="team1Kills">0</b> eliminations</small></article>
-      <article class="team-card team-2"><span>AMBER FORGE</span><strong id="team2Territory">0%</strong><small><b id="team2Kills">0</b> eliminations</small></article>
+      <article id="team0Card" class="team-card"><span id="team0Name">TEAM 1</span><strong id="team0Territory">0%</strong><small><b id="team0Kills">0</b> eliminations</small></article>
+      <article id="team1Card" class="team-card"><span id="team1Name">TEAM 2</span><strong id="team1Territory">0%</strong><small><b id="team1Kills">0</b> eliminations</small></article>
+      <article id="team2Card" class="team-card"><span id="team2Name">TEAM 3</span><strong id="team2Territory">0%</strong><small><b id="team2Kills">0</b> eliminations</small></article>
     </section>
 
     <aside class="player-panel">
-      <div class="player-row">
-        <span id="playerTeamDot" class="team-dot"></span>
-        <div><strong id="playerNameLabel">PLAYER</strong><small id="playerStateLabel">Not registered</small></div>
-      </div>
+      <div class="player-row"><span id="playerTeamDot" class="team-dot"></span><div><strong id="playerNameLabel">PC GROUP</strong><small id="playerStateLabel">Not registered</small><small id="playerMembersLabel">Three students required</small></div></div>
       <div class="stat-grid">
-        <div><span>Room</span><b id="roomCodeLabel">—</b></div>
-        <div><span>Ready</span><b id="playerReadyLabel">NO</b></div>
-        <div><span>Territory</span><b id="playerTerritoryLabel">0</b></div>
-        <div><span>Eliminations</span><b id="playerKillsLabel">0</b></div>
-        <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div>
-        <div><span>Accuracy</span><b id="playerAccuracyLabel">—</b></div>
+        <div><span>Room</span><b id="roomCodeLabel">—</b></div><div><span>Ready</span><b id="playerReadyLabel">NO</b></div>
+        <div><span>Territory</span><b id="playerTerritoryLabel">0</b></div><div><span>Eliminations</span><b id="playerKillsLabel">0</b></div>
+        <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div><div><span>Accuracy</span><b id="playerAccuracyLabel">—</b></div>
       </div>
       <div class="cooldown-row"><span>SHOT</span><progress id="shotCooldown" max="1" value="1"></progress></div>
       <div class="cooldown-row"><span>DASH</span><progress id="dashCooldown" max="1" value="1"></progress></div>
     </aside>
 
-    <aside class="minimap-panel">
-      <canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas>
-      <small>Authoritative server territory</small>
-    </aside>
-
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative server territory</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
-      <div class="modal lobby-modal online-lobby">
+      <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div>
-            <p class="eyebrow">REAL ONLINE MULTIPLAYER · STUDENT ENTRY</p>
-            <h1>Register for the match</h1>
-            <p class="lead">Use the game page—not the Render server address. Enter the room code provided by the teacher, register, wait for approval, and mark yourself ready.</p>
-          </div>
+          <div><p class="eyebrow">REAL ONLINE MULTIPLAYER · PC GROUP REGISTRATION</p><h1>Register three students on this PC</h1><p class="lead">This computer controls one arena player. Exactly three students must be registered before the teacher can approve this PC group.</p></div>
           <a class="master-link" href="master.html">Teacher control</a>
         </div>
 
-        <div class="server-health-card">
-          <span id="serverHealthDot" class="health-dot"></span>
-          <div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div>
-        </div>
+        <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
+        <details class="advanced-server"><summary>Advanced server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label></details>
 
-        <details class="advanced-server">
-          <summary>Advanced server connection</summary>
-          <label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" placeholder="wss://your-service.onrender.com" /></label>
-        </details>
-
-        <div class="registration-grid">
-          <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
-          <label>Student / group name<input id="playerNameInput" maxlength="24" autocomplete="off" placeholder="Group 1" /></label>
-          <label>Preferred team<select id="teamSelect"><option value="0">Cyan Circuit</option><option value="1">Magenta Pulse</option><option value="2">Amber Forge</option></select></label>
-        </div>
-
-        <button id="registerButton" class="primary-button" type="button">REGISTER AND WAIT FOR TEACHER</button>
+        <section id="registrationForm">
+          <div class="registration-grid registration-top-row">
+            <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
+            <label>PC / group label<input id="pcLabelInput" maxlength="24" autocomplete="off" placeholder="Example: Table 4" /></label>
+            <label>Preferred team<select id="teamSelect"><option value="0">Team slot 1</option><option value="1">Team slot 2</option><option value="2">Team slot 3</option></select></label>
+          </div>
+          <div class="student-registration-grid">
+            <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
+            <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
+            <label>Student 3 full name<input id="student3Input" maxlength="24" autocomplete="off" placeholder="Student 3" /></label>
+          </div>
+          <button id="registerButton" class="primary-button" type="button">REGISTER THREE STUDENTS AND WAIT</button>
+        </section>
         <div id="lobbyStatus" class="notice">Waiting for registration.</div>
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
-          <div class="waiting-hero">
-            <div class="waiting-pulse"></div>
-            <div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div>
-          </div>
-          <div class="waiting-meta">
-            <div><span>Room</span><b id="waitingRoomCode">------</b></div>
-            <div><span>Name</span><b id="waitingName">—</b></div>
-            <div><span>Team</span><b id="waitingTeam">Preference only</b></div>
-          </div>
+          <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
+          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC group</span><b id="waitingPcLabel">—</b></div><div><span>Preferred team</span><b id="waitingTeam">Preference only</b></div></div>
+          <div class="registered-students"><span>REGISTERED STUDENTS</span><strong id="waitingStudents">—</strong></div>
         </section>
 
         <section id="approvedPanel" class="room-panel hidden" aria-live="polite">
           <div class="room-heading">
             <div><span>APPROVED IN ROOM</span><strong id="roomCodeLarge">------</strong></div>
-            <button id="readyButton" class="primary-button compact-button" type="button">I AM READY</button>
+            <button id="readyButton" class="primary-button compact-button" type="button" disabled>I AM READY</button>
           </div>
+
+          <section class="assigned-team-card">
+            <span id="assignedTeamColor" class="large-color-dot"></span>
+            <div><small>ASSIGNED TEAM</small><strong id="assignedTeamName">Team voting in progress</strong><span id="teamNamingStatus">0/9 suggestions · 0/9 votes</span></div>
+          </section>
+
+          <section id="proposalPanel" class="ballot-panel">
+            <div class="ballot-heading"><div><h2>Step 1 · Each student suggests a team name</h2><p>Respectful names only. Prohibited language and disguised profanity are rejected by the server.</p></div><span id="proposalProgress">0 / 3 sent</span></div>
+            <div class="student-ballot-grid">
+              <label><span id="proposal1Label">Student 1 suggestion</span><input id="proposal1Input" maxlength="28" autocomplete="off" placeholder="Team name suggestion" /></label>
+              <label><span id="proposal2Label">Student 2 suggestion</span><input id="proposal2Input" maxlength="28" autocomplete="off" placeholder="Team name suggestion" /></label>
+              <label><span id="proposal3Label">Student 3 suggestion</span><input id="proposal3Input" maxlength="28" autocomplete="off" placeholder="Team name suggestion" /></label>
+            </div>
+            <button id="submitProposalsButton" class="secondary-button" type="button">SUBMIT 3 SUGGESTIONS</button>
+          </section>
+
+          <section id="votePanel" class="ballot-panel disabled-panel">
+            <div class="ballot-heading"><div><h2>Step 2 · Each student votes</h2><p>Voting opens after all nine students assigned to this team submit a suggestion.</p></div><span id="voteProgress">0 / 3 votes</span></div>
+            <div id="candidateBoard" class="candidate-board"><div class="empty-state">Waiting for team suggestions.</div></div>
+            <div class="student-ballot-grid">
+              <label><span id="vote1Label">Student 1 vote</span><select id="vote1Select" disabled><option value="">Waiting…</option></select></label>
+              <label><span id="vote2Label">Student 2 vote</span><select id="vote2Select" disabled><option value="">Waiting…</option></select></label>
+              <label><span id="vote3Label">Student 3 vote</span><select id="vote3Select" disabled><option value="">Waiting…</option></select></label>
+            </div>
+            <button id="submitVotesButton" class="secondary-button" type="button" disabled>SUBMIT 3 VOTES</button>
+          </section>
+
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">The teacher starts the match after all 9 approved players are connected, balanced 3–3–3, and ready.</p>
+          <p class="approval-note">The teacher may fill missing PC-player slots with AI bots. The match starts only after teams are 3–3–3, team-name voting is complete, and every real PC group is ready.</p>
         </section>
 
-        <div class="rule-grid">
-          <div><b>9</b><span>real student PCs</span></div><div><b>3 × 3</b><span>teacher assigned</span></div><div><b>05:00</b><span>server timer</span></div><div><b>TRIG</b><span>respawn gate</span></div>
-        </div>
+        <div class="rule-grid"><div><b>9</b><span>PC-player slots</span></div><div><b>3</b><span>students per PC</span></div><div><b>VOTE</b><span>team name</span></div><div><b>AI</b><span>optional bots</span></div></div>
       </div>
     </section>
 
     <section id="questionOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="questionTitle">
-      <div class="modal question-modal">
-        <div class="question-header"><div><p class="eyebrow">SERVER-VALIDATED RESPAWN</p><h2 id="questionTitle">Solve to return</h2></div><div id="questionTimer" class="question-timer">20</div></div>
-        <canvas id="questionCanvas" width="560" height="250" aria-label="Right triangle diagram"></canvas>
-        <p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p>
-      </div>
+      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">SERVER-VALIDATED RESPAWN</p><h2 id="questionTitle">Solve to return</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Right triangle diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
-      <div class="modal end-modal">
-        <p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div>
-        <div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Every trigonometry attempt for all nine real players</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Player</th><th>Team</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th><th>Avg. response</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
-        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button>
-      </div>
+      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>PC groups, three-student rosters, AI status and trigonometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC group</th><th>Students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
   <script src="config.js"></script>
-  <script src="student-v2.js"></script>
+  <script src="student-v3.js"></script>
 </body>
 </html>

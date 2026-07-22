@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260722-smooth2";
+  const ASSET_VERSION = "20260722-fluid3";
   const replacements = [
     ["Three-student registration, voting and simple bots are available.", "Nine PC players, three teams and optional bots are available."],
     ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Its music team was assigned automatically."],
@@ -9,7 +9,8 @@
     ["COMPLETE VOTING FIRST", "MARK THIS PLAYER READY"],
     ["VOTING COMPLETE", "3 TEAMS · 9 PLAYERS"],
     ["team-name voting incomplete", "automatic team names pending"],
-    ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"]
+    ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
+    ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"]
   ];
 
   function rewriteText(node) {
@@ -54,12 +55,16 @@
     const studentPage = Boolean(document.getElementById("gameCanvas"));
     if (studentPage) {
       loadStyle("gameplay-v5.css", "gameplayV5Styles");
+      loadStyle("gameplay-v6.css", "gameplayV6Styles");
       loadScript("gameplay-v5.js", "gameplayV5Script")
+        .then(() => loadScript("gameplay-v6.js", "gameplayV6Script"))
         .then(() => loadScript("combat-feed.js", "combatFeedScript"))
         .catch(() => {});
       return;
     }
+    loadStyle("master-live-v6.css", "masterLiveV6Styles");
     loadScript("master-ready-control.js", "masterReadyControlScript")
+      .then(() => loadScript("master-live-v6.js", "masterLiveV6Script"))
       .then(() => loadScript("combat-feed.js", "combatFeedScript"))
       .catch(() => {});
   }

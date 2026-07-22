@@ -54,6 +54,7 @@
             <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
             <label>PC / group label<input id="pcLabelInput" maxlength="24" autocomplete="off" placeholder="Example: Table 4" /></label>
           </div>
+          <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
           <p class="approval-note">The server assigns this PC group to an available team at random after teacher approval.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
@@ -66,7 +67,7 @@
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC group</span><b id="waitingPcLabel">—</b></div><div><span>Team</span><b>Random assignment</b></div></div>
+          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC group</span><b id="waitingPcLabel">—</b></div><div><span>Team</span><b>Random assignment</b><b id="waitingTeam" hidden aria-hidden="true"></b></div></div>
           <div class="registered-students"><span>REGISTERED STUDENTS</span><strong id="waitingStudents">—</strong></div>
         </section>
 

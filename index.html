@@ -8,9 +8,9 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-fluid3" />
-  <link rel="stylesheet" href="online.css?v=20260722-fluid3" />
-  <link rel="stylesheet" href="student-v3.css?v=20260722-fluid3" />
+  <link rel="stylesheet" href="styles.css?v=20260722-questions1" />
+  <link rel="stylesheet" href="online.css?v=20260722-questions1" />
+  <link rel="stylesheet" href="student-v3.css?v=20260722-questions1" />
 </head>
 <body>
   <main id="app">
@@ -46,7 +46,7 @@
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register one of the nine PC players</h1><p class="lead">This computer controls one arena player representing exactly three students. Each player starts with three lives and five ammo charges. A geometry question appears only after the third life is lost, while random boxes provide ammunition and temporary powers.</p></div>
+          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register one of the nine PC players</h1><p class="lead">This computer controls one arena player representing exactly three students. Each player starts with three lives and five ammo charges. After the third life is lost, the server presents one geometry challenge: identify a sine or cosine ratio from labeled sides, determine an unknown right-triangle side, or find a height using Thales' theorem.</p></div>
         </div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
@@ -116,16 +116,17 @@
     </section>
 
     <section id="questionOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="questionTitle">
-      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">FINAL-LIFE SERVER RESPAWN</p><h2 id="questionTitle">Solve to restore three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Right triangle diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
+      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">GEOMETRY RESPAWN CHALLENGE</p><h2 id="questionTitle">Solve to restore three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Geometry problem diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
-      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Nine player slots, three-student rosters, AI status and trigonometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
+      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Nine player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
-  <script src="config.js?v=20260722-fluid3"></script>
-  <script src="student-v3.js?v=20260722-fluid3"></script>
-  <script src="student-registration-sync.js?v=20260722-fluid3"></script>
-  <script src="music-mode-ui.js?v=20260722-fluid3"></script>
+  <script src="config.js?v=20260722-questions1"></script>
+  <script src="student-v3.js?v=20260722-questions1"></script>
+  <script src="student-registration-sync.js?v=20260722-questions1"></script>
+  <script src="music-mode-ui.js?v=20260722-questions1"></script>
+  <script src="question-bank-ui.js?v=20260722-questions1"></script>
 </body>
 </html>

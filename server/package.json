@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "26.0.0",
+  "version": "27.0.0",
   "private": true,
-  "description": "Secure classroom gateway with 40 Hz simulation, 15 Hz compressed snapshots, three lives, five ammo charges, supply boxes and server-side backpressure control.",
+  "description": "Secure classroom gateway with fluid multiplayer, three lives, five ammo charges, supply boxes, ratio-identification questions, right-triangle unknown-side problems and Thales height challenges.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-v6.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v7.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

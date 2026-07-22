@@ -19,6 +19,11 @@ const masterCss = fs.readFileSync("master-live-v9.css", "utf8");
 const musicMode = fs.readFileSync("music-mode-ui.js", "utf8");
 const runtime = fs.readFileSync("server/runtime-v9.js", "utf8");
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
+const runtimeModule = require("../server/runtime-v9.js");
+const patchedServer = runtimeModule.patchServerSource(fs.readFileSync("server/server-v3.js", "utf8"));
+const patchedGateway = runtimeModule.patchGatewaySource(fs.readFileSync("server/secure-gateway.js", "utf8"));
+new vm.Script(patchedServer, { filename: "server-v3.v9-patched.js" });
+new vm.Script(patchedGateway, { filename: "secure-gateway.v9-patched.js" });
 
 assert.match(gameplay, /gameplayV9Canvas/);
 assert.match(gameplay, /const size = clamp\(hitRadius \* 1\.18, 14, 20\)/);
@@ -47,9 +52,15 @@ assert.match(runtime, /closestX/);
 assert.match(runtime, /territoryDelta/);
 assert.match(runtime, /perMessageDeflate: false/);
 assert.match(runtime, /compress: false/);
+assert.match(patchedServer, /const TICK_RATE = 50/);
+assert.match(patchedServer, /const STATE_RATE = 20/);
+assert.match(patchedServer, /updateAmmoRegeneration\(now\)/);
+assert.match(patchedServer, /PROJECTILE_RADIUS = 18/);
+assert.match(patchedServer, /territoryDelta/);
+assert.match(patchedGateway, /perMessageDeflate: false/);
 
 assert.match(musicMode, /gameplay-v9\.js/);
 assert.match(musicMode, /master-live-v9\.js/);
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v9.js secure-gateway.js");
 
-console.log("Gameplay v9 test passed: equal visual sizes, enlarged and swept hitboxes, 10-second ammo regeneration, delta snapshots, interpolation and light master rendering are configured.");
+console.log("Gameplay v9 test passed: runtime patches compile and equal visual sizes, enlarged and swept hitboxes, 10-second ammo regeneration, delta snapshots, interpolation and light master rendering are configured.");

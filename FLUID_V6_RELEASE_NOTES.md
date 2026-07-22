@@ -14,3 +14,5 @@ This release introduces the following classroom gameplay changes:
 - Master live-arena visibility for supply boxes, lives, and ammunition.
 
 The existing registration, teacher approval, readiness, room PIN, three-team structure, Spacebar-only shooting, and right-click aiming workflows remain in place.
+
+The pull request workflow compiles the layered authoritative runtime and verifies the gameplay, networking, and browser integration markers before release.

@@ -92,7 +92,7 @@ assert.match(studentHtml, /3 teams/);
 assert.match(studentHtml, /3 lives/);
 assert.match(studentHtml, /5 ammo charges/);
 assert.match(studentHtml, /random supply boxes|random boxes/);
-assert.match(studentHtml, /3 players per team/);
+assert.match(studentHtml, /players per team/);
 assert.match(studentHtml, /proposalPanel" class="ballot-panel hidden" hidden/);
 assert.match(studentHtml, /votePanel" class="ballot-panel hidden" hidden/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);

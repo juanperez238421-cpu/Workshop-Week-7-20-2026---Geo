@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Shield power">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9bd3ff"/><stop offset="1" stop-color="#2e90fa"/></linearGradient></defs>
+  <rect x="4" y="4" width="56" height="56" rx="15" fill="#eaf5ff" stroke="#2e90fa" stroke-width="4"/>
+  <path d="M32 10 49 17v14c0 11-6.8 18.8-17 23-10.2-4.2-17-12-17-23V17z" fill="url(#g)" stroke="#174b7a" stroke-width="3"/>
+  <path d="M32 16v31c7.2-3.7 11-9.2 11-16V21z" fill="#dff2ff" opacity=".8"/>
+  <path d="m23 31 6 6 12-14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

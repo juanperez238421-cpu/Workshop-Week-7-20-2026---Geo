@@ -33,6 +33,17 @@
     return Number.parseInt(value, 10) || 0;
   }
 
+  function persistCurrentRoomCode(currentCode) {
+    if (!/^[A-Z2-9]{6}$/.test(currentCode)) return;
+    try {
+      const session = JSON.parse(localStorage.getItem("triadMasterSession") || "null");
+      if (session?.masterToken && session.roomCode !== currentCode) {
+        session.roomCode = currentCode;
+        localStorage.setItem("triadMasterSession", JSON.stringify(session));
+      }
+    } catch {}
+  }
+
   function updatePinControls() {
     const input = $("newRoomCodeInput");
     const button = $("changeRoomCodeButton");
@@ -44,8 +55,10 @@
     const currentCode = ($("roomCodeLarge")?.textContent || "").trim();
     const lockedByPlayers = approved > 0 || pending > 0;
 
+    persistCurrentRoomCode(currentCode);
     button.disabled = lockedByPlayers;
     input.disabled = lockedByPlayers;
+    status.style.color = lockedByPlayers ? "#b54708" : "#667085";
     status.textContent = lockedByPlayers
       ? "PIN locked because player registration has started."
       : currentCode && currentCode !== "------"
@@ -92,31 +105,53 @@
   function installPinEvents() {
     const input = $("newRoomCodeInput");
     const button = $("changeRoomCodeButton");
-    if (!input || !button || button.dataset.bound === "true") return;
-    button.dataset.bound = "true";
+    const copyButton = $("copyCodeButton");
+    if (!input || !button) return;
 
-    input.addEventListener("input", () => {
-      input.value = input.value.toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 6);
-    });
+    if (button.dataset.bound !== "true") {
+      button.dataset.bound = "true";
+      input.addEventListener("input", () => {
+        input.value = input.value.toUpperCase().replace(/[^A-Z2-9]/g, "").slice(0, 6);
+      });
 
-    button.addEventListener("click", () => {
-      const newRoomCode = input.value.trim().toUpperCase();
-      if (!/^[A-Z2-9]{6}$/.test(newRoomCode)) {
-        setPinStatus("Enter exactly six characters using A-Z and 2-9.", true);
-        input.focus();
-        return;
-      }
+      button.addEventListener("click", () => {
+        const newRoomCode = input.value.trim().toUpperCase();
+        if (!/^[A-Z2-9]{6}$/.test(newRoomCode)) {
+          setPinStatus("Enter exactly six characters using A-Z and 2-9.", true);
+          input.focus();
+          return;
+        }
 
-      const socket = window.__triadTeacherControlSocket;
-      if (!socket || socket.readyState !== WebSocket.OPEN) {
-        setPinStatus("Teacher control is not connected. Restore or create the room first.", true);
-        return;
-      }
+        const socket = window.__triadTeacherControlSocket;
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          setPinStatus("Teacher control is not connected. Restore or create the room first.", true);
+          return;
+        }
 
-      socket.send(JSON.stringify({ type: "set_registration_lock", newRoomCode }));
-      setPinStatus("Changing the player room PIN…");
-      input.value = "";
-    });
+        socket.send(JSON.stringify({ type: "set_registration_lock", newRoomCode }));
+        setPinStatus("Changing the player room PIN…");
+        input.value = "";
+      });
+    }
+
+    if (copyButton && copyButton.dataset.pinCopyBound !== "true") {
+      copyButton.dataset.pinCopyBound = "true";
+      copyButton.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const currentCode = ($("roomCodeLarge")?.textContent || "").trim();
+        if (!/^[A-Z2-9]{6}$/.test(currentCode)) {
+          setPinStatus("Create a room before copying the player PIN.", true);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(currentCode);
+          setPinStatus(`Player PIN ${currentCode} copied.`);
+        } catch {
+          setPinStatus("The browser could not copy the player PIN.", true);
+        }
+      }, true);
+    }
   }
 
   function refresh() {

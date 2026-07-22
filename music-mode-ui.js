@@ -1,14 +1,14 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260722-fluid3";
+  const ASSET_VERSION = "20260722-aimteam1";
   const replacements = [
     ["Three-student registration, voting and simple bots are available.", "Nine PC players, three teams and optional bots are available."],
-    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Its music team was assigned automatically."],
-    ["Approved · setup incomplete", "Approved · mark ready"],
+    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Select an available team name, then mark Ready."],
+    ["Approved · setup incomplete", "Approved · choose team and mark ready"],
     ["COMPLETE VOTING FIRST", "MARK THIS PLAYER READY"],
     ["VOTING COMPLETE", "3 TEAMS · 9 PLAYERS"],
-    ["team-name voting incomplete", "automatic team names pending"],
+    ["team-name voting incomplete", "team selection pending"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
     ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"],
     ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"]
@@ -57,8 +57,10 @@
     if (studentPage) {
       loadStyle("gameplay-v5.css", "gameplayV5Styles");
       loadStyle("gameplay-v6.css", "gameplayV6Styles");
-      loadScript("gameplay-v5.js", "gameplayV5Script")
-        .then(() => loadScript("gameplay-v6.js", "gameplayV6Script"))
+      loadStyle("gameplay-v8.css", "gameplayV8Styles");
+      loadStyle("team-selection-v8.css", "teamSelectionV8Styles");
+      loadScript("gameplay-v8.js", "gameplayV8Script")
+        .then(() => loadScript("team-selection-v8.js", "teamSelectionV8Script"))
         .then(() => loadScript("combat-feed.js", "combatFeedScript"))
         .catch(() => {});
       return;

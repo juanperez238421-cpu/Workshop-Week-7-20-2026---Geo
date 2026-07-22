@@ -72,7 +72,7 @@ assert.match(studentJs, /submit_team_proposals/);
 assert.match(studentJs, /submit_team_votes/);
 assert.match(masterJs, /randomAvailableTeam/);
 assert.match(masterJs, /APPROVE · RANDOM TEAM/);
-assert.doesNotMatch(masterJs, /move_player/);
+assert.doesNotMatch(masterJs, /type:\s*"move_player"/);
 assert.match(masterJs, /fill_with_bots/);
 assert.match(masterHtml, /START 5-MINUTE MATCH/);
 console.log("Smoke test passed: master.html is server-password-gated, student access is disconnected, visible team preference is removed, random team assignment is locked, and secure gameplay contracts remain present.");

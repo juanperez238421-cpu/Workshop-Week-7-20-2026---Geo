@@ -28,6 +28,10 @@
 
   const $ = (id) => document.getElementById(id);
 
+  function setText(node, value) {
+    if (node && node.textContent !== value) node.textContent = value;
+  }
+
   function numericText(id) {
     const value = $(id)?.textContent || "0";
     return Number.parseInt(value, 10) || 0;
@@ -54,16 +58,17 @@
     const pending = numericText("pendingCount");
     const currentCode = ($("roomCodeLarge")?.textContent || "").trim();
     const lockedByPlayers = approved > 0 || pending > 0;
+    const message = lockedByPlayers
+      ? "PIN locked because player registration has started."
+      : currentCode && currentCode !== "------"
+        ? `Current player PIN: ${currentCode}`
+        : "Create a room before changing the player PIN.";
 
     persistCurrentRoomCode(currentCode);
     button.disabled = lockedByPlayers;
     input.disabled = lockedByPlayers;
     status.style.color = lockedByPlayers ? "#b54708" : "#667085";
-    status.textContent = lockedByPlayers
-      ? "PIN locked because player registration has started."
-      : currentCode && currentCode !== "------"
-        ? `Current player PIN: ${currentCode}`
-        : "Create a room before changing the player PIN.";
+    setText(status, message);
   }
 
   function updateRosterPresentation() {
@@ -77,28 +82,24 @@
       const botTag = card.querySelector(".bot-tag");
       if (botTag) {
         botCards += 1;
-        botTag.textContent = "AI PLAYER";
+        setText(botTag, "AI PLAYER");
         card.classList.add("ai-player-card");
         const serverTag = [...card.querySelectorAll(".tag")].find((tag) => tag.textContent.includes("SERVER BOT"));
-        if (serverTag) serverTag.textContent = "AUTONOMOUS AI";
+        if (serverTag) setText(serverTag, "AUTONOMOUS AI");
       }
     }
 
     const realCards = cards.length - botCards;
-    const summary = $("playerListSummary");
-    if (summary) summary.textContent = `${cards.length}/9 total players · ${realCards} real · ${botCards} AI`;
+    setText($("playerListSummary"), `${cards.length}/9 total players · ${realCards} real · ${botCards} AI`);
 
-    const botSummary = $("botCountSummary");
-    if (botSummary) {
-      const openSlots = Math.max(0, 9 - cards.length);
-      botSummary.textContent = `${botCards} AI active · ${openSlots} open slot${openSlots === 1 ? "" : "s"}`;
-    }
+    const openSlots = Math.max(0, 9 - cards.length);
+    setText($("botCountSummary"), `${botCards} AI active · ${openSlots} open slot${openSlots === 1 ? "" : "s"}`);
   }
 
   function setPinStatus(message, isError = false) {
     const status = $("roomPinStatus");
     if (!status) return;
-    status.textContent = message;
+    setText(status, message);
     status.style.color = isError ? "#b42318" : "#067647";
   }
 

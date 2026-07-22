@@ -28,12 +28,12 @@
 
   <main id="teacherApp" class="master-shell teacher-app" hidden>
     <header class="master-topbar">
-      <div><p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>Teacher panel · live registration · 9 PC-player slots</span></div>
+      <div><p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>9 PC players · 3 teams · 3 players per team · 3 student names per player</span></div>
       <div class="master-status teacher-session-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="teacherLogoutButton" class="teacher-logout-button" type="button">LOG OUT</button></div>
     </header>
 
     <section id="setupPanel" class="master-card setup-card">
-      <div class="section-heading"><div><h2>Create the classroom room</h2><p>Create one room and give students only the six-character room code.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <div class="section-heading"><div><h2>Create the classroom room</h2><p>Each approved PC registration becomes exactly one of the nine arena players. Give students only the six-character room code.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
       <details>
         <summary>Advanced server connection</summary>
         <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
@@ -45,28 +45,28 @@
     <section id="controlPanel" class="hidden">
       <span id="studentLink" hidden aria-hidden="true"></span>
       <button id="copyLinkButton" type="button" hidden aria-hidden="true" tabindex="-1"></button>
+      <div id="teamVotingList" hidden aria-hidden="true"></div>
 
       <section class="master-grid summary-grid summary-grid-v3">
         <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="primary-button compact-button" type="button">COPY CODE</button></div></article>
         <article class="master-card"><span>PLAYER SLOTS</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
-        <article class="master-card"><span>LIVE GROUPS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>connected classroom slots</small></article>
-        <article class="master-card"><span>PENDING APPROVAL</span><strong id="pendingCount">0</strong><small>updates automatically</small></article>
+        <article class="master-card"><span>REAL / AI PLAYERS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>one PC equals one player</small></article>
+        <article class="master-card"><span>PENDING PLAYERS</span><strong id="pendingCount">0</strong><small>each contains exactly 3 names</small></article>
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
 
+      <section class="master-card">
+        <div class="section-heading"><div><h2>Fixed match structure</h2><p><strong>9 PC players total</strong> → <strong>3 teams</strong> → <strong>3 PC players per team</strong>. Every PC player stores and represents exactly <strong>3 student names</strong>. Team names are assigned automatically from a randomized list of famous song titles.</p></div></div>
+      </section>
+
       <section class="master-columns">
-        <section class="master-card"><div class="section-heading"><div><h2>Live student registrations</h2><p>New PC groups appear here automatically. Verify the three names, then approve the group.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for student registrations.</div></div></section>
-        <section class="master-card"><div class="section-heading"><div><h2>Approved players</h2><p>Approved groups move here immediately. Team assignment is random and locked.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
+        <section class="master-card"><div class="section-heading"><div><h2>Live player registrations</h2><p>Each submitted PC appears here as one pending player with three student names. Verify the names, then approve that single player slot.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for PC-player registrations.</div></div></section>
+        <section class="master-card"><div class="section-heading"><div><h2>Approved players</h2><p>Approved players move here immediately. Assignment is random, locked and limited to three players per team.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
       </section>
 
       <section class="master-card ai-control-card">
-        <div class="section-heading"><div><h2>Fill missing slots</h2><p>Use AI only when fewer than nine real PC groups are available.</p></div></div>
+        <div class="section-heading"><div><h2>Fill missing player slots</h2><p>Use AI only when fewer than nine real PC players are available. Each AI occupies one player slot and contains three virtual student names.</p></div></div>
         <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE AI</button></div>
-      </section>
-
-      <section class="master-card team-voting-card">
-        <div class="section-heading"><div><h2>Teams and voting</h2><p>Approved groups receive a random available team. Students then suggest and vote for team names.</p></div></div>
-        <div id="teamVotingList" class="team-voting-list"></div>
       </section>
 
       <section class="master-card start-console">
@@ -74,16 +74,17 @@
         <div class="button-row"><button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
       </section>
 
-      <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry from real PC groups and AI players.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
+      <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry for the nine PC-player slots.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
 
       <section id="reportPanel" class="master-card hidden">
         <div class="section-heading"><div><h2>Final classroom report</h2><p id="winnerSummary"></p></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
         <div id="finalRanking" class="final-ranking"></div>
-        <div class="table-wrap"><table><thead><tr><th>PC group</th><th>Students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
       </section>
     </section>
   </main>
   <script src="config.js"></script>
   <script src="teacher-auth.js"></script>
+  <script src="music-mode-ui.js"></script>
 </body>
 </html>

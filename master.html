@@ -3,17 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f9fc" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta http-equiv="refresh" content="0; url=teacher.html" />
-  <title>Teacher Control Moved</title>
-  <script>
-    const target = new URL("teacher.html", window.location.href);
-    target.search = window.location.search;
-    target.hash = window.location.hash;
-    window.location.replace(target.href);
-  </script>
+  <title>Triad Territory Rush — Master Teacher Control</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="master.css" />
+  <link rel="stylesheet" href="master-v3.css" />
+  <link rel="stylesheet" href="teacher-auth.css" />
 </head>
-<body>
-  <p>Teacher control moved to <a href="teacher.html">teacher.html</a>.</p>
+<body class="teacher-auth-locked">
+  <section id="teacherAuthOverlay" class="teacher-auth-screen" aria-modal="true" role="dialog" aria-labelledby="teacherAuthTitle">
+    <form id="teacherAuthForm" class="teacher-auth-card">
+      <span class="teacher-auth-mark">SERVER-VERIFIED MASTER PAGE</span>
+      <h1 id="teacherAuthTitle">Unlock master control</h1>
+      <p>Enter the four-digit classroom password. The multiplayer server verifies it before any master command is enabled.</p>
+      <label for="teacherPassword">Teacher password
+        <input id="teacherPassword" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" aria-describedby="teacherAuthError" required />
+      </label>
+      <button id="teacherAuthSubmit" class="primary-button" type="submit">UNLOCK MASTER CONTROL</button>
+      <p id="teacherAuthError" class="teacher-auth-message" aria-live="polite">Enter the four-digit teacher password.</p>
+      <div class="teacher-auth-footer"><span>Student devices cannot open or control this page.</span></div>
+    </form>
+  </section>
+
+  <main id="teacherApp" class="master-shell teacher-app" hidden>
+    <header class="master-topbar">
+      <div><p class="eyebrow">SECURE AUTHORITATIVE MASTER CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>Teacher console · 9 PC-player slots · 3 students per PC</span></div>
+      <div class="master-status teacher-session-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="teacherLogoutButton" class="teacher-logout-button" type="button">LOG OUT</button></div>
+    </header>
+
+    <section id="setupPanel" class="master-card setup-card">
+      <div class="section-heading"><div><h2>Create the online match</h2><p>The password-protected master controller is separate from every student player slot.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
+      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE MASTER ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS CONTROL</button></div>
+      <div id="setupStatus" class="notice">Create a room, then share only the generated student link.</div>
+      <div class="preflight-strip" aria-label="Real test preflight checklist">
+        <div><b>1 · Security</b><span>Password 9109 must be accepted by the server.</span></div>
+        <div><b>2 · Server</b><span>Wait for PROTOCOL 3 ONLINE.</span></div>
+        <div><b>3 · Students</b><span>Share only the generated student link.</span></div>
+        <div><b>4 · Start</b><span>Confirm 9/9 slots, voting and readiness.</span></div>
+      </div>
+    </section>
+
+    <section id="controlPanel" class="hidden">
+      <section class="master-grid summary-grid summary-grid-v3">
+        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="secondary-button" type="button">COPY CODE</button><button id="copyLinkButton" class="primary-button compact-button" type="button">COPY STUDENT LINK</button></div></article>
+        <article class="master-card"><span>PLAYER SLOTS</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
+        <article class="master-card"><span>REAL PC GROUPS</span><strong id="realPcCount">0</strong><small>three students per PC</small></article>
+        <article class="master-card"><span>AI BOTS</span><strong id="botCount">0</strong><small>optional replacements</small></article>
+        <article class="master-card"><span>PENDING</span><strong id="pendingCount">0</strong><small>awaiting approval</small></article>
+        <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
+      </section>
+
+      <section class="master-card join-link-card"><div><span>STUDENT ENTRY LINK</span><strong id="studentLink">—</strong><small>Open this generated link on each student PC. The student page contains no link to master control.</small></div></section>
+
+      <section class="master-card ai-control-card">
+        <div class="section-heading"><div><h2>AI replacement players</h2><p>Use bots only when fewer than nine real PC groups are available. Bots automatically register virtual students, vote, mark ready and play.</p></div></div>
+        <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL ALL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE ALL AI BOTS</button></div>
+      </section>
+
+      <section class="master-card team-voting-card">
+        <div class="section-heading"><div><h2>Random team assignment, colors and voting</h2><p>Approved PC groups are assigned randomly to an available team. Every team receives a random color, and students vote for its name.</p></div></div>
+        <div id="teamVotingList" class="team-voting-list"></div>
+      </section>
+
+      <section class="master-columns">
+        <section class="master-card"><div class="section-heading"><div><h2>Pending PC registrations</h2><p>Verify the three students, then approve the group. Its team is assigned automatically and randomly.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">No pending registrations.</div></div></section>
+        <section class="master-card"><div class="section-heading"><div><h2>Approved roster</h2><p>Team assignments are random and locked. AI slots are clearly identified.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
+      </section>
+
+      <section class="master-card start-console">
+        <div><span id="startReadiness">WAITING FOR PLAYER REGISTRATION</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">05:00</small></div>
+        <div class="button-row"><button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
+      </section>
+
+      <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry from real PC groups and AI players.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
+
+      <section id="reportPanel" class="master-card hidden">
+        <div class="section-heading"><div><h2>Final classroom report</h2><p id="winnerSummary"></p></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
+        <div id="finalRanking" class="final-ranking"></div>
+        <div class="table-wrap"><table><thead><tr><th>PC group</th><th>Students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+      </section>
+    </section>
+  </main>
+  <script src="config.js"></script>
+  <script src="teacher-auth.js"></script>
 </body>
 </html>

@@ -16,6 +16,12 @@
   justify-content: flex-end;
 }
 
+.master-live-toolbar .button-row button,
+.master-player-station-head .button-row button {
+  width: auto;
+  margin-top: 0;
+}
+
 .master-live-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

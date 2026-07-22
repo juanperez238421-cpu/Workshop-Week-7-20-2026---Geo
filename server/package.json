@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "23.0.0",
+  "version": "23.0.1",
   "private": true,
   "description": "Authoritative WebSocket server for nine PC-player slots, three students per PC, team-name voting and AI bots.",
-  "main": "server-v3.js",
+  "main": "start.js",
   "scripts": {
-    "start": "node server-v3.js",
-    "test": "node --check server-v3.js"
+    "start": "node start.js",
+    "test": "node --check server-v3.js && node --check moderation.js && node --check start.js && node moderation.test.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

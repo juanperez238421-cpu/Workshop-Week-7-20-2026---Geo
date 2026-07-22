@@ -28,48 +28,45 @@
 
   <main id="teacherApp" class="master-shell teacher-app" hidden>
     <header class="master-topbar">
-      <div><p class="eyebrow">SECURE AUTHORITATIVE MASTER CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>Teacher console · 9 PC-player slots · 3 students per PC</span></div>
+      <div><p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3</p><h1>Triad Territory Rush</h1><span>Teacher panel · live registration · 9 PC-player slots</span></div>
       <div class="master-status teacher-session-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="teacherLogoutButton" class="teacher-logout-button" type="button">LOG OUT</button></div>
     </header>
 
     <section id="setupPanel" class="master-card setup-card">
-      <div class="section-heading"><div><h2>Create the online match</h2><p>The password-protected master controller is separate from every student player slot.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
-      <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
-      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE MASTER ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS CONTROL</button></div>
-      <div id="setupStatus" class="notice">Create a room, then share only the generated student link.</div>
-      <div class="preflight-strip" aria-label="Real test preflight checklist">
-        <div><b>1 · Security</b><span>Password 9109 must be accepted by the server.</span></div>
-        <div><b>2 · Server</b><span>Wait for PROTOCOL 3 ONLINE.</span></div>
-        <div><b>3 · Students</b><span>Share only the generated student link.</span></div>
-        <div><b>4 · Start</b><span>Confirm 9/9 slots, voting and readiness.</span></div>
-      </div>
+      <div class="section-heading"><div><h2>Create the classroom room</h2><p>Create one room and give students only the six-character room code.</p></div><span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span></div>
+      <details>
+        <summary>Advanced server connection</summary>
+        <label>Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label>
+      </details>
+      <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS ROOM</button></div>
+      <div id="setupStatus" class="notice">Create a room. The code will appear at the top of the panel.</div>
     </section>
 
     <section id="controlPanel" class="hidden">
+      <span id="studentLink" hidden aria-hidden="true"></span>
+      <button id="copyLinkButton" type="button" hidden aria-hidden="true" tabindex="-1"></button>
+
       <section class="master-grid summary-grid summary-grid-v3">
-        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="secondary-button" type="button">COPY CODE</button><button id="copyLinkButton" class="primary-button compact-button" type="button">COPY STUDENT LINK</button></div></article>
+        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="primary-button compact-button" type="button">COPY CODE</button></div></article>
         <article class="master-card"><span>PLAYER SLOTS</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
-        <article class="master-card"><span>REAL PC GROUPS</span><strong id="realPcCount">0</strong><small>three students per PC</small></article>
-        <article class="master-card"><span>AI BOTS</span><strong id="botCount">0</strong><small>optional replacements</small></article>
-        <article class="master-card"><span>PENDING</span><strong id="pendingCount">0</strong><small>awaiting approval</small></article>
+        <article class="master-card"><span>LIVE GROUPS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>connected classroom slots</small></article>
+        <article class="master-card"><span>PENDING APPROVAL</span><strong id="pendingCount">0</strong><small>updates automatically</small></article>
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
 
-      <section class="master-card join-link-card"><div><span>STUDENT ENTRY LINK</span><strong id="studentLink">—</strong><small>Open this generated link on each student PC. The student page contains no link to master control.</small></div></section>
+      <section class="master-columns">
+        <section class="master-card"><div class="section-heading"><div><h2>Live student registrations</h2><p>New PC groups appear here automatically. Verify the three names, then approve the group.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for student registrations.</div></div></section>
+        <section class="master-card"><div class="section-heading"><div><h2>Approved players</h2><p>Approved groups move here immediately. Team assignment is random and locked.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
+      </section>
 
       <section class="master-card ai-control-card">
-        <div class="section-heading"><div><h2>AI replacement players</h2><p>Use bots only when fewer than nine real PC groups are available. Bots automatically register virtual students, vote, mark ready and play.</p></div></div>
-        <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL ALL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE ALL AI BOTS</button></div>
+        <div class="section-heading"><div><h2>Fill missing slots</h2><p>Use AI only when fewer than nine real PC groups are available.</p></div></div>
+        <div class="button-row"><button id="fillBotsButton" class="primary-button" type="button">FILL MISSING SLOTS WITH AI</button><button id="removeBotsButton" class="secondary-button" type="button">REMOVE AI</button></div>
       </section>
 
       <section class="master-card team-voting-card">
-        <div class="section-heading"><div><h2>Random team assignment, colors and voting</h2><p>Approved PC groups are assigned randomly to an available team. Every team receives a random color, and students vote for its name.</p></div></div>
+        <div class="section-heading"><div><h2>Teams and voting</h2><p>Approved groups receive a random available team. Students then suggest and vote for team names.</p></div></div>
         <div id="teamVotingList" class="team-voting-list"></div>
-      </section>
-
-      <section class="master-columns">
-        <section class="master-card"><div class="section-heading"><div><h2>Pending PC registrations</h2><p>Verify the three students, then approve the group. Its team is assigned automatically and randomly.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">No pending registrations.</div></div></section>
-        <section class="master-card"><div class="section-heading"><div><h2>Approved roster</h2><p>Team assignments are random and locked. AI slots are clearly identified.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
       </section>
 
       <section class="master-card start-console">

@@ -3,35 +3,37 @@
 
   const root = document.documentElement;
   const body = document.body;
+  const app = document.getElementById("teacherApp");
 
-  function forceDocumentScrolling() {
+  function applyMasterViewport() {
     root.style.setProperty("width", "100%", "important");
-    root.style.setProperty("height", "auto", "important");
-    root.style.setProperty("min-height", "100%", "important");
-    root.style.setProperty("overflow-x", "hidden", "important");
-    root.style.setProperty("overflow-y", "auto", "important");
+    root.style.setProperty("height", "100%", "important");
+    root.style.setProperty("overflow", "hidden", "important");
 
-    if (body.classList.contains("teacher-auth-locked")) {
-      body.style.removeProperty("overflow-x");
-      body.style.removeProperty("overflow-y");
-      body.style.setProperty("overflow", "hidden", "important");
-      return;
-    }
-
-    body.style.removeProperty("overflow");
     body.style.setProperty("width", "100%", "important");
-    body.style.setProperty("height", "auto", "important");
-    body.style.setProperty("min-height", "100vh", "important");
-    body.style.setProperty("overflow-x", "hidden", "important");
-    body.style.setProperty("overflow-y", "visible", "important");
+    body.style.setProperty("height", "100%", "important");
+    body.style.setProperty("overflow", "hidden", "important");
+
+    if (!app || body.classList.contains("teacher-auth-locked")) return;
+
+    app.style.setProperty("position", "fixed", "important");
+    app.style.setProperty("inset", "0", "important");
+    app.style.setProperty("width", "100%", "important");
+    app.style.setProperty("height", "100dvh", "important");
+    app.style.setProperty("min-height", "0", "important");
+    app.style.setProperty("max-height", "100dvh", "important");
+    app.style.setProperty("overflow-x", "hidden", "important");
+    app.style.setProperty("overflow-y", "scroll", "important");
+    app.style.setProperty("scrollbar-gutter", "stable", "important");
 
     for (const element of [
-      document.getElementById("teacherApp"),
-      document.getElementById("controlPanel")
+      document.getElementById("controlPanel"),
+      document.getElementById("registrationInbox"),
+      document.getElementById("pendingList"),
+      document.getElementById("rosterList")
     ]) {
       if (!element) continue;
       element.style.setProperty("height", "auto", "important");
-      element.style.setProperty("min-height", "0", "important");
       element.style.setProperty("max-height", "none", "important");
       element.style.setProperty("overflow", "visible", "important");
     }
@@ -45,18 +47,16 @@
     jump.dataset.scrollGuardBound = "true";
     jump.addEventListener("click", (event) => {
       event.preventDefault();
-      forceDocumentScrolling();
+      applyMasterViewport();
       window.requestAnimationFrame(() => {
         inbox.scrollIntoView({ behavior: "smooth", block: "start" });
         inbox.focus({ preventScroll: true });
       });
     });
-
-    if (!inbox.hasAttribute("tabindex")) inbox.setAttribute("tabindex", "-1");
   }
 
   function refresh() {
-    forceDocumentScrolling();
+    applyMasterViewport();
     installRegistrationJump();
   }
 
@@ -76,4 +76,5 @@
 
   window.addEventListener("load", refresh, { once: true });
   window.addEventListener("pageshow", refresh);
+  window.addEventListener("resize", refresh);
 })();

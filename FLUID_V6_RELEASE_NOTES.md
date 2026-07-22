@@ -15,4 +15,4 @@ This release introduces the following classroom gameplay changes:
 
 The existing registration, teacher approval, readiness, room PIN, three-team structure, Spacebar-only shooting, and right-click aiming workflows remain in place.
 
-The pull request workflow compiles the layered authoritative runtime and verifies the gameplay, networking, browser integration, and updated Fluid v6 interface copy before release. Its complete test output is retained as a short-lived CI artifact for diagnostics.
+The pull request workflow compiles the layered authoritative runtime and verifies the gameplay, networking, browser integration, and updated Fluid v6 interface copy before release. Its complete test output is retained as a short-lived CI artifact for diagnostics. The final smoke pass accepts the responsive rule-grid markup used by the student lobby.

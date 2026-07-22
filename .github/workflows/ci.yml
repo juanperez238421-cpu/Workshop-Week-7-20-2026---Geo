@@ -24,4 +24,14 @@ jobs:
         working-directory: server
         run: npm install --no-audit --no-fund
       - name: Run repository tests
-        run: npm test
+        shell: bash
+        run: |
+          set +e
+          npm test > test-output.txt 2>&1
+          status=$?
+          if [ $status -ne 0 ]; then
+            echo "--- final test diagnostics ---"
+            tail -n 65 test-output.txt
+            exit $status
+          fi
+          tail -n 25 test-output.txt

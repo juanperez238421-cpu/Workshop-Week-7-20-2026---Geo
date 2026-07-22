@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "25.5.0",
+  "version": "26.0.0",
   "private": true,
-  "description": "Nine PC players across three teams, with a 9600×6000 smooth camera-follow arena, right-click aim guides, Space-only shooting, random PC titles, proximity volleys, teacher readiness controls and live match supervision.",
+  "description": "Nine PC players across three teams, with a 9600×6000 predicted arena, three lives, five ammo charges, random supply powers, right-click aiming and compressed backpressure-aware multiplayer snapshots.",
   "scripts": {
-    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
+    "test": "node --check student-v3.js && node --check student-registration-sync.js && node --check gameplay-v5.js && node --check gameplay-v6.js && node --check combat-feed.js && node --check master-ready-control.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-live-v6.js && node --check master-scroll-guard.js && node --check teacher-auth.js && node --check music-mode-ui.js && node --check config.js && node --check server/runtime-patch.js && node --check server/runtime-v6.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/gameplay-v5-test.js && node scripts/gameplay-v6-test.js && node scripts/smoke-test.js && node scripts/runtime-test.js"
   },
   "engines": { "node": ">=20" }
 }

@@ -41,7 +41,7 @@
 
     <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative server territory</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
-    <div class="controls-hint">WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes</div>
+    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
@@ -55,7 +55,7 @@
         <section id="registrationForm">
           <div class="registration-grid registration-top-row">
             <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
-            <label>PC / player label<input id="pcLabelInput" maxlength="24" autocomplete="off" placeholder="Example: Player 4" /></label>
+            <label>Random PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned automatically" readonly title="The server assigns a unique random title after submission." /></label>
           </div>
           <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
           <p class="approval-note">One submitted PC equals one player slot. After teacher approval, the server assigns that player to an available team automatically.</p>
@@ -126,6 +126,6 @@
   <script src="config.js"></script>
   <script src="student-v3.js"></script>
   <script src="student-registration-sync.js"></script>
-  <script src="music-mode-ui.js?v=20260722-cohesion1"></script>
+  <script src="music-mode-ui.js?v=20260722-smooth2"></script>
 </body>
 </html>

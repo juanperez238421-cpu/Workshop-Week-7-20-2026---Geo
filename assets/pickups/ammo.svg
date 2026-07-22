@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ammunition bullet">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd27a"/><stop offset="1" stop-color="#f79009"/></linearGradient></defs>
+  <rect x="4" y="4" width="56" height="56" rx="15" fill="#fff7e6" stroke="#f79009" stroke-width="4"/>
+  <g transform="rotate(-32 32 32)">
+    <path d="M27 11h10l5 10v27a7 7 0 0 1-7 7h-6a7 7 0 0 1-7-7V21z" fill="url(#g)" stroke="#7a3e00" stroke-width="3"/>
+    <path d="M22 40h20v8a7 7 0 0 1-7 7h-6a7 7 0 0 1-7-7z" fill="#b85c00"/>
+    <path d="M27 11h10l5 10H22z" fill="#fff1c2"/>
+  </g>
+</svg>

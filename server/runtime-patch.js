@@ -100,6 +100,13 @@ function patchServerSource(input) {
 
   source = replaceRequired(
     source,
+    'this.pending.set(registrationId, registration); ws.role = "pending";',
+    'this.pending.set(registrationId, registration); safeSend(this.controller?.ws, { type: "registration_pending", roomCode: this.code, pendingCount: this.pending.size, registrationId, pcLabel, students }); ws.role = "pending";',
+    "direct teacher registration notification"
+  );
+
+  source = replaceRequired(
+    source,
     'assertController(ws) { if (!this.controller || this.controller.ws !== ws || ws.role !== "controller") throw new Error("Teacher controller authorization required."); }',
     'changeRoomCode(controllerWs, newCodeValue) { this.assertController(controllerWs); if (this.phase !== "lobby") throw new Error("The player room PIN can only be changed in the lobby."); if (this.players.size || this.pending.size) throw new Error("Change the player room PIN before any player registers."); const newCode = String(newCodeValue || "").trim().toUpperCase(); if (!/^[A-Z2-9]{6}$/.test(newCode)) throw new Error("Use exactly six characters: A-Z and 2-9."); if (newCode === this.code) return; if (rooms.has(newCode)) throw new Error("That player room PIN is already in use."); const oldCode = this.code; rooms.delete(oldCode); this.code = newCode; rooms.set(newCode, this); if (this.controller?.ws) this.controller.ws.roomCode = newCode; this.updatedAt = Date.now(); this.sendLobby(); this.broadcastEvent(`Player room PIN changed from ${oldCode} to ${newCode}.`); }\n  assertController(ws) { if (!this.controller || this.controller.ws !== ws || ws.role !== "controller") throw new Error("Teacher controller authorization required."); }',
     "room PIN controller method"

@@ -48,7 +48,16 @@
       <div id="teamVotingList" hidden aria-hidden="true"></div>
 
       <section class="master-grid summary-grid summary-grid-v3">
-        <article class="master-card room-code-card"><span>ROOM CODE</span><strong id="roomCodeLarge">------</strong><div class="button-row"><button id="copyCodeButton" class="primary-button compact-button" type="button">COPY CODE</button></div></article>
+        <article class="master-card room-code-card">
+          <span>PLAYER ROOM PIN</span>
+          <strong id="roomCodeLarge">------</strong>
+          <div class="button-row"><button id="copyCodeButton" class="primary-button compact-button" type="button">COPY PIN</button></div>
+          <label for="newRoomCodeInput">Custom six-character PIN
+            <input id="newRoomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" />
+          </label>
+          <button id="changeRoomCodeButton" class="secondary-button" type="button">CHANGE PLAYER PIN</button>
+          <small id="roomPinStatus">Create a room before changing the player PIN.</small>
+        </article>
         <article class="master-card"><span>PLAYER SLOTS</span><strong id="approvedCount">0 / 9</strong><small id="approvedDetail">0 ready</small></article>
         <article class="master-card"><span>REAL / AI PLAYERS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>one PC equals one player</small></article>
         <article class="master-card"><span>PENDING PLAYERS</span><strong id="pendingCount">0</strong><small>each contains exactly 3 names</small></article>
@@ -58,14 +67,15 @@
       <section class="master-card ai-control-card">
         <div class="section-heading">
           <div>
-            <h2>AI bot players</h2>
+            <h2>AI bot players and match start</h2>
             <p>Add bots to fill every empty player slot until the room reaches 9 total players. Bots are distributed automatically to preserve 3 teams with 3 players each.</p>
           </div>
-          <strong><span id="botCountSummary">Use only for missing players</span></strong>
+          <strong><span id="botCountSummary">0 AI active · 9 open slots</span></strong>
         </div>
         <div class="button-row">
           <button id="fillBotsButton" class="primary-button" type="button">ADD AI BOTS TO FILL MISSING SLOTS</button>
           <button id="removeBotsButton" class="secondary-button" type="button">REMOVE ALL AI BOTS</button>
+          <button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button>
         </div>
       </section>
 
@@ -75,12 +85,16 @@
 
       <section class="master-columns">
         <section class="master-card"><div class="section-heading"><div><h2>Live player registrations</h2><p>Each submitted PC appears here as one pending player with three student names. Verify the names, then approve that single player slot.</p></div></div><div id="pendingList" class="pending-list"><div class="empty-state">Waiting for PC-player registrations.</div></div></section>
-        <section class="master-card"><div class="section-heading"><div><h2>Approved players</h2><p>Approved players move here immediately. Assignment is random, locked and limited to three players per team.</p></div></div><div id="teamCapacity" class="team-capacity"></div><div id="rosterList" class="master-roster"></div></section>
+        <section class="master-card">
+          <div class="section-heading"><div><h2>Player list — real and AI</h2><p id="playerListSummary">0/9 total players · 0 real · 0 AI</p><p>Every bot appears here as a normal player card with an AI label, assigned team and three virtual student names.</p></div></div>
+          <div id="teamCapacity" class="team-capacity"></div>
+          <div id="rosterList" class="master-roster"></div>
+        </section>
       </section>
 
       <section class="master-card start-console">
         <div><span id="startReadiness">WAITING FOR PLAYER REGISTRATION</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">05:00</small></div>
-        <div class="button-row"><button id="startMatchButton" class="primary-button" type="button" disabled>START 5-MINUTE MATCH</button><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
+        <div class="button-row"><button id="endMatchButton" class="danger-button" type="button" disabled>END MATCH NOW</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET FOR NEW ROUND</button></div>
       </section>
 
       <section id="livePanel" class="master-card live-panel hidden"><div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry for the nine PC-player slots.</p></div></div><div id="liveTeams" class="live-teams"></div><div id="livePlayers" class="live-players"></div></section>
@@ -93,6 +107,7 @@
     </section>
   </main>
   <script src="config.js"></script>
+  <script src="master-enhancements.js"></script>
   <script src="teacher-auth.js"></script>
   <script src="music-mode-ui.js"></script>
 </body>

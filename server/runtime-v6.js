@@ -185,7 +185,7 @@ const STATE_BACKPRESSURE_BYTES = 192 * 1024;`,
 
   source = replacePattern(
     source,
-    /  updateBots\(now\) \{[\s\S]*?\n  \}\n  volleySize\(player\)/,
+    /  updateBots\(now\) \{[\s\S]*?\n  \}\n  tick\(\)/,
     `  updateBots(now) {
     if (this.phase !== "playing") return;
     for (const bot of this.players.values()) {
@@ -207,7 +207,7 @@ const STATE_BACKPRESSURE_BYTES = 192 * 1024;`,
       if (bot.input.dash) bot.ai.nextDashAt = now + 2300 + crypto.randomInt(1900);
     }
   }
-  volleySize(player)`,
+  tick()`,
     "resource-aware bots"
   );
 

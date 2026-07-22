@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Rapid fire power">
+  <rect x="4" y="4" width="56" height="56" rx="15" fill="#fff0ee" stroke="#f04438" stroke-width="4"/>
+  <g fill="#f97066" stroke="#7a271a" stroke-width="2.5">
+    <path d="M15 18h9l4 7v22a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5V25z"/>
+    <path d="M28 12h9l4 7v28a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5V19z"/>
+    <path d="M41 18h9l4 7v22a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5V25z"/>
+  </g>
+  <path d="M16 37h11M29 37h11M42 37h11" stroke="#fff" stroke-width="3"/>
+</svg>

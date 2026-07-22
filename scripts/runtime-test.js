@@ -51,9 +51,15 @@ assert.equal(new Set(room.teamNames).size, 3);
 assert.ok(room.teamNames.every((name) => MUSIC_TEAM_NAMES.includes(name)));
 assert.equal(room.teamNamesFinalized.every(Boolean), true);
 
+room.changeRoomCode(controller, "PLAY26");
+assert.equal(room.code, "PLAY26");
+assert.equal(controller.roomCode, "PLAY26");
+assert.throws(() => room.changeRoomCode(controller, "BAD!"), /six characters/);
+
 const studentWs = socket();
 room.registerStudent(studentWs, { pcLabel: "PC Player 1", students: ["Ana", "Luis", "Sara"], preferredTeam: 0 });
 assert.equal(room.pending.size, 1);
+assert.throws(() => room.changeRoomCode(controller, "ROOM27"), /before any player registers/);
 const registration = [...room.pending.values()][0];
 assert.equal(registration.students.length, 3);
 
@@ -80,4 +86,4 @@ assert.equal(room.phase, "playing");
 room.updateBots(Date.now());
 assert.ok([...room.players.values()].filter((player) => player.isBot).every((bot) => Number.isFinite(bot.input.angle)));
 
-console.log("Runtime test passed: one PC registration creates one of 9 players, every player contains exactly 3 student names, teams remain 3×3, and music team names are assigned automatically without voting.");
+console.log("Runtime test passed: the teacher can set the pre-registration player PIN, one PC creates one of 9 players, every player contains 3 student names, AI players appear in the 3×3 roster, and the match can start without voting.");

@@ -14,9 +14,9 @@
 <body class="teacher-auth-locked">
   <section id="teacherAuthOverlay" class="teacher-auth-screen" aria-modal="true" role="dialog" aria-labelledby="teacherAuthTitle">
     <form id="teacherAuthForm" class="teacher-auth-card">
-      <span class="teacher-auth-mark">TEACHER-ONLY PAGE</span>
+      <span class="teacher-auth-mark">SERVER-VERIFIED TEACHER PAGE</span>
       <h1 id="teacherAuthTitle">Unlock match control</h1>
-      <p>Enter the four-digit classroom password. Access remains active only in this browser tab until you log out or close it.</p>
+      <p>Enter the four-digit classroom password. The multiplayer server verifies it before any teacher control is enabled.</p>
       <label for="teacherPassword">Teacher password
         <input id="teacherPassword" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" aria-describedby="teacherAuthError" required />
       </label>
@@ -38,8 +38,8 @@
       <div class="setup-actions"><button id="createRoomButton" class="primary-button" type="button">CREATE MASTER ROOM</button><button id="restoreRoomButton" class="secondary-button" type="button">RESTORE PREVIOUS CONTROL</button></div>
       <div id="setupStatus" class="notice">Create a room, then share the generated student link.</div>
       <div class="preflight-strip" aria-label="Real test preflight checklist">
-        <div><b>1 · Server</b><span>Wait for PROTOCOL 3 ONLINE.</span></div>
-        <div><b>2 · Teacher</b><span>Keep this page on one control PC.</span></div>
+        <div><b>1 · Security</b><span>Teacher PIN must be accepted by the server.</span></div>
+        <div><b>2 · Server</b><span>Wait for PROTOCOL 3 ONLINE.</span></div>
         <div><b>3 · Students</b><span>Share only the generated student link.</span></div>
         <div><b>4 · Start</b><span>Confirm 9/9 slots, voting and readiness.</span></div>
       </div>

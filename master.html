@@ -9,11 +9,12 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-scroll4" />
-  <link rel="stylesheet" href="master.css?v=20260722-scroll4" />
-  <link rel="stylesheet" href="master-v3.css?v=20260722-scroll4" />
-  <link rel="stylesheet" href="teacher-auth.css?v=20260722-scroll4" />
-  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-scroll4" />
+  <link rel="stylesheet" href="styles.css?v=20260722-live1" />
+  <link rel="stylesheet" href="master.css?v=20260722-live1" />
+  <link rel="stylesheet" href="master-v3.css?v=20260722-live1" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260722-live1" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260722-live1" />
+  <link rel="stylesheet" href="master-live-game.css?v=20260722-live1" />
   <style id="master-critical-scroll-fix">
     html,
     body {
@@ -144,6 +145,49 @@
         </div>
       </section>
 
+      <section id="masterLiveGamePanel" class="master-card master-live-game-card" aria-labelledby="masterLiveGameTitle">
+        <div class="master-live-toolbar">
+          <div>
+            <h2 id="masterLiveGameTitle">Live arena and master player station</h2>
+            <p>Watch the authoritative match directly from the teacher console. The master browser can also register and play as one of the nine player slots.</p>
+          </div>
+          <div class="button-row">
+            <button id="masterFullscreenButton" class="secondary-button" type="button">FULLSCREEN LIVE ARENA</button>
+            <button id="masterJoinPlayerButton" class="primary-button" type="button" disabled>JOIN AS PLAYER HERE</button>
+            <button id="masterOpenPlayerButton" class="secondary-button" type="button" disabled>OPEN PLAYER IN NEW TAB</button>
+          </div>
+        </div>
+
+        <div class="master-live-meta">
+          <div><span>ROOM</span><strong id="masterLiveRoom">NO ROOM</strong></div>
+          <div><span>PHASE</span><strong id="masterLivePhase">LOBBY</strong></div>
+          <div><span>FEED</span><strong id="masterLiveFeedStatus">WAITING FOR MATCH</strong></div>
+        </div>
+
+        <div id="masterArenaShell" class="master-arena-shell">
+          <canvas id="masterGameCanvas" aria-label="Live authoritative arena view"></canvas>
+          <div id="masterArenaOverlay" class="master-arena-overlay">Live arena feed will appear here when the match begins.</div>
+        </div>
+        <div id="masterTeamLegend" class="master-team-legend" aria-label="Live team territory legend"></div>
+
+        <section id="masterPlayerStation" class="master-player-station" hidden>
+          <div class="master-player-station-head">
+            <div>
+              <h3>Master browser player station</h3>
+              <p>Register this browser as a normal PC player with three represented names. Approve the request in the registration inbox, mark it ready, then click inside the game frame to use WASD, mouse, Space and Shift.</p>
+            </div>
+            <div class="button-row">
+              <button id="masterResetPlayerButton" class="secondary-button" type="button">RESET PLAYER SESSION</button>
+              <button id="masterHidePlayerButton" class="secondary-button" type="button">HIDE PLAYER STATION</button>
+            </div>
+          </div>
+          <div class="master-player-frame-wrap">
+            <iframe id="masterPlayerFrame" title="Playable master browser game station" src="about:blank" allow="fullscreen; autoplay"></iframe>
+          </div>
+          <p class="master-player-note"><strong>Important:</strong> this master player consumes one of the nine real player slots and must be approved like any other registration. Keep the live arena above for supervision and use the embedded frame only when you intend to participate.</p>
+        </section>
+      </section>
+
       <section class="master-card">
         <div class="section-heading">
           <div>
@@ -173,7 +217,7 @@
       </section>
 
       <section id="livePanel" class="master-card live-panel hidden">
-        <div class="section-heading"><div><h2>Live match monitor</h2><p>Server-authoritative telemetry for the nine PC-player slots.</p></div></div>
+        <div class="section-heading"><div><h2>Live match telemetry</h2><p>Server-authoritative team and player status for all nine slots.</p></div></div>
         <div id="liveTeams" class="live-teams"></div>
         <div id="livePlayers" class="live-players"></div>
       </section>
@@ -188,11 +232,12 @@
       </section>
     </section>
   </main>
-  <script src="config.js?v=20260722-scroll4"></script>
-  <script src="master-registration-sync.js?v=20260722-scroll4"></script>
-  <script src="master-enhancements.js?v=20260722-scroll4"></script>
-  <script src="teacher-auth.js?v=20260722-scroll4"></script>
-  <script src="music-mode-ui.js?v=20260722-scroll4"></script>
-  <script src="master-scroll-guard.js?v=20260722-scroll4"></script>
+  <script src="config.js?v=20260722-live1"></script>
+  <script src="master-registration-sync.js?v=20260722-live1"></script>
+  <script src="master-enhancements.js?v=20260722-live1"></script>
+  <script src="master-live-game.js?v=20260722-live1"></script>
+  <script src="teacher-auth.js?v=20260722-live1"></script>
+  <script src="music-mode-ui.js?v=20260722-live1"></script>
+  <script src="master-scroll-guard.js?v=20260722-live1"></script>
 </body>
 </html>

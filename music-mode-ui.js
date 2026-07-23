@@ -1,17 +1,26 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260723-solo-nine-channels24";
+  const ASSET_VERSION = "20260724-stable-autostart26";
   const replacements = [
-    ["Nine PC players, three teams and optional bots are available.", "Up to nine PC channels are available; each real PC receives eight automatic bots."],
+    ["Nine PC players, three teams and optional bots are available.", "Up to nine PC channels are available; each real PC receives five automatic bots."],
     ["One to nine PC players, three teams and optional bots are available.", "Up to nine isolated PC-versus-bots channels are available under one Master PIN."],
-    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC channel. Mark Ready when the group is prepared."],
-    ["Approved · setup incomplete", "Approved · mark ready"],
-    ["COMPLETE VOTING FIRST", "I AM READY"],
-    ["VOTING COMPLETE", "ISOLATED CHANNEL READY"],
-    ["team-name voting incomplete", "channel not ready"],
+    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC channel. The Master can start it immediately."],
+    ["Teacher approved this PC channel. Mark Ready when the group is prepared.", "Teacher approved this PC channel. The Master can start it immediately."],
+    ["Approved · setup incomplete", "Approved · Master-controlled start"],
+    ["Approved · mark ready", "Approved · Master-controlled start"],
+    ["Approved · not ready", "Approved · startable"],
+    ["READY — CLICK TO CANCEL", "MASTER START"],
+    ["I AM READY", "MASTER START"],
+    ["START ALL READY CHANNELS", "START ALL APPROVED CHANNELS"],
+    ["WAITING FOR A READY CHANNEL", "WAITING FOR AN APPROVED CHANNEL"],
+    ["channel not ready", "channel awaiting Master start"],
+    ["8 automatic bots", "5 automatic bots"],
+    ["eight automatic bots", "five automatic bots"],
+    ["eight optimized bots", "five optimized bots"],
+    ["1 human + 8 bots", "1 human + 5 bots"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
-    ["Eliminated · solve trigonometry", "Eliminated · solve the geometry respawn challenge"],
+    ["Eliminated · solve trigonometry", "Eliminated · solve the assigned geometry respawn challenge"],
     ["automatic +1 every 10 s", "automatic +1 every 5 s"],
     ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"],
     ["05:00", "10:00"],
@@ -29,24 +38,16 @@
     if (next !== value) node.textContent = next;
   }
 
-  function removeStudentVotingControls() {
+  function removeStudentVotingAndReadyControls() {
     if (!document.getElementById("gameCanvas")) return;
-    ["proposalPanel", "votePanel", "teamNamingStatus"].forEach((id) => {
+    ["proposalPanel", "votePanel", "teamNamingStatus", "readyButton"].forEach((id) => {
       const element = document.getElementById(id);
       if (element?.isConnected) element.remove();
     });
   }
 
-  function unlockStudentReadyControl() {
-    const approvedPanel = document.getElementById("approvedPanel");
-    const readyButton = document.getElementById("readyButton");
-    const readyLabel = document.getElementById("playerReadyLabel");
-    if (!approvedPanel || !readyButton || approvedPanel.classList.contains("hidden")) return;
-
-    const isReady = String(readyLabel?.textContent || "").trim().toUpperCase() === "YES";
-    readyButton.disabled = false;
-    readyButton.textContent = isReady ? "READY — CLICK TO CANCEL" : "I AM READY";
-    readyButton.classList.toggle("secondary-button", isReady);
+  function removeMasterReadyControls() {
+    document.querySelectorAll(".teacher-ready-toggle").forEach((element) => element.remove());
   }
 
   function loadStyle(path, id) {
@@ -91,7 +92,6 @@
     return loadScript("master-solo-channels-v24.js", "masterSoloChannelsV24Script")
       .then(() => loadScript("master-team-score-v23.js", "masterTeamScoreV23Script"))
       .then(() => loadScript("network-v12.js", "networkV12Script"))
-      .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
       .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"));
   }
 
@@ -100,20 +100,22 @@
       "serverHealthText",
       "lobbyStatus",
       "playerStateLabel",
-      "readyButton",
       "startReadiness",
       "setupStatus",
       "ammoRegenTimer",
       "clockLabel",
-      "automaticReportStatus"
+      "automaticReportStatus",
+      "startMatchButton",
+      "approvedDetail",
+      "botCountSummary"
     ].forEach((id) => rewriteText(document.getElementById(id)));
     rewriteText(document.querySelector(".controls-hint"));
     rewriteText(document.querySelector("#questionOverlay .eyebrow"));
     rewriteText(document.querySelector(".master-topbar span"));
     rewriteText(document.querySelector("#masterLiveGamePanel p"));
     rewriteText(document.querySelector(".start-console"));
-    removeStudentVotingControls();
-    unlockStudentReadyControl();
+    removeStudentVotingAndReadyControls();
+    removeMasterReadyControls();
   }
 
   let refreshQueued = false;
@@ -135,13 +137,17 @@
 
   function installTargetedObservers() {
     const textOptions = { subtree: true, childList: true, characterData: true };
-    observeTarget("playerReadyLabel", textOptions);
     observeTarget("lobbyStatus", textOptions);
     observeTarget("playerStateLabel", textOptions);
     observeTarget("ammoRegenTimer", textOptions);
     observeTarget("clockLabel", textOptions);
     observeTarget("automaticReportStatus", textOptions);
+    observeTarget("startMatchButton", textOptions);
+    observeTarget("startReadiness", textOptions);
+    observeTarget("approvedDetail", textOptions);
+    observeTarget("botCountSummary", textOptions);
     observeTarget("approvedPanel", { attributes: true, attributeFilter: ["class"] });
+    observeTarget("rosterList", { subtree: true, childList: true, characterData: true });
   }
 
   function start() {

@@ -1,0 +1,161 @@
+/* Student Stable v15: bounded rendering and a single-client interface. */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#gameCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  background: #eef2f7;
+}
+
+.registration-modal {
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.student-stability-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 12px 0;
+  padding: 11px 13px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #344054;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.student-stability-note strong {
+  color: #101828;
+  white-space: nowrap;
+}
+
+.resource-hud-v15 {
+  position: fixed;
+  z-index: 5;
+  left: 18px;
+  bottom: 64px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 8px;
+  width: min(660px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.resource-card-v15 {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(152, 162, 179, 0.55);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.resource-card-v15 span,
+.resource-card-v15 small {
+  display: block;
+  color: #667085;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.resource-card-v15 strong {
+  display: block;
+  margin: 3px 0;
+  overflow: hidden;
+  color: #101828;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-selection-panel-v15 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 0.65fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.team-selection-panel-v15 > div > span,
+.team-selection-panel-v15 label {
+  display: block;
+  color: #475467;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.team-selection-panel-v15 > div > strong {
+  display: block;
+  margin: 4px 0 2px;
+  color: #101828;
+  font-size: 1rem;
+}
+
+.team-selection-panel-v15 small,
+.team-selection-status-v15 {
+  color: #667085;
+  font-size: 0.78rem;
+}
+
+.team-selection-panel-v15 select {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.team-selection-status-v15 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.notice[data-kind="success"] {
+  background: #ecfdf3;
+}
+
+.notice[data-kind="error"] {
+  background: #fef3f2;
+}
+
+@media (max-width: 900px) {
+  .resource-hud-v15 {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .team-selection-panel-v15 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .registration-modal {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+
+  .resource-hud-v15 {
+    left: 8px;
+    bottom: 54px;
+    width: calc(100vw - 16px);
+  }
+}

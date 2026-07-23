@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "32.0.0",
+  "version": "33.0.0",
   "private": true,
-  "description": "Gameplay v12 backend with moving-target long-shot collision, five-second ammunition recovery, soft full-state resynchronization and stale-socket reconnect protection.",
+  "description": "Combat v18 backend with authoritative semi-automatic hitscan, complete question metadata, cumulative classroom scoring, five-second ammunition recovery and protected teacher reporting.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-v12.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v13.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

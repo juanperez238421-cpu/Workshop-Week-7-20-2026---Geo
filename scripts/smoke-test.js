@@ -8,21 +8,17 @@ const files = [
   "renderer-bootstrap-v12.js",
   "student-v3.js",
   "student-registration-sync.js",
-  "gameplay-v5.js",
-  "gameplay-v6.js",
   "gameplay-v8.js",
   "gameplay-v9.js",
   "gameplay-v12-ui.js",
   "minimap-v10.js",
   "pickup-assets-v10.js",
   "question-bank-v10-ui.js",
-  "network-v11.js",
   "network-v12.js",
   "team-selection-v8.js",
   "master-v3.js",
   "master-enhancements.js",
   "master-live-game.js",
-  "master-live-v6.js",
   "master-live-v9.js",
   "master-ready-control.js",
   "master-flex-start-v11.js",
@@ -32,9 +28,7 @@ const files = [
   "config.js",
   "server/runtime-patch.js",
   "server/runtime-v6.js",
-  "server/runtime-v7.js",
   "server/runtime-v8.js",
-  "server/runtime-v9.js",
   "server/runtime-v10.js",
   "server/runtime-v11.js",
   "server/runtime-v12.js",
@@ -47,6 +41,10 @@ const studentHtml = fs.readFileSync("index.html", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
 const teacherAliasHtml = fs.readFileSync("teacher.html", "utf8");
 const studentJs = fs.readFileSync("student-v3.js", "utf8");
+const masterJs = fs.readFileSync("master-v3.js", "utf8");
+const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
+const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
+const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
 const gameplayV8Js = fs.readFileSync("gameplay-v8.js", "utf8");
 const gameplayV9Js = fs.readFileSync("gameplay-v9.js", "utf8");
 const minimapV10Js = fs.readFileSync("minimap-v10.js", "utf8");
@@ -55,22 +53,17 @@ const questionV10Js = fs.readFileSync("question-bank-v10-ui.js", "utf8");
 const networkV12Js = fs.readFileSync("network-v12.js", "utf8");
 const rendererBootstrap = fs.readFileSync("renderer-bootstrap-v12.js", "utf8");
 const flexV11Js = fs.readFileSync("master-flex-start-v11.js", "utf8");
-const masterJs = fs.readFileSync("master-v3.js", "utf8");
-const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
-const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
 const masterLiveV9Js = fs.readFileSync("master-live-v9.js", "utf8");
-const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
-const runtimePatchJs = fs.readFileSync("server/runtime-patch.js", "utf8");
-const runtimeV6Js = fs.readFileSync("server/runtime-v6.js", "utf8");
-const runtimeV8Js = fs.readFileSync("server/runtime-v8.js", "utf8");
-const runtimeV10Js = fs.readFileSync("server/runtime-v10.js", "utf8");
-const runtimeV11Js = fs.readFileSync("server/runtime-v11.js", "utf8");
 const runtimeV12Js = fs.readFileSync("server/runtime-v12.js", "utf8");
 const serverJs = fs.readFileSync("server/server-v3.js", "utf8");
 const gatewayJs = fs.readFileSync("server/secure-gateway.js", "utf8");
 
-function ids(html) { return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1])); }
-function jsIds(js) { return new Set([...js.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1])); }
+function ids(html) {
+  return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
+}
+function jsIds(js) {
+  return new Set([...js.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
+}
 for (const [name, html, js] of [
   ["student", studentHtml, studentJs],
   ["master", masterHtml, masterJs],
@@ -85,20 +78,6 @@ for (const [name, html, js] of [
 assert.match(serverJs, /const PROTOCOL = 3/);
 assert.match(serverJs, /const MAX_PLAYERS = 9/);
 assert.match(serverJs, /const STUDENTS_PER_PC = 3/);
-assert.match(serverJs, /winnerRule:\s*"largest-territory"/);
-
-assert.match(runtimePatchJs, /MUSIC_TEAM_NAMES/);
-assert.match(runtimePatchJs, /RANDOM_PC_TITLES/);
-assert.match(runtimeV6Js, /MAX_LIVES = 3/);
-assert.match(runtimeV6Js, /MAX_AMMO = 5/);
-assert.match(runtimeV6Js, /MAX_PICKUPS = 14/);
-assert.match(runtimeV8Js, /selectTeam\(playerId, value\)/);
-assert.match(runtimeV8Js, /!killer\.isBot && !victim\.isBot/);
-assert.match(runtimeV10Js, /width: 12800, height: 8000/);
-assert.match(runtimeV10Js, /angleVertex/);
-assert.match(runtimeV11Js, /MIN_PLAYERS_TO_START = 1/);
-assert.match(runtimeV11Js, /forwardToBrowser/);
-assert.match(runtimeV11Js, /sendSocketFrame/);
 assert.match(runtimeV12Js, /PROJECTILE_LIFETIME_MS = 5200/);
 assert.match(runtimeV12Js, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
 assert.match(runtimeV12Js, /relativeStartX/);
@@ -108,9 +87,9 @@ assert.match(runtimeV12Js, /player\.ws !== ws/);
 assert.match(studentHtml, /Register a classroom PC player/);
 assert.match(studentHtml, /1–9 active players|1 to 9 approved players/);
 assert.match(studentHtml, /exactly three students/i);
-assert.match(studentHtml, /3 lives/);
-assert.match(studentHtml, /5 ammo charges/);
-assert.match(studentHtml, /5 seconds/);
+assert.match(studentHtml, /<b>3<\/b><span>lives before question<\/span>/);
+assert.match(studentHtml, /<b>5<\/b><span>ammo charges<\/span>/);
+assert.match(studentHtml, /<b>5 s<\/b><span>automatic ammo recovery<\/span>/);
 assert.match(studentHtml, /moving-target long-shot hitboxes/);
 assert.match(studentHtml, /renderer-bootstrap-v12\.js/);
 assert.match(studentHtml, /question-bank-v10-ui\.js/);

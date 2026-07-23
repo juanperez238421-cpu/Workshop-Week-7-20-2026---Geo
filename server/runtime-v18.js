@@ -17,7 +17,9 @@ function repairRuntimeV17(source) {
     ['`Channel ${channelNumber} real player is offline.`', '"Channel " + channelNumber + " real player is offline."'],
     ['`Channel ${channelNumber} real player is not ready.`', '"Channel " + channelNumber + " real player is not ready."'],
     ['`${ready.length} isolated human-vs-bots channel(s) started.`', 'ready.length + " isolated human-vs-bots channel(s) started."'],
-    ['`solo_${this.code}_${Date.now()}`', '"solo_" + this.code + "_" + Date.now()']
+    ['`solo_${this.code}_${Date.now()}`', '"solo_" + this.code + "_" + Date.now()'],
+    ['\'  "reset_room"\\n]);\'', '\'"reset_room"\''],
+    ['\'  "reset_room",\\n  "start_channel",\\n  "end_channel",\\n  "reset_channel"\\n]);\'', '\'"reset_room",\\n  "start_channel",\\n  "end_channel",\\n  "reset_channel"\'']
   ];
 
   let repaired = source;

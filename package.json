@@ -1,10 +1,10 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "43.0.0",
+  "version": "44.0.0",
   "private": true,
-  "description": "Fluid Clean v25 preserves Solo Channels, Recovered Arena, Geometry v19, Private Score v23 and swept-projectile combat while disabling duplicate rendering, compacting the HUD and balancing nine simultaneous bot channels.",
+  "description": "Stable Autostart v26 restores authoritative movement and timer ticks, reduces each isolated channel to five balanced bots, removes the student Ready step and records deaths and geometry answers for each registered student.",
   "scripts": {
-    "test": "node --check student-bootstrap-v25.js && node --check student-fluid-v25.js && node --check student-input-v18.js && node --check student-arena-v22.js && node --check student-score-resilience-v23.js && node --check question-ui-v19.js && node --check student-app-v16.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-team-score-v23.js && node --check master-solo-channels-v24.js && node --check master-ready-control.js && node --check master-flex-start-v11.js && node --check master-scroll-guard.js && node --check master-report-v18.js && node --check teacher-auth.js && node --check config.js && node --check music-mode-ui.js && node --check server/runtime-v18.js && node --check server/runtime-v19.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/fluid-clean-v25-test.js"
+    "test": "node --check student-bootstrap-v25.js && node --check student-fluid-v25.js && node --check student-input-v18.js && node --check student-arena-v22.js && node --check student-score-resilience-v23.js && node --check student-stable-v26.js && node --check question-ui-v19.js && node --check student-app-v16.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-team-score-v23.js && node --check master-solo-channels-v24.js && node --check master-ready-control.js && node --check master-flex-start-v11.js && node --check master-scroll-guard.js && node --check master-report-v18.js && node --check master-individual-v26.js && node --check teacher-auth.js && node --check config.js && node --check music-mode-ui.js && node --check server/runtime-v18.js && node --check server/runtime-v19.js && node --check server/runtime-v20.js && node --check server/runtime-v21.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/stable-runtime-v21-test.js"
   },
   "engines": { "node": ">=20" }
 }

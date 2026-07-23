@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260723-studentfix13";
+  const ASSET_VERSION = "20260723-private-score23";
   const replacements = [
     ["Nine PC players, three teams and optional bots are available.", "One to nine PC players, three teams and optional bots are available."],
     ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Select an available team name, then mark Ready."],
@@ -12,7 +12,12 @@
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
     ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"],
     ["automatic +1 every 10 s", "automatic +1 every 5 s"],
-    ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"]
+    ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"],
+    ["05:00", "10:00"],
+    ["five minutes", "ten minutes"],
+    ["after five minutes", "after ten minutes"],
+    ["authoritative semi-auto hitscan", "authoritative swept-projectile combat"],
+    ["server-resolved hitscan combat", "server-resolved projectile combat"]
   ];
 
   function rewriteText(node) {
@@ -82,7 +87,9 @@
 
     loadStyle("master-live-v9.css", "masterLiveV9Styles");
     loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
-    return loadScript("network-v12.js", "networkV12Script")
+    loadStyle("master-team-score-v23.css", "masterTeamScoreV23Styles");
+    return loadScript("master-team-score-v23.js", "masterTeamScoreV23Script")
+      .then(() => loadScript("network-v12.js", "networkV12Script"))
       .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
       .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
       .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"))
@@ -98,10 +105,15 @@
       "readyButton",
       "startReadiness",
       "setupStatus",
-      "ammoRegenTimer"
+      "ammoRegenTimer",
+      "clockLabel",
+      "automaticReportStatus"
     ].forEach((id) => rewriteText(document.getElementById(id)));
     rewriteText(document.querySelector(".controls-hint"));
     rewriteText(document.querySelector("#questionOverlay .eyebrow"));
+    rewriteText(document.querySelector(".master-topbar span"));
+    rewriteText(document.querySelector("#masterLiveGamePanel p"));
+    rewriteText(document.querySelector(".start-console"));
     removeStudentVotingControls();
     unlockStudentReadyControl();
   }
@@ -129,6 +141,8 @@
     observeTarget("lobbyStatus", textOptions);
     observeTarget("playerStateLabel", textOptions);
     observeTarget("ammoRegenTimer", textOptions);
+    observeTarget("clockLabel", textOptions);
+    observeTarget("automaticReportStatus", textOptions);
     observeTarget("approvedPanel", { attributes: true, attributeFilter: ["class"] });
   }
 

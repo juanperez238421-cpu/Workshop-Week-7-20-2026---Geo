@@ -9,13 +9,13 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-solo-nine-channels24" />
-  <link rel="stylesheet" href="master.css?v=20260723-solo-nine-channels24" />
-  <link rel="stylesheet" href="master-v3.css?v=20260723-solo-nine-channels24" />
-  <link rel="stylesheet" href="teacher-auth.css?v=20260723-solo-nine-channels24" />
-  <link rel="stylesheet" href="master-layout-fix.css?v=20260723-solo-nine-channels24" />
-  <link rel="stylesheet" href="master-live-game.css?v=20260723-solo-nine-channels24" />
-  <link id="masterSoloChannelsV24Styles" rel="stylesheet" href="master-solo-channels-v24.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="styles.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="master.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="master-v3.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="master-live-game.css?v=20260724-stable-autostart26" />
+  <link id="masterSoloChannelsV24Styles" rel="stylesheet" href="master-solo-channels-v24.css?v=20260724-stable-autostart26" />
   <style id="master-critical-scroll-fix">
     html,
     body {
@@ -46,9 +46,8 @@
       max-height: none !important;
       overflow: visible !important;
     }
-    .teacher-ready-toggle[data-ready="true"] {
-      border-color: #f04438;
-      color: #b42318;
+    .teacher-ready-toggle {
+      display: none !important;
     }
   </style>
 </head>
@@ -70,9 +69,9 @@
   <main id="teacherApp" class="master-shell teacher-app" hidden>
     <header class="master-topbar">
       <div>
-        <p class="eyebrow">SECURE CLASSROOM CONTROL · SOLO CHANNELS V24 · PRIVATE REPORTING</p>
+        <p class="eyebrow">SECURE CLASSROOM CONTROL · STABLE AUTOSTART V26 · PRIVATE INDIVIDUAL REPORTING</p>
         <h1>Triad Territory Rush</h1>
-        <span>One Master PIN · up to nine independent PC-versus-eight-bots channels · 10 Hz student streams · one-hertz Master aggregate</span>
+        <span>One Master PIN · up to nine independent PC-versus-five-bots channels · 10 Hz student streams · one-hertz Master aggregate</span>
       </div>
       <div class="master-status teacher-session-actions">
         <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
@@ -85,7 +84,7 @@
       <div class="section-heading">
         <div>
           <h2>Create the shared classroom room</h2>
-          <p>Create one six-character PIN. Approve up to nine PCs; every approved PC receives a separate isolated ten-minute match against eight automatic server bots.</p>
+          <p>Create one six-character PIN. Approve up to nine PCs; every approved PC receives a separate ten-minute match against five automatic server bots.</p>
         </div>
         <span id="serverHealthBadge" class="health-pill">CHECKING SERVER</span>
       </div>
@@ -116,8 +115,8 @@
           <button id="changeRoomCodeButton" class="secondary-button" type="button">CHANGE PLAYER PIN</button>
           <small id="roomPinStatus">Create a room before changing the player PIN.</small>
         </article>
-        <article class="master-card"><span>ISOLATED CHANNELS</span><strong id="approvedCount">0 / 9 CHANNELS</strong><small id="approvedDetail">0 online · 0 ready</small></article>
-        <article class="master-card"><span>REAL PCs / SERVER BOTS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>each real PC receives 8 bots</small></article>
+        <article class="master-card"><span>ISOLATED CHANNELS</span><strong id="approvedCount">0 / 9 CHANNELS</strong><small id="approvedDetail">0 online · 0 startable</small></article>
+        <article class="master-card"><span>REAL PCs / SERVER BOTS</span><strong><b id="realPcCount">0</b> REAL · <b id="botCount">0</b> AI</strong><small>each real PC receives 5 bots</small></article>
         <article class="master-card"><span>PENDING PCs</span><strong id="pendingCount">0</strong><small>each registration contains exactly 3 names</small></article>
         <article class="master-card"><span>REGISTRATION</span><strong id="lockState">OPEN</strong><button id="toggleLockButton" class="secondary-button" type="button">LOCK REGISTRATION</button></article>
       </section>
@@ -126,7 +125,7 @@
         <div class="section-heading">
           <div>
             <h2 id="registrationInboxTitle">Isolated PC-channel registrations</h2>
-            <p>Every submitted PC appears here with exactly three full student names. Approval assigns the next Channel 1–9 and creates eight server bots automatically.</p>
+            <p>Every submitted PC appears here with exactly three full student names. Approval assigns the next Channel 1–9, creates five server bots automatically and makes the channel immediately startable by the Master.</p>
           </div>
           <span id="pendingInboxBadge" class="registration-state-pill"><b id="pendingInboxCount">0</b> WAITING</span>
         </div>
@@ -139,14 +138,14 @@
         <div class="section-heading">
           <div>
             <h2>Automatic channel bots</h2>
-            <p>Every approved PC automatically receives eight optimized bots. Manual bot controls are disabled in isolated-channel mode.</p>
+            <p>Every approved PC automatically receives five optimized bots: six total combatants with two players per team. Nine active channels therefore simulate 45 bots instead of the previous 72.</p>
           </div>
           <strong><span id="botCountSummary">0 AI active · 9 open channels</span></strong>
         </div>
         <div class="button-row">
           <button id="fillBotsButton" class="primary-button" type="button" disabled>BOTS ADDED AUTOMATICALLY</button>
           <button id="removeBotsButton" class="secondary-button" type="button" disabled>BOTS REQUIRED</button>
-          <button id="startMatchButton" class="primary-button" type="button" disabled>WAITING FOR A READY CHANNEL</button>
+          <button id="startMatchButton" class="primary-button" type="button" disabled>WAITING FOR AN APPROVED CHANNEL</button>
         </div>
       </section>
 
@@ -154,7 +153,7 @@
         <div class="master-live-toolbar">
           <div>
             <h2 id="masterLiveGameTitle">Legacy shared-arena monitor</h2>
-            <p>Hidden in Solo Channels v24. The Master dashboard receives compact one-hertz summaries rather than nine complete arena streams.</p>
+            <p>Hidden in isolated-channel mode. The Master dashboard receives compact one-hertz summaries rather than nine complete arena streams.</p>
           </div>
           <div class="button-row">
             <button id="masterFullscreenButton" class="secondary-button" type="button">FULLSCREEN</button>
@@ -169,7 +168,7 @@
         </div>
         <div id="masterArenaShell" class="master-arena-shell">
           <canvas id="masterGameCanvas" aria-label="Legacy shared arena view"></canvas>
-          <div id="masterArenaOverlay" class="master-arena-overlay">Solo channels use the nine-card dashboard.</div>
+          <div id="masterArenaOverlay" class="master-arena-overlay">Isolated channels use the nine-card dashboard.</div>
         </div>
         <div id="masterTeamLegend" class="master-team-legend"></div>
         <section id="masterPlayerStation" class="master-player-station" hidden>
@@ -183,7 +182,7 @@
         <div class="section-heading">
           <div>
             <h2>Isolated match structure and preserved rules</h2>
-            <p>Each real PC plays a separate <strong>1 human + 8 bots</strong> ten-minute match. Powers, territory painting, three lives, five ammunition charges, one charge every five seconds, right-click aim, swept projectiles, geometry respawns and the 2.50–5.00 score remain unchanged. Channels may start, finish and reset independently.</p>
+            <p>Each real PC plays a separate <strong>1 human + 5 bots</strong> ten-minute match. Powers, territory painting, three lives, five ammunition charges, one charge every five seconds, right-click aim, swept projectiles, geometry respawns and the 2.50–5.00 score remain unchanged. The Master can start any approved connected channel without a student Ready step.</p>
           </div>
         </div>
       </section>
@@ -193,7 +192,7 @@
           <div>
             <h2>Real PC channel list</h2>
             <p id="playerListSummary">0/9 real PC channels · 0 automatic bots</p>
-            <p>The Master retains each real PC's three names, connection state, answers, deaths, eliminations, territory and score. Bots remain inside their corresponding child channel and are not expanded in this roster.</p>
+            <p>The Master retains each real PC's three names, connection state, answers, deaths, eliminations, territory and score. Geometry questions and assigned deaths are additionally attributed to the specific student who was selected for that turn.</p>
           </div>
         </div>
         <div id="teamCapacity" class="team-capacity"></div>
@@ -203,7 +202,7 @@
       </section>
 
       <section class="master-card start-console">
-        <div><span id="startReadiness">WAITING: ADD AND READY AT LEAST ONE PC CHANNEL</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">10:00</small></div>
+        <div><span id="startReadiness">WAITING: APPROVE AT LEAST ONE CONNECTED PC CHANNEL</span><strong id="phaseLabel">LOBBY</strong><small id="clockLabel">10:00</small></div>
         <div class="button-row"><button id="endMatchButton" class="danger-button" type="button" disabled>END ALL ACTIVE CHANNELS</button><button id="resetRoomButton" class="secondary-button" type="button" disabled>RESET COMPLETED CHANNELS</button></div>
       </section>
 
@@ -215,7 +214,7 @@
 
       <section id="reportPanel" class="master-card hidden">
         <div class="section-heading">
-          <div><h2>Final private classroom report</h2><p id="winnerSummary"></p><p id="automaticReportStatus">When all approved channels finish, a combined private JSON and real-player CSV download automatically. Completed channel data is also preserved in the Master browser.</p></div>
+          <div><h2>Final private classroom report</h2><p id="winnerSummary"></p><p id="automaticReportStatus">When channels finish, PC-level reports remain available and a separate individual-student CSV/JSON is backed up automatically with assigned deaths, answers, correctness, timeouts and response times.</p></div>
           <div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD REAL-PLAYER CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD COMPLETE JSON</button></div>
         </div>
         <div id="finalRanking" class="final-ranking"></div>
@@ -223,16 +222,17 @@
       </section>
     </section>
   </main>
-  <script src="config.js?v=20260723-solo-nine-channels24"></script>
-  <script src="master-report-v18.js?v=20260723-solo-nine-channels24"></script>
-  <script src="master-registration-sync.js?v=20260723-solo-nine-channels24"></script>
-  <script src="master-enhancements.js?v=20260723-solo-nine-channels24"></script>
-  <script src="master-live-game.js?v=20260723-solo-nine-channels24"></script>
-  <script id="masterSoloChannelsV24Script" src="master-solo-channels-v24.js?v=20260723-solo-nine-channels24"></script>
-  <script src="teacher-auth.js?v=20260723-solo-nine-channels24"></script>
-  <script id="networkV12Script" src="network-v12.js?v=20260723-solo-nine-channels24"></script>
-  <script id="masterFlexStartV11Script" src="master-flex-start-v11.js?v=20260723-solo-nine-channels24"></script>
-  <script src="music-mode-ui.js?v=20260723-solo-nine-channels24"></script>
-  <script src="master-scroll-guard.js?v=20260723-solo-nine-channels24"></script>
+  <script src="config.js?v=20260724-stable-autostart26"></script>
+  <script src="master-individual-v26.js?v=20260724-stable-autostart26"></script>
+  <script src="master-report-v18.js?v=20260724-stable-autostart26"></script>
+  <script src="master-registration-sync.js?v=20260724-stable-autostart26"></script>
+  <script src="master-enhancements.js?v=20260724-stable-autostart26"></script>
+  <script src="master-live-game.js?v=20260724-stable-autostart26"></script>
+  <script id="masterSoloChannelsV24Script" src="master-solo-channels-v24.js?v=20260724-stable-autostart26"></script>
+  <script src="teacher-auth.js?v=20260724-stable-autostart26"></script>
+  <script id="networkV12Script" src="network-v12.js?v=20260724-stable-autostart26"></script>
+  <script id="masterFlexStartV11Script" src="master-flex-start-v11.js?v=20260724-stable-autostart26"></script>
+  <script src="music-mode-ui.js?v=20260724-stable-autostart26"></script>
+  <script src="master-scroll-guard.js?v=20260724-stable-autostart26"></script>
 </body>
 </html>

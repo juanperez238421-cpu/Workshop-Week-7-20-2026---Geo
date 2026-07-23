@@ -4,6 +4,7 @@
   const root = document.documentElement;
   const body = document.body;
   const app = document.getElementById("teacherApp");
+  const STUDENT_BUILD = String(window.TRIAD_CONFIG?.clientBuild || "20260723-studentfix14");
 
   function applyMasterViewport() {
     root.style.setProperty("width", "100%", "important");
@@ -55,26 +56,110 @@
     });
   }
 
+  function validRoomCode(value) {
+    return /^[A-Z2-9]{6}$/.test(String(value || "").trim().toUpperCase());
+  }
+
+  function currentRoomCode() {
+    const value = String(document.getElementById("roomCodeLarge")?.textContent || "").trim().toUpperCase();
+    return validRoomCode(value) ? value : "";
+  }
+
+  function studentUrl(station = "") {
+    const roomCode = currentRoomCode();
+    if (!roomCode) return null;
+    const base = window.TRIAD_CONFIG?.gameUrl || new URL("index.html", location.href).href;
+    const url = new URL(base, location.href);
+    url.searchParams.set("room", roomCode);
+    url.searchParams.set("v", STUDENT_BUILD);
+    if (station) url.searchParams.set("station", station);
+    else url.searchParams.delete("station");
+    return url;
+  }
+
+  function prepareStudentSession(roomCode, forceReset = false) {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem("triadStudentSession") || "null"); } catch {}
+    if (forceReset || (saved?.roomCode && saved.roomCode !== roomCode)) {
+      try { localStorage.removeItem("triadStudentSession"); } catch {}
+    }
+    if (forceReset) {
+      try { localStorage.removeItem("triadPcLabel"); } catch {}
+    }
+  }
+
+  function updateShareLink() {
+    const link = studentUrl();
+    const target = document.getElementById("studentLink");
+    if (!target || !link) return;
+    target.textContent = link.href;
+    target.dataset.url = link.href;
+  }
+
+  function installFreshStudentEntry() {
+    const joinButton = document.getElementById("masterJoinPlayerButton");
+    const openButton = document.getElementById("masterOpenPlayerButton");
+    const station = document.getElementById("masterPlayerStation");
+    const frame = document.getElementById("masterPlayerFrame");
+    const feed = document.getElementById("masterLiveFeedStatus");
+
+    if (joinButton && joinButton.dataset.studentV14Bound !== "true") {
+      joinButton.dataset.studentV14Bound = "true";
+      joinButton.addEventListener("click", (event) => {
+        const url = studentUrl("master");
+        if (!url || !station || !frame) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        prepareStudentSession(currentRoomCode(), false);
+        station.hidden = false;
+        frame.src = url.href;
+        joinButton.textContent = "SHOW MASTER PLAYER STATION";
+        station.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, true);
+    }
+
+    if (openButton && openButton.dataset.studentV14Bound !== "true") {
+      openButton.dataset.studentV14Bound = "true";
+      openButton.addEventListener("click", (event) => {
+        const url = studentUrl("master");
+        if (!url) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        prepareStudentSession(currentRoomCode(), false);
+        window.open(url.href, "_blank", "noopener");
+      }, true);
+    }
+
+    if (!currentRoomCode() && feed) feed.textContent = "CREATE OR RESTORE A ROOM FIRST";
+    updateShareLink();
+  }
+
   function refresh() {
     applyMasterViewport();
     installRegistrationJump();
+    installFreshStudentEntry();
+    updateShareLink();
   }
 
-  const observer = new MutationObserver(refresh);
-  observer.observe(body, {
-    attributes: true,
-    attributeFilter: ["class"],
-    childList: true,
-    subtree: true
-  });
+  const bodyObserver = new MutationObserver(refresh);
+  bodyObserver.observe(body, { attributes: true, attributeFilter: ["class"] });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", refresh, { once: true });
-  } else {
-    refresh();
+  const roomCode = document.getElementById("roomCodeLarge");
+  if (roomCode) {
+    const roomObserver = new MutationObserver(refresh);
+    roomObserver.observe(roomCode, { childList: true, characterData: true, subtree: true });
   }
+
+  const controlPanel = document.getElementById("controlPanel");
+  if (controlPanel) {
+    const controlObserver = new MutationObserver(refresh);
+    controlObserver.observe(controlPanel, { attributes: true, attributeFilter: ["class"] });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", refresh, { once: true });
+  else refresh();
 
   window.addEventListener("load", refresh, { once: true });
   window.addEventListener("pageshow", refresh);
-  window.addEventListener("resize", refresh);
+  window.addEventListener("resize", applyMasterViewport);
 })();

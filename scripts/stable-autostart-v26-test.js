@@ -132,7 +132,8 @@ classroom.approveRegistration(controller, registration.id, 0);
 
 const entry = classroom.realEntries()[0];
 assert.ok(entry, "approved PC must own one isolated channel");
-const { room, player } = entry.channel;
+const room = entry.channel.room;
+const player = entry.player;
 assert.equal(player.ready, true, "approval must make the channel immediately startable");
 assert.equal(room.players.size, 6, "one human plus five bots must create six combatants");
 assert.equal([...room.players.values()].filter((candidate) => candidate.isBot).length, 5);

@@ -8,7 +8,8 @@ for (const file of [
   "minimap-v10.js",
   "pickup-assets-v10.js",
   "question-bank-v10-ui.js",
-  "server/runtime-v10.js"
+  "server/runtime-v10.js",
+  "server/runtime-v11.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -68,6 +69,6 @@ assert.match(indexHtml, /no blank delta frames/);
 assert.match(masterHtml, /12,800 × 8,000 arena/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
 assert.match(musicMode, /minimap-v10\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v10.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v11.js secure-gateway.js");
 
-console.log("Gameplay v10 test passed: 12800×8000 arena, persistent delta minimap, varied right-triangle angles and dedicated supply assets are configured.");
+console.log("Gameplay v10 compatibility test passed under runtime v11: 12800×8000 arena, persistent delta minimap, varied right-triangle angles and dedicated supply assets remain configured.");

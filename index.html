@@ -8,16 +8,16 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-mapassets1" />
-  <link rel="stylesheet" href="online.css?v=20260722-mapassets1" />
-  <link rel="stylesheet" href="student-v3.css?v=20260722-mapassets1" />
+  <link rel="stylesheet" href="styles.css?v=20260723-stableflex1" />
+  <link rel="stylesheet" href="online.css?v=20260723-stableflex1" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-stableflex1" />
 </head>
 <body>
   <main id="app">
     <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
-      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>9 PC players · 3 teams · 12,800 × 8,000 arena · stable minimap · dedicated supply assets · varied right-triangle angles</span></div>
+      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>1–9 active players · stable coalesced stream · automatic reconnect · 12,800 × 8,000 arena · persistent minimap</span></div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
     </header>
@@ -46,7 +46,7 @@
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register one of the nine PC players</h1><p class="lead">This computer controls one arena player representing exactly three students. After teacher approval, the player may choose one of the available team names before marking Ready. Each player starts with 3 lives and 5 ammo charges, automatically recovers 1 ammunition charge every 10 seconds, and can collect dedicated bullet, shield, speed, rapid-fire and paint-boost supply assets. After the third life is lost, the server presents a randomized geometry challenge with different right-triangle orientations and acute angles, an unknown side, or a Thales height problem.</p></div>
+          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register a classroom PC player</h1><p class="lead">This computer controls one arena player representing exactly three students. The teacher may start the match with any number from 1 to 9 approved players; a completely full room is no longer required. Every real player currently included must remain connected and mark Ready. The realtime stream now coalesces obsolete snapshots, preserves cumulative territory updates, sends keepalive heartbeats and reconnects automatically if the active game stream stalls. Each player retains 3 lives, 5 ammo charges, automatic ammunition recovery, dedicated supply powers, right-triangle orientations and acute angles, unknown-side questions and Thales height problems.</p></div>
         </div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
@@ -58,7 +58,7 @@
             <label>Random PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned automatically" readonly title="The server assigns a unique random title after submission." /></label>
           </div>
           <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
-          <p class="approval-note">One submitted PC equals one player slot. The teacher approves the registration first; then the player can select any team name with available capacity.</p>
+          <p class="approval-note">One submitted PC equals one active player slot. The teacher approves the registration first; then the player selects any team name with available capacity. The room can start before reaching nine players.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
@@ -108,10 +108,10 @@
 
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">The match requires nine player slots arranged as three teams of three players. Select a team with capacity, then mark Ready. AI may fill only missing player slots.</p>
+          <p class="approval-note">The teacher can start with 1–9 approved players. Teams may be uneven during testing. Select a team with capacity and mark Ready; AI remains optional.</p>
         </section>
 
-        <div class="rule-grid"><div><b>9</b><span>PC players total</span></div><div><b>3</b><span>lives before question</span></div><div><b>5</b><span>ammo charges</span></div><div><b>10 s</b><span>automatic ammo recovery</span></div></div>
+        <div class="rule-grid"><div><b>1–9</b><span>active players</span></div><div><b>3</b><span>lives before question</span></div><div><b>5</b><span>ammo charges</span></div><div><b>10 s</b><span>automatic ammo recovery</span></div></div>
       </div>
     </section>
 
@@ -120,13 +120,13 @@
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
-      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Nine player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
+      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Active player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
-  <script src="config.js?v=20260722-mapassets1"></script>
-  <script src="student-v3.js?v=20260722-mapassets1"></script>
-  <script src="student-registration-sync.js?v=20260722-mapassets1"></script>
-  <script src="music-mode-ui.js?v=20260722-mapassets1"></script>
-  <script src="question-bank-v10-ui.js?v=20260722-mapassets1"></script>
+  <script src="config.js?v=20260723-stableflex1"></script>
+  <script src="student-v3.js?v=20260723-stableflex1"></script>
+  <script src="student-registration-sync.js?v=20260723-stableflex1"></script>
+  <script src="music-mode-ui.js?v=20260723-stableflex1"></script>
+  <script src="question-bank-v10-ui.js?v=20260723-stableflex1"></script>
 </body>
 </html>

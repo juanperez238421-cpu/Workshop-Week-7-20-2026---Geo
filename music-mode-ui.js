@@ -1,16 +1,17 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260723-private-score23";
+  const ASSET_VERSION = "20260723-solo-nine-channels24";
   const replacements = [
-    ["Nine PC players, three teams and optional bots are available.", "One to nine PC players, three teams and optional bots are available."],
-    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Select an available team name, then mark Ready."],
-    ["Approved · setup incomplete", "Approved · choose team and mark ready"],
+    ["Nine PC players, three teams and optional bots are available.", "Up to nine PC channels are available; each real PC receives eight automatic bots."],
+    ["One to nine PC players, three teams and optional bots are available.", "Up to nine isolated PC-versus-bots channels are available under one Master PIN."],
+    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC channel. Mark Ready when the group is prepared."],
+    ["Approved · setup incomplete", "Approved · mark ready"],
     ["COMPLETE VOTING FIRST", "I AM READY"],
-    ["VOTING COMPLETE", "FLEXIBLE ROOM · 1–9 PLAYERS"],
-    ["team-name voting incomplete", "team selection pending"],
+    ["VOTING COMPLETE", "ISOLATED CHANNEL READY"],
+    ["team-name voting incomplete", "channel not ready"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
-    ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"],
+    ["Eliminated · solve trigonometry", "Eliminated · solve the geometry respawn challenge"],
     ["automatic +1 every 10 s", "automatic +1 every 5 s"],
     ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"],
     ["05:00", "10:00"],
@@ -85,16 +86,13 @@
         .then(() => loadScript("combat-feed.js", "combatFeedScript"));
     }
 
-    loadStyle("master-live-v9.css", "masterLiveV9Styles");
-    loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
     loadStyle("master-team-score-v23.css", "masterTeamScoreV23Styles");
-    return loadScript("master-team-score-v23.js", "masterTeamScoreV23Script")
+    loadStyle("master-solo-channels-v24.css", "masterSoloChannelsV24Styles");
+    return loadScript("master-solo-channels-v24.js", "masterSoloChannelsV24Script")
+      .then(() => loadScript("master-team-score-v23.js", "masterTeamScoreV23Script"))
       .then(() => loadScript("network-v12.js", "networkV12Script"))
-      .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
       .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
-      .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"))
-      .then(() => loadScript("master-live-v9.js", "masterLiveV9Script"))
-      .then(() => loadScript("combat-feed.js", "combatFeedScript"));
+      .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"));
   }
 
   function refresh() {

@@ -5,8 +5,8 @@ const assert = require("node:assert/strict");
 const vm = require("node:vm");
 
 const studentHtml = fs.readFileSync("index.html", "utf8");
-const studentJs = fs.readFileSync("student-app-v15.js", "utf8");
-const studentCss = fs.readFileSync("student-v15.css", "utf8");
+const studentJs = fs.readFileSync("student-app-v16.js", "utf8");
+const studentCss = fs.readFileSync("student-v16.css", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
 const masterScroll = fs.readFileSync("master-scroll-guard.js", "utf8");
 const teacherAuth = fs.readFileSync("teacher-auth.js", "utf8");
@@ -14,7 +14,7 @@ const gateway = fs.readFileSync("server/secure-gateway.js", "utf8");
 const runtimeV12 = fs.readFileSync("server/runtime-v12.js", "utf8");
 const server = fs.readFileSync("server/server-v3.js", "utf8");
 
-new vm.Script(studentJs, { filename: "student-app-v15.js" });
+new vm.Script(studentJs, { filename: "student-app-v16.js" });
 new vm.Script(masterScroll, { filename: "master-scroll-guard.js" });
 
 function htmlIds(html) {
@@ -25,18 +25,22 @@ function referencedIds(js) {
   return new Set([...js.matchAll(/\$\("([A-Za-z0-9_-]+)"\)/g)].map((match) => match[1]));
 }
 
-const missingStudentIds = [...referencedIds(studentJs)].filter((id) => !htmlIds(studentHtml).has(id));
-assert.deepEqual(missingStudentIds, [], `Stable student page missing IDs: ${missingStudentIds.join(", ")}`);
+const ids = htmlIds(studentHtml);
+const missingStudentIds = [...referencedIds(studentJs)].filter((id) => !ids.has(id));
+assert.deepEqual(missingStudentIds, [], `Recovery student page missing IDs: ${missingStudentIds.join(", ")}`);
+assert.equal([...studentHtml.matchAll(/\sid="([^"]+)"/g)].length, ids.size, "Student page must not contain duplicate IDs");
 
-const scriptSources = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
-assert.equal(scriptSources.length, 2, `Student page must load exactly two scripts, found ${scriptSources.length}`);
-assert.match(scriptSources[0], /^config\.js\?v=20260723-studentstable15$/);
-assert.match(scriptSources[1], /^student-app-v15\.js\?v=20260723-studentstable15$/);
+const scripts = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
+assert.deepEqual(scripts, [
+  "config.js?v=20260723-studentrecovery16",
+  "student-app-v16.js?v=20260723-studentrecovery16"
+]);
 
 for (const removedLayer of [
   "renderer-bootstrap-v12.js",
   "student-v3.js",
   "student-registration-sync.js",
+  "student-app-v15.js",
   "music-mode-ui.js",
   "gameplay-v9.js",
   "network-v12.js",
@@ -44,40 +48,45 @@ for (const removedLayer of [
   "question-bank-v10-ui.js",
   "team-selection-v8.js"
 ]) {
-  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not be loaded by the stable student page`);
+  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on Recovery v16`);
 }
 
 assert.doesNotMatch(studentJs, /WebSocket\.prototype/);
 assert.doesNotMatch(studentJs, /HTMLCanvasElement\.prototype/);
 assert.doesNotMatch(studentJs, /window\.requestAnimationFrame\s*=/);
 assert.doesNotMatch(studentJs, /MutationObserver/);
-assert.doesNotMatch(studentJs, /appendChild\(script\)|createElement\("script"\)/);
-assert.match(studentJs, /single-socket-single-render-loop/);
-assert.match(studentJs, /2_500_000/);
-assert.match(studentJs, /LOBBY_FRAME_INTERVAL_MS = 200/);
-assert.match(studentJs, /GAME_FRAME_INTERVAL_MS = 33/);
+assert.doesNotMatch(studentJs, /type: "select_team"/);
+assert.match(studentJs, /architecture: "input-first-single-socket"/);
+assert.match(studentJs, /lobbyRenderer: "off"/);
+assert.match(studentJs, /dpr: 1/);
 assert.match(studentJs, /MAX_SOCKET_BUFFER = 64 \* 1024/);
-assert.match(studentJs, /territoryDelta/);
-assert.match(studentJs, /type: "select_team"/);
-assert.match(studentJs, /type: "set_ready"/);
 assert.match(studentJs, /type: "register_student"/);
 assert.match(studentJs, /type: "reconnect_student"/);
-assert.match(studentJs, /type: "ping"/);
+assert.match(studentJs, /type: "set_ready"/);
+assert.match(studentJs, /type: "input"/);
+assert.match(studentJs, /type: "answer"/);
+assert.match(studentJs, /territoryDelta/);
 assert.match(studentJs, /thales_height/);
 assert.match(studentJs, /ratio_sin/);
 assert.match(studentJs, /ratio_cos/);
-assert.match(studentJs, /unknown side/i);
 
-assert.match(studentHtml, /STABLE CLIENT V15/);
-assert.match(studentHtml, /one WebSocket · one renderer · bounded memory/i);
-assert.match(studentHtml, /exactly three students/i);
-assert.match(studentHtml, /id="playerTeamChoice"/);
+assert.match(studentHtml, /RECOVERY CLIENT V16/);
+assert.match(studentHtml, /input-first lobby/i);
+assert.match(studentHtml, /id="student1Input"[^>]*placeholder="Student 1"/);
+assert.match(studentHtml, /id="student2Input"[^>]*placeholder="Student 2"/);
+assert.match(studentHtml, /id="student3Input"[^>]*placeholder="Student 3"/);
+assert.doesNotMatch(studentHtml, /id="student[123]Input"[^>]*(?:disabled|readonly)/);
+assert.match(studentHtml, /id="registerButton"/);
 assert.match(studentHtml, /id="readyButton"/);
+assert.doesNotMatch(studentHtml, /id="playerTeamChoice"/);
 assert.match(studentHtml, /GEOMETRY RESPAWN CHALLENGE/);
 assert.match(studentHtml, /<b>5 s<\/b><span>automatic ammo recovery<\/span>/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
-assert.match(studentCss, /max-height: calc\(100dvh - 32px\)/);
-assert.match(studentCss, /resource-hud-v15/);
+
+assert.match(studentCss, /pointer-events: auto !important/);
+assert.match(studentCss, /body\.lobby-active #gameCanvas/);
+assert.match(studentCss, /backdrop-filter: none !important/);
+assert.match(studentCss, /#registrationForm input:not\(\[readonly\]\)/);
 
 assert.match(masterHtml, /SERVER-VERIFIED MASTER PAGE/);
 assert.match(masterScroll, /clientBuild/);
@@ -89,9 +98,10 @@ assert.match(gateway, /DEFAULT_TEACHER_PASSWORD = "9109"/);
 assert.match(server, /const PROTOCOL = 3/);
 assert.match(server, /const MAX_PLAYERS = 9/);
 assert.match(server, /const STUDENTS_PER_PC = 3/);
+assert.doesNotMatch(server, /case "select_team"/);
 assert.match(runtimeV12, /PROJECTILE_LIFETIME_MS = 5200/);
 assert.match(runtimeV12, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
 assert.match(runtimeV12, /sendFullStateTo/);
 assert.match(runtimeV12, /player\.ws !== ws/);
 
-console.log("Smoke test passed: Student Stable v15 uses one socket, one bounded renderer, direct registration/team/ready controls, integrated geometry questions, secure teacher separation and the authoritative Gameplay v12 server.");
+console.log("Smoke test passed: Recovery v16 restores writable student inputs, removes the unsupported team-selection request, keeps one socket, disables lobby rendering, preserves Ready/start flow, and remains compatible with the authoritative Gameplay v12 server.");

@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "36.0.0",
+  "version": "37.0.0",
   "private": true,
-  "description": "Ten-minute Gameplay v23 backend with master-only private reports, live 2.5–5 group scoring, stronger reconnect protection, swept projectiles, Reporting v18 and Geometry v19.",
+  "description": "Solo Channels v24: one shared Master PIN controls up to nine isolated PC games, each with one real player and eight server bots, ten-minute scoring, private reporting and a 10 Hz low-bandwidth state stream.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-v15.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check runtime-v16.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v17.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check runtime-v16.js && node --check runtime-v17.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

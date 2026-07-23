@@ -236,9 +236,9 @@ const GROUP_SCORE_FORMULA = Object.freeze({
     `ws.on("message", (raw) => { ws.isAlive = true; handleMessage(ws, raw); });`,
     "message activity heartbeat"
   );
-  source = replaceRequired(
+  source = replacePattern(
     source,
-    `const heartbeat = setInterval(() => { for (const ws of wss.clients) { if (!ws.isAlive) { ws.terminate(); continue; } ws.isAlive = false; ws.ping(); } }, 30_000);`,
+    /const heartbeat = setInterval\(\(\) => \{[\s\S]*?for \(const ws of wss\.clients\)[\s\S]*?ws\.ping\(\);[\s\S]*?\},\s*[0-9_]+\);/,
     `const heartbeat = setInterval(() => { for (const ws of wss.clients) { if (!ws.isAlive) { ws.terminate(); continue; } ws.isAlive = false; ws.ping(); } }, 15_000);`,
     "faster connection heartbeat"
   );

@@ -8,10 +8,10 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-inputhotfix17" />
-  <link rel="stylesheet" href="online.css?v=20260723-inputhotfix17" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-inputhotfix17" />
-  <link rel="stylesheet" href="student-v16.css?v=20260723-inputhotfix17" />
+  <link rel="stylesheet" href="styles.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="online.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="student-v16.css?v=20260723-hitscanreport18" />
 </head>
 <body class="lobby-active">
   <main id="app">
@@ -20,7 +20,7 @@
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Student Input Hotfix v17 · registration before renderer · one WebSocket</span>
+        <span>Combat v18 · semi-auto hitscan · complete classroom reporting</span>
       </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
@@ -37,7 +37,7 @@
       <div class="stat-grid">
         <div><span>Room</span><b id="roomCodeLabel">—</b></div><div><span>Ready</span><b id="playerReadyLabel">NO</b></div>
         <div><span>Territory</span><b id="playerTerritoryLabel">0</b></div><div><span>Eliminations</span><b id="playerKillsLabel">0</b></div>
-        <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div><div><span>Accuracy</span><b id="playerAccuracyLabel">—</b></div>
+        <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div><div><span>Combat accuracy</span><b id="playerAccuracyLabel">—</b></div>
       </div>
       <div class="cooldown-row"><span>SHOT</span><progress id="shotCooldown" max="1" value="1"></progress></div>
       <div class="cooldown-row"><span>DASH</span><progress id="dashCooldown" max="1" value="1"></progress></div>
@@ -52,19 +52,19 @@
 
     <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative territory · lightweight 5 FPS map</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
-    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes</div>
+    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK to aim · TAP SPACE to fire · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
           <div>
-            <p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · INPUT HOTFIX V17</p>
+            <p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · COMBAT V18</p>
             <h1>Register a classroom PC player</h1>
-            <p class="lead">Enter the current six-character room PIN and exactly three student names. Registration stays interactive before game rendering begins.</p>
+            <p class="lead">Enter the current six-character room PIN and exactly three complete student names. Spaces, surnames, accents and paste shortcuts work normally.</p>
           </div>
         </div>
 
-        <div class="student-recovery-note"><strong>Registration-first recovery.</strong> Canvas contexts now remain lazy until gameplay or a geometry question needs them.</div>
+        <div class="student-recovery-note"><strong>Registration-first recovery.</strong> Gameplay canvases remain lazy until the match begins, and form fields isolate Space/WASD from combat controls.</div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects only after Register is pressed.</small></div></div>
         <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
@@ -76,13 +76,13 @@
           </div>
           <p class="approval-note">One submitted computer equals one active player slot representing exactly three students. The teacher assigns the team during approval. After approval, press <strong>I AM READY</strong>.</p>
           <div class="student-registration-grid">
-            <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
-            <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
-            <label>Student 3 full name<input id="student3Input" maxlength="24" autocomplete="off" placeholder="Student 3" /></label>
+            <label>Student 1 full name<input id="student1Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+            <label>Student 2 full name<input id="student2Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+            <label>Student 3 full name<input id="student3Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
           </div>
           <button id="registerButton" class="primary-button" type="button">REGISTER THIS PC PLAYER</button>
         </section>
-        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter the PIN and three names.</div>
+        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter the PIN and three full names.</div>
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
@@ -107,12 +107,14 @@
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
-      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Player rosters and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
+      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire and combat data</strong><span>Player rosters, geometry attempts and authoritative score telemetry</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Question accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
 
-  <script src="student-bootstrap-v17.js?v=20260723-inputhotfix17"></script>
-  <script src="config.js?v=20260723-inputhotfix17"></script>
-  <script src="student-app-v16.js?v=20260723-inputhotfix17"></script>
+  <script src="student-bootstrap-v17.js?v=20260723-hitscanreport18"></script>
+  <script src="student-input-v18.js?v=20260723-hitscanreport18"></script>
+  <script src="student-combat-v18.js?v=20260723-hitscanreport18"></script>
+  <script src="config.js?v=20260723-hitscanreport18"></script>
+  <script src="student-app-v16.js?v=20260723-hitscanreport18"></script>
 </body>
 </html>

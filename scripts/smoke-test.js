@@ -6,18 +6,28 @@ const vm = require("node:vm");
 
 const studentHtml = fs.readFileSync("index.html", "utf8");
 const studentBootstrap = fs.readFileSync("student-bootstrap-v17.js", "utf8");
+const studentInput = fs.readFileSync("student-input-v18.js", "utf8");
+const studentCombat = fs.readFileSync("student-combat-v18.js", "utf8");
 const studentJs = fs.readFileSync("student-app-v16.js", "utf8");
 const studentCss = fs.readFileSync("student-v16.css", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
+const masterReport = fs.readFileSync("master-report-v18.js", "utf8");
 const masterScroll = fs.readFileSync("master-scroll-guard.js", "utf8");
 const teacherAuth = fs.readFileSync("teacher-auth.js", "utf8");
 const gateway = fs.readFileSync("server/secure-gateway.js", "utf8");
 const runtimeV12 = fs.readFileSync("server/runtime-v12.js", "utf8");
+const runtimeV13 = fs.readFileSync("server/runtime-v13.js", "utf8");
 const server = fs.readFileSync("server/server-v3.js", "utf8");
 
-new vm.Script(studentBootstrap, { filename: "student-bootstrap-v17.js" });
-new vm.Script(studentJs, { filename: "student-app-v16.js" });
-new vm.Script(masterScroll, { filename: "master-scroll-guard.js" });
+for (const [name, source] of [
+  ["student-bootstrap-v17.js", studentBootstrap],
+  ["student-input-v18.js", studentInput],
+  ["student-combat-v18.js", studentCombat],
+  ["student-app-v16.js", studentJs],
+  ["master-report-v18.js", masterReport],
+  ["master-scroll-guard.js", masterScroll],
+  ["server/runtime-v13.js", runtimeV13]
+]) new vm.Script(source, { filename: name });
 
 function htmlIds(html) {
   return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
@@ -34,9 +44,11 @@ assert.equal([...studentHtml.matchAll(/\sid="([^"]+)"/g)].length, ids.size, "Stu
 
 const scripts = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
 assert.deepEqual(scripts, [
-  "student-bootstrap-v17.js?v=20260723-inputhotfix17",
-  "config.js?v=20260723-inputhotfix17",
-  "student-app-v16.js?v=20260723-inputhotfix17"
+  "student-bootstrap-v17.js?v=20260723-hitscanreport18",
+  "student-input-v18.js?v=20260723-hitscanreport18",
+  "student-combat-v18.js?v=20260723-hitscanreport18",
+  "config.js?v=20260723-hitscanreport18",
+  "student-app-v16.js?v=20260723-hitscanreport18"
 ]);
 
 for (const removedLayer of [
@@ -51,7 +63,7 @@ for (const removedLayer of [
   "question-bank-v10-ui.js",
   "team-selection-v8.js"
 ]) {
-  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the input hotfix page`);
+  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the v18 student page`);
 }
 
 assert.doesNotMatch(studentBootstrap, /HTMLCanvasElement\.prototype/);
@@ -61,6 +73,13 @@ assert.match(studentBootstrap, /perCanvasLazyContext: true/);
 assert.match(studentBootstrap, /WRITABLE_INPUT_IDS/);
 assert.match(studentBootstrap, /navigator\.serviceWorker\.getRegistrations/);
 assert.match(studentBootstrap, /document\.body\?\.classList\.contains\("lobby-active"\)/);
+
+assert.match(studentInput, /event\.stopPropagation\(\)/);
+assert.doesNotMatch(studentInput, /event\.preventDefault\(\)/);
+assert.match(studentInput, /fullNamesWithSpaces: true/);
+assert.match(studentCombat, /combatFxCanvasV18/);
+assert.match(studentCombat, /authoritative-semi-auto-hitscan/);
+assert.match(studentCombat, /function ensureOverlay/);
 
 assert.doesNotMatch(studentJs, /WebSocket\.prototype/);
 assert.doesNotMatch(studentJs, /HTMLCanvasElement\.prototype/);
@@ -81,11 +100,11 @@ assert.match(studentJs, /thales_height/);
 assert.match(studentJs, /ratio_sin/);
 assert.match(studentJs, /ratio_cos/);
 
-assert.match(studentHtml, /INPUT HOTFIX V17/);
-assert.match(studentHtml, /registration before renderer/i);
-assert.match(studentHtml, /id="student1Input"[^>]*placeholder="Student 1"/);
-assert.match(studentHtml, /id="student2Input"[^>]*placeholder="Student 2"/);
-assert.match(studentHtml, /id="student3Input"[^>]*placeholder="Student 3"/);
+assert.match(studentHtml, /COMBAT V18/);
+assert.match(studentHtml, /Spaces, surnames, accents and paste shortcuts work normally/);
+assert.match(studentHtml, /id="student1Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
+assert.match(studentHtml, /id="student2Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
+assert.match(studentHtml, /id="student3Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
 assert.doesNotMatch(studentHtml, /id="student[123]Input"[^>]*(?:disabled|readonly)/);
 assert.match(studentHtml, /id="registerButton"/);
 assert.match(studentHtml, /id="readyButton"/);
@@ -100,6 +119,10 @@ assert.match(studentCss, /backdrop-filter: none !important/);
 assert.match(studentCss, /#registrationForm input:not\(\[readonly\]\)/);
 
 assert.match(masterHtml, /SERVER-VERIFIED MASTER PAGE/);
+assert.match(masterHtml, /master-report-v18\.js/);
+assert.ok(masterHtml.indexOf("master-report-v18.js") < masterHtml.indexOf("teacher-auth.js"));
+assert.match(masterReport, /automaticDownload: true/);
+assert.match(masterReport, /triadGlobalScoreStoreV18/);
 assert.match(masterScroll, /clientBuild/);
 assert.match(masterScroll, /url\.searchParams\.set\("v", STUDENT_BUILD\)/);
 assert.match(teacherAuth, /authenticate_teacher/);
@@ -114,5 +137,8 @@ assert.match(runtimeV12, /PROJECTILE_LIFETIME_MS = 5200/);
 assert.match(runtimeV12, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
 assert.match(runtimeV12, /sendFullStateTo/);
 assert.match(runtimeV12, /player\.ws !== ws/);
+assert.match(runtimeV13, /HITSCAN_RANGE = 3900/);
+assert.match(runtimeV13, /questionsPresented/);
+assert.match(runtimeV13, /teacherBrowserBackupRecommended/);
 
-console.log("Smoke test passed: Input Hotfix v17 keeps registration writable before renderer allocation, preserves the single-socket Recovery v16 client, and remains compatible with the authoritative Gameplay v12 server.");
+console.log("Smoke test passed: v18 preserves registration-first rendering, accepts complete names with spaces, loads authoritative hitscan visuals and enables automatic teacher-only metadata reporting.");

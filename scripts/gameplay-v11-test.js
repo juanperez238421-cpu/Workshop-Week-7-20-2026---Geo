@@ -56,7 +56,9 @@ assert.match(flex, /FLEXIBLE START ENABLED/);
 const music = fs.readFileSync("music-mode-ui.js", "utf8");
 assert.match(music, /network-v11\.js/);
 assert.match(music, /master-flex-start-v11\.js/);
-assert.ok(music.indexOf('loadScript("network-v11.js"') < music.indexOf('loadScript("gameplay-v9.js"')));
+const networkLoaderIndex = music.indexOf('loadScript("network-v11.js"');
+const gameplayLoaderIndex = music.indexOf('loadScript("gameplay-v9.js"');
+assert.ok(networkLoaderIndex >= 0 && gameplayLoaderIndex >= 0 && networkLoaderIndex < gameplayLoaderIndex);
 
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v11.js secure-gateway.js");

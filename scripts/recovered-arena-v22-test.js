@@ -11,9 +11,11 @@ const css = fs.readFileSync(path.join(root, "student-arena-v22.css"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const config = fs.readFileSync(path.join(root, "config.js"), "utf8");
 const runtime = fs.readFileSync(path.join(root, "server", "runtime-v15.js"), "utf8");
+const soloRuntime = fs.readFileSync(path.join(root, "server", "runtime-v18.js"), "utf8");
 const serverPackage = JSON.parse(fs.readFileSync(path.join(root, "server", "package.json"), "utf8"));
 
 new vm.Script(gameplay, { filename: "student-arena-v22.js" });
+new vm.Script(soloRuntime, { filename: "runtime-v18.js" });
 
 for (const marker of [
   "studentRecoveredArenaCanvasV22",
@@ -63,20 +65,21 @@ for (const marker of [
   "cursor: crosshair"
 ]) assert.ok(css.includes(marker), `missing CSS marker: ${marker}`);
 
-assert.match(html, /student-arena-v22\.css\?v=20260723-recoveredarena22/);
-assert.match(html, /student-arena-v22\.js\?v=20260723-recoveredarena22/);
+assert.match(html, /student-arena-v22\.css\?v=20260723-solo-nine-channels24/);
+assert.match(html, /student-arena-v22\.js\?v=20260723-solo-nine-channels24/);
 assert.doesNotMatch(html, /student-master-view-v21\.js/);
 assert.doesNotMatch(html, /student-gameplay-v20\.js/);
 assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-arena-v22.js"));
 assert.ok(html.indexOf("student-arena-v22.js") < html.indexOf("student-app-v16.js"));
 assert.match(html, /HOLD RIGHT CLICK on the arena to aim/);
 assert.match(html, /SPACE fires|Spacebar remains the only shooting control/);
-assert.match(html, /Connection architecture preserved/);
-assert.match(config, /20260723-recoveredarena22/);
+assert.match(html, /one WebSocket/i);
+assert.match(config, /20260723-solo-nine-channels24/);
 
 for (const marker of ["authoritative-swept-projectile-v20", "PROJECTILE_SPEED = 2850", "relative-motion swept projectile collision", "shotCooldownMs", "dashCooldownMs"]) {
   assert.ok(runtime.includes(marker), `server marker changed: ${marker}`);
 }
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
+assert.match(soloRuntime, /repairRuntimeV17/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
-console.log("Recovered Arena v22 validation passed.");
+console.log("Recovered Arena v22 validation passed beneath Solo Channels v24.");

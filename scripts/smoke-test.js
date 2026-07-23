@@ -8,11 +8,16 @@ const files = [
   "gameplay-v5.js",
   "gameplay-v6.js",
   "gameplay-v8.js",
+  "gameplay-v9.js",
+  "minimap-v10.js",
+  "pickup-assets-v10.js",
+  "question-bank-v10-ui.js",
   "team-selection-v8.js",
   "master-v3.js",
   "master-enhancements.js",
   "master-live-game.js",
   "master-live-v6.js",
+  "master-live-v9.js",
   "master-ready-control.js",
   "master-scroll-guard.js",
   "teacher-auth.js",
@@ -22,6 +27,8 @@ const files = [
   "server/runtime-v6.js",
   "server/runtime-v7.js",
   "server/runtime-v8.js",
+  "server/runtime-v9.js",
+  "server/runtime-v10.js",
   "server/server-v3.js",
   "server/secure-gateway.js"
 ];
@@ -33,15 +40,21 @@ const teacherAliasHtml = fs.readFileSync("teacher.html", "utf8");
 const studentJs = fs.readFileSync("student-v3.js", "utf8");
 const gameplayV6Js = fs.readFileSync("gameplay-v6.js", "utf8");
 const gameplayV8Js = fs.readFileSync("gameplay-v8.js", "utf8");
+const gameplayV9Js = fs.readFileSync("gameplay-v9.js", "utf8");
+const minimapV10Js = fs.readFileSync("minimap-v10.js", "utf8");
+const pickupAssetsV10Js = fs.readFileSync("pickup-assets-v10.js", "utf8");
+const questionV10Js = fs.readFileSync("question-bank-v10-ui.js", "utf8");
 const teamSelectionV8Js = fs.readFileSync("team-selection-v8.js", "utf8");
 const masterJs = fs.readFileSync("master-v3.js", "utf8");
 const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
 const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
 const masterLiveV6Js = fs.readFileSync("master-live-v6.js", "utf8");
+const masterLiveV9Js = fs.readFileSync("master-live-v9.js", "utf8");
 const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
 const runtimePatchJs = fs.readFileSync("server/runtime-patch.js", "utf8");
 const runtimeV6Js = fs.readFileSync("server/runtime-v6.js", "utf8");
 const runtimeV8Js = fs.readFileSync("server/runtime-v8.js", "utf8");
+const runtimeV10Js = fs.readFileSync("server/runtime-v10.js", "utf8");
 const serverJs = fs.readFileSync("server/server-v3.js", "utf8");
 const gatewayJs = fs.readFileSync("server/secure-gateway.js", "utf8");
 
@@ -92,6 +105,9 @@ assert.match(runtimeV8Js, /selectTeam\(playerId, value\)/);
 assert.match(runtimeV8Js, /humanVersusHuman/);
 assert.match(runtimeV8Js, /!killer\.isBot && !victim\.isBot/);
 assert.match(runtimeV8Js, /case "select_team"/);
+assert.match(runtimeV10Js, /width: 12800, height: 8000/);
+assert.match(runtimeV10Js, /angleVertex/);
+assert.match(runtimeV10Js, /angleDegrees/);
 
 assert.match(studentHtml, /Register one of the nine PC players/);
 assert.match(studentHtml, /one arena player/);
@@ -103,9 +119,10 @@ assert.match(studentHtml, /exactly three students/i);
 assert.match(studentHtml, /3 teams/);
 assert.match(studentHtml, /3 lives/);
 assert.match(studentHtml, /5 ammo charges/);
-assert.match(studentHtml, /supply boxes|explosion effects|swept bullet hitboxes|automatic ammo recovery|ammunition charge every 10 seconds/i);
+assert.match(studentHtml, /supply boxes|supply assets|explosion effects|swept bullet hitboxes|automatic ammo recovery|ammunition charge every 10 seconds/i);
 assert.match(studentHtml, /players per team|PC players total/i);
 assert.match(studentHtml, /select any team name|choose one of the available team names/i);
+assert.match(studentHtml, /12,800 × 8,000/);
 assert.match(studentHtml, /proposalPanel" class="ballot-panel hidden" hidden/);
 assert.match(studentHtml, /votePanel" class="ballot-panel hidden" hidden/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
@@ -124,6 +141,11 @@ assert.match(gameplayV8Js, /message\.shoot = spacePressed/);
 assert.match(gameplayV8Js, /spawnExplosion/);
 assert.match(gameplayV8Js, /globalCompositeOperation = "lighter"/);
 assert.match(gameplayV8Js, /pickupLegend/);
+assert.match(gameplayV9Js, /territoryDelta/);
+assert.match(minimapV10Js, /original\.replaceWith\(canvas\)/);
+assert.match(minimapV10Js, /ctx\.drawImage\(buffer/);
+assert.match(pickupAssetsV10Js, /assets\/pickups\/ammo\.svg/);
+assert.match(questionV10Js, /DIFFERENT ANGLES AND ORIENTATIONS/);
 assert.match(teamSelectionV8Js, /Choose an available team name/);
 assert.match(teamSelectionV8Js, /type: "select_team"/);
 
@@ -135,7 +157,8 @@ assert.match(masterHtml, /3 players per team/);
 assert.match(masterHtml, /3 student names per player|exactly three student names/i);
 assert.match(masterHtml, /3 lives/);
 assert.match(masterHtml, /5 ammo charges/);
-assert.match(masterHtml, /supply boxes/);
+assert.match(masterHtml, /supply boxes|supply assets|bullet, shield, speed/i);
+assert.match(masterHtml, /12,800 × 8,000/);
 assert.match(masterHtml, /teamVotingList" hidden/);
 assert.match(masterHtml, /newRoomCodeInput/);
 assert.match(masterHtml, /changeRoomCodeButton/);
@@ -166,6 +189,7 @@ assert.match(masterLiveGameJs, /iframe|masterPlayerFrame/);
 assert.match(masterLiveV6Js, /masterSupplyCanvas/);
 assert.match(masterLiveV6Js, /masterNetworkQuality/);
 assert.match(masterLiveV6Js, /view\.pickups/);
+assert.match(masterLiveV9Js, /masterRealtimeCanvas/);
 assert.match(teacherAuthJs, /authenticate_teacher/);
 assert.match(teacherAuthJs, /teacherAuthToken/);
 assert.doesNotMatch(teacherAuthJs, /["']9109["']/);
@@ -176,4 +200,4 @@ assert.match(masterJs, /randomAvailableTeam/);
 assert.match(masterJs, /APPROVE · RANDOM TEAM/);
 assert.doesNotMatch(masterJs, /type:\s*"move_player"/);
 
-console.log("Smoke test passed: secure teacher access, geometry questions, reliable mouse aim, Space-only shooting, player team selection, human-only kill announcements, explosions, supply powers and live arena supervision are present.");
+console.log("Smoke test passed: larger map, stable minimap, varied geometry, dedicated supply assets, secure teacher access and multiplayer gameplay are present.");

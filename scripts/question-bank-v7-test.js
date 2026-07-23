@@ -82,16 +82,18 @@ for (let index = 0; index < 600; index += 1) {
 
 assert.deepEqual([...seen].sort(), ["pythagoras", "ratio_cos", "ratio_sin", "thales_height"]);
 
-const ui = fs.readFileSync(path.join(process.cwd(), "question-bank-ui.js"), "utf8");
-new vm.Script(ui, { filename: "question-bank-ui.js" });
-assert.match(ui, /drawRightTriangleDiagram/);
-assert.match(ui, /drawThalesDiagram/);
-assert.match(ui, /SIN AND COS · SIDE RELATIONSHIPS/);
-assert.match(ui, /THALES' THEOREM · SIMILAR TRIANGLES/);
+const legacyUi = fs.readFileSync(path.join(process.cwd(), "question-bank-ui.js"), "utf8");
+const currentUi = fs.readFileSync(path.join(process.cwd(), "question-bank-v10-ui.js"), "utf8");
+new vm.Script(legacyUi, { filename: "question-bank-ui.js" });
+new vm.Script(currentUi, { filename: "question-bank-v10-ui.js" });
+assert.match(legacyUi, /drawRightTriangleDiagram/);
+assert.match(legacyUi, /drawThalesDiagram/);
+assert.match(currentUi, /DIFFERENT ANGLES AND ORIENTATIONS/);
+assert.match(currentUi, /THALES' THEOREM · SIMILAR TRIANGLES/);
 
 const html = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf8");
-assert.match(html, /question-bank-ui\.js/);
-assert.match(html, /identify a sine or cosine ratio/);
-assert.match(html, /find a height using Thales' theorem/);
+assert.match(html, /question-bank-v10-ui\.js/);
+assert.match(html, /right-triangle orientations and acute angles/i);
+assert.match(html, /Thales height problem/i);
 
-console.log("Question bank v7 test passed: ratio recognition, unknown right-triangle sides and Thales height problems compile and generate valid four-option questions.");
+console.log("Question bank compatibility test passed: legacy ratio, unknown-side and Thales generators remain valid while the v10 UI provides varied orientations and angles.");

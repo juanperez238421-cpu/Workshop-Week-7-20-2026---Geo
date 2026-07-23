@@ -8,16 +8,16 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260722-smoothhit1" />
-  <link rel="stylesheet" href="online.css?v=20260722-smoothhit1" />
-  <link rel="stylesheet" href="student-v3.css?v=20260722-smoothhit1" />
+  <link rel="stylesheet" href="styles.css?v=20260722-mapassets1" />
+  <link rel="stylesheet" href="online.css?v=20260722-mapassets1" />
+  <link rel="stylesheet" href="student-v3.css?v=20260722-mapassets1" />
 </head>
 <body>
   <main id="app">
     <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
-      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>9 PC players · 3 teams · 3 lives · 5 ammo charges · +1 ammo every 10 s · swept bullet hitboxes · realtime interpolation</span></div>
+      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>9 PC players · 3 teams · 12,800 × 8,000 arena · stable minimap · dedicated supply assets · varied right-triangle angles</span></div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
     </header>
@@ -39,14 +39,14 @@
       <div class="cooldown-row"><span>DASH</span><progress id="dashCooldown" max="1" value="1"></progress></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative server territory</small></aside>
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Persistent authoritative territory · no blank delta frames</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK and move the mouse to aim · release to lock · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register one of the nine PC players</h1><p class="lead">This computer controls one arena player representing exactly three students. After teacher approval, the player may choose one of the available team names before marking Ready. Each player starts with 3 lives and 5 ammo charges, and automatically recovers 1 ammunition charge every 10 seconds up to the limit. After the third life is lost, the server presents one geometry challenge: identify a sine or cosine ratio from labeled sides, determine an unknown right-triangle side, or find a height using Thales' theorem.</p></div>
+          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · PC PLAYER REGISTRATION</p><h1>Register one of the nine PC players</h1><p class="lead">This computer controls one arena player representing exactly three students. After teacher approval, the player may choose one of the available team names before marking Ready. Each player starts with 3 lives and 5 ammo charges, automatically recovers 1 ammunition charge every 10 seconds, and can collect dedicated bullet, shield, speed, rapid-fire and paint-boost supply assets. After the third life is lost, the server presents a randomized geometry challenge with different right-triangle orientations and acute angles, an unknown side, or a Thales height problem.</p></div>
         </div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
@@ -123,10 +123,10 @@
       <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Nine player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
-  <script src="config.js?v=20260722-smoothhit1"></script>
-  <script src="student-v3.js?v=20260722-smoothhit1"></script>
-  <script src="student-registration-sync.js?v=20260722-smoothhit1"></script>
-  <script src="music-mode-ui.js?v=20260722-smoothhit1"></script>
-  <script src="question-bank-ui.js?v=20260722-smoothhit1"></script>
+  <script src="config.js?v=20260722-mapassets1"></script>
+  <script src="student-v3.js?v=20260722-mapassets1"></script>
+  <script src="student-registration-sync.js?v=20260722-mapassets1"></script>
+  <script src="music-mode-ui.js?v=20260722-mapassets1"></script>
+  <script src="question-bank-v10-ui.js?v=20260722-mapassets1"></script>
 </body>
 </html>

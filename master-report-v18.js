@@ -1,10 +1,12 @@
 (() => {
   "use strict";
 
-  const BUILD = "20260723-private-report23";
+  const BUILD = "20260723-solo-nine-channels24";
   const STORAGE_KEY = "triadGlobalScoreStoreV18";
+  const CHANNEL_STORAGE_KEY = "triadSoloChannelReportsV24";
   const observedSockets = new WeakSet();
   const exportedMatches = new Set();
+  const backedUpChannels = new Set();
   const nativeAddEventListener = WebSocket.prototype.addEventListener;
 
   function parse(data) {
@@ -20,6 +22,20 @@
     return { version: 1, updatedAt: null, matches: {}, students: {} };
   }
 
+  function readChannelStore() {
+    try {
+      const value = JSON.parse(localStorage.getItem(CHANNEL_STORAGE_KEY) || "null");
+      if (value?.version === 1 && value.channels) return value;
+    } catch {}
+    return { version: 1, updatedAt: null, channels: {} };
+  }
+
+  function writeChannelStore(store) {
+    store.updatedAt = new Date().toISOString();
+    try { localStorage.setItem(CHANNEL_STORAGE_KEY, JSON.stringify(store)); } catch {}
+    return store;
+  }
+
   function keyForStudent(name) {
     return String(name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   }
@@ -32,6 +48,9 @@
 
     for (const player of report.players || []) {
       compactPlayers.push({
+        channelNumber: player.channelNumber ?? report.channelNumber ?? null,
+        channelLabel: player.channelLabel ?? report.channelLabel ?? null,
+        botsFaced: player.botsFaced ?? report.botsInChannel ?? null,
         pcLabel: player.pcLabel,
         students: player.students,
         team: player.team,
@@ -103,11 +122,13 @@
     store.matches[matchId] = {
       matchId,
       roomCode: report.roomCode,
+      architecture: report.architecture,
       startedAt: report.startedAt,
       endedAt: report.endedAt,
       winners,
       teamScores: report.teamScores,
       metadata: report.metadata,
+      channelCount: Array.isArray(report.channels) ? report.channels.length : undefined,
       players: compactPlayers
     };
     store.updatedAt = new Date().toISOString();
@@ -137,23 +158,45 @@
   function realPlayersCsv(report) {
     const realPlayers = (report.players || []).filter((player) => !player.isBot);
     const rows = [[
-      "room_code", "match_id", "pc_player", "students", "team", "team_rank", "group_score_1_to_5", "wrong_answer_penalty",
-      "territory", "kills", "deaths", "shots_fired", "shots_hit", "combat_accuracy", "questions_presented", "questions_answered",
-      "correct", "wrong", "timeouts", "question_accuracy", "average_response_ms"
+      "room_code", "match_id", "channel_number", "channel_label", "pc_player", "students", "bots_faced", "team", "team_rank",
+      "group_score_1_to_5", "wrong_answer_penalty", "territory", "kills", "deaths", "shots_fired", "shots_hit",
+      "combat_accuracy", "questions_presented", "questions_answered", "correct", "wrong", "timeouts", "question_accuracy", "average_response_ms"
     ]];
     for (const player of realPlayers) {
       rows.push([
-        report.roomCode, report.matchId, player.pcLabel, (player.students || []).join(" | "), player.teamName, player.teamRank,
-        player.groupScore, player.wrongAnswerPenalty, player.territory, player.kills, player.deaths, player.shotsFired, player.shotsHit,
-        player.combatAccuracy ?? "", player.questionsPresented, player.questionsAnswered, player.correct, player.wrong, player.timeouts,
-        player.accuracy ?? "", player.averageResponseMs ?? ""
+        report.roomCode,
+        report.matchId,
+        player.channelNumber ?? report.channelNumber ?? "",
+        player.channelLabel ?? report.channelLabel ?? "",
+        player.pcLabel,
+        (player.students || []).join(" | "),
+        player.botsFaced ?? report.botsInChannel ?? "",
+        player.teamName,
+        player.teamRank,
+        player.groupScore,
+        player.wrongAnswerPenalty,
+        player.territory,
+        player.kills,
+        player.deaths,
+        player.shotsFired,
+        player.shotsHit,
+        player.combatAccuracy ?? "",
+        player.questionsPresented,
+        player.questionsAnswered,
+        player.correct,
+        player.wrong,
+        player.timeouts,
+        player.accuracy ?? "",
+        player.averageResponseMs ?? ""
       ]);
     }
     rows.push([]);
-    rows.push(["pc_player", "students", "question_type", "prompt", "selected_option", "correct_option", "outcome", "response_ms", "answered_at"]);
+    rows.push(["channel_number", "channel_label", "pc_player", "students", "question_type", "prompt", "selected_option", "correct_option", "outcome", "response_ms", "answered_at"]);
     for (const player of realPlayers) {
       for (const answer of player.answers || []) {
         rows.push([
+          player.channelNumber ?? report.channelNumber ?? "",
+          player.channelLabel ?? report.channelLabel ?? "",
           player.pcLabel,
           (player.students || []).join(" | "),
           answer.type,
@@ -192,6 +235,27 @@
     }
   }
 
+  function backupChannel(message) {
+    const report = message?.report;
+    const channelNumber = Number(message?.channelNumber ?? report?.channelNumber);
+    if (!report || !Number.isInteger(channelNumber)) return;
+    const backupId = `${report.roomCode || "room"}:channel-${channelNumber}:${report.matchId || report.endedAt || Date.now()}`;
+    if (backedUpChannels.has(backupId)) return;
+    backedUpChannels.add(backupId);
+    const store = readChannelStore();
+    store.channels[backupId] = {
+      backupId,
+      savedAt: new Date().toISOString(),
+      channelNumber,
+      channelLabel: message.channelLabel ?? report.channelLabel,
+      winners: message.winners || [],
+      report
+    };
+    writeChannelStore(store);
+    const realPlayer = (report.players || []).find((player) => !player.isBot);
+    updateReportNotice(`Channel ${channelNumber} completed for ${realPlayer?.pcLabel || "a real PC"}. Its private names, statistics and answer history were saved in this Master browser. Combined download occurs after all approved channels finish.`);
+  }
+
   function exportMatch(message) {
     const report = message?.report;
     if (!report?.globalScore || !Array.isArray(report.players)) return;
@@ -202,36 +266,39 @@
 
     const realPlayers = report.players.filter((player) => !player.isBot);
     const payload = {
-      exportVersion: 2,
+      exportVersion: 3,
       build: BUILD,
       exportedAt: new Date().toISOString(),
       automaticDownload: true,
       teacherOnlyPrivateData: true,
+      architecture: report.architecture || "one-master-code-nine-independent-channels",
       match: report,
+      channels: report.channels || [],
       teamScores: report.teamScores,
       realPlayers,
       questionMetadata: report.metadata,
       serverGlobalScore: report.globalScore,
-      browserGlobalScore: browserScoreSnapshot(storeResult.store)
+      browserGlobalScore: browserScoreSnapshot(storeResult.store),
+      channelBrowserBackup: readChannelStore()
     };
 
     const stem = `triad-${safeFilename(report.roomCode)}-${safeFilename(matchId)}`;
     const jsonFilename = `${stem}-teacher-private-complete.json`;
-    const csvFilename = `${stem}-real-players.csv`;
+    const csvFilename = `${stem}-real-pc-channels.csv`;
     setTimeout(() => {
       try {
         download(JSON.stringify(payload, null, 2), jsonFilename, "application/json;charset=utf-8");
-        updateReportNotice(`Private teacher report downloaded automatically as ${jsonFilename}. Preparing the real-player CSV…`);
+        updateReportNotice(`Combined private teacher report downloaded automatically as ${jsonFilename}. Preparing the real-PC channel CSV…`);
         setTimeout(() => {
           try {
             download(realPlayersCsv(report), csvFilename, "text/csv;charset=utf-8");
-            updateReportNotice(`${realPlayers.length} real player record(s) downloaded automatically in JSON and CSV. A cumulative backup was also saved in this teacher browser.`);
+            updateReportNotice(`${realPlayers.length} real PC channel record(s) downloaded automatically in JSON and CSV. Per-channel backups and the cumulative student backup remain saved in this Master browser.`);
           } catch {
-            updateReportNotice(`The complete private JSON was downloaded and the browser backup was saved. Use DOWNLOAD CSV if the browser blocked the second automatic file.`);
+            updateReportNotice("The complete private JSON and browser backups were saved. Use DOWNLOAD REAL-PLAYER CSV if the browser blocked the second automatic file.");
           }
         }, 900);
       } catch {
-        updateReportNotice("The private match data was saved in this teacher browser. Use DOWNLOAD JSON if the browser blocked automatic download.");
+        updateReportNotice("The complete private channel data was saved in this Master browser. Use DOWNLOAD COMPLETE JSON if the browser blocked automatic download.");
       }
     }, 700);
   }
@@ -241,6 +308,7 @@
     observedSockets.add(socket);
     nativeAddEventListener.call(socket, "message", (event) => {
       const message = parse(event.data);
+      if (message?.type === "channel_ended") backupChannel(message);
       if (message?.type === "match_ended") exportMatch(message);
     });
   }
@@ -253,8 +321,11 @@
   window.__triadMasterReportV18 = Object.freeze({
     build: BUILD,
     storageKey: STORAGE_KEY,
+    channelStorageKey: CHANNEL_STORAGE_KEY,
     privateTeacherReports: true,
+    perChannelImmediateBrowserBackup: true,
     automaticRealPlayerJsonAndCsv: true,
-    getBrowserGlobalScore: () => browserScoreSnapshot(readStore())
+    getBrowserGlobalScore: () => browserScoreSnapshot(readStore()),
+    getChannelBackups: () => readChannelStore()
   });
 })();

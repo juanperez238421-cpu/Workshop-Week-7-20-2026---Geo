@@ -141,14 +141,13 @@
     keepRegistrationInteractive();
 
     if ("serviceWorker" in navigator) {
+      const projectScope = new URL("./", location.href).href;
       navigator.serviceWorker.getRegistrations()
-        .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-        .catch(() => {});
-    }
-
-    if ("caches" in window) {
-      caches.keys()
-        .then((keys) => Promise.all(keys.filter((key) => /triad|territory|workshop/i.test(key)).map((key) => caches.delete(key))))
+        .then((registrations) => Promise.all(
+          registrations
+            .filter((registration) => registration.scope.startsWith(projectScope))
+            .map((registration) => registration.unregister())
+        ))
         .catch(() => {});
     }
 

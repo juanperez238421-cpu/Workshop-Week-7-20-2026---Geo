@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const crypto = require("node:crypto");
 const runtime = require("../server/runtime-v11.js");
 
-for (const file of ["network-v11.js", "master-flex-start-v11.js", "music-mode-ui.js", "server/runtime-v11.js"]) {
+for (const file of ["network-v11.js", "network-v12.js", "master-flex-start-v11.js", "music-mode-ui.js", "server/runtime-v11.js", "server/runtime-v12.js"]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
 
@@ -41,12 +41,12 @@ assert.match(patchedGateway, /connectionHeartbeat/);
 assert.match(patchedGateway, /payload\.startsWith\('\{"type":"state"'\)/);
 assert.match(patchedGateway, /client\.pendingEngineMessages\.length < 48/);
 
-const network = fs.readFileSync("network-v11.js", "utf8");
-assert.match(network, /INPUT_MIN_INTERVAL_MS = 45/);
-assert.match(network, /STREAM_STALL_MS = 3600/);
-assert.match(network, /CLIENT_BACKPRESSURE_BYTES/);
-assert.match(network, /socket\.close\(4000, "Realtime stream stalled"\)/);
-assert.match(network, /APP_PING_INTERVAL_MS = 5000/);
+const networkV11 = fs.readFileSync("network-v11.js", "utf8");
+assert.match(networkV11, /INPUT_MIN_INTERVAL_MS = 45/);
+assert.match(networkV11, /STREAM_STALL_MS = 3600/);
+assert.match(networkV11, /CLIENT_BACKPRESSURE_BYTES/);
+assert.match(networkV11, /socket\.close\(4000, "Realtime stream stalled"\)/);
+assert.match(networkV11, /APP_PING_INTERVAL_MS = 5000/);
 
 const flex = fs.readFileSync("master-flex-start-v11.js", "utf8");
 assert.match(flex, /1–9 PLAYERS/);
@@ -54,14 +54,14 @@ assert.match(flex, /START MATCH WITH/);
 assert.match(flex, /FLEXIBLE START ENABLED/);
 
 const music = fs.readFileSync("music-mode-ui.js", "utf8");
-assert.match(music, /network-v11\.js/);
+assert.match(music, /network-v12\.js/);
 assert.match(music, /master-flex-start-v11\.js/);
-const networkLoaderIndex = music.indexOf('loadScript("network-v11.js"');
+const networkLoaderIndex = music.indexOf('loadScript("network-v12.js"');
 const gameplayLoaderIndex = music.indexOf('loadScript("gameplay-v9.js"');
 assert.ok(networkLoaderIndex >= 0 && gameplayLoaderIndex >= 0 && networkLoaderIndex < gameplayLoaderIndex);
 
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v11.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v12.js secure-gateway.js");
 
 const fakeServer = { on(){}, listen(){}, close(callback){ if (callback) callback(); } };
 const fakeApp = { disable(){}, use(){}, get(){} };
@@ -104,4 +104,4 @@ assert.equal(room.canStart(), true);
 room.start(controller);
 assert.equal(room.phase, "countdown");
 
-console.log("Gameplay v11 test passed: coalesced snapshots, cumulative territory recovery, heartbeat watchdogs, bounded projectiles and flexible 1–9-player starts compile and operate.");
+console.log("Gameplay v11 compatibility test passed under runtime v12: coalesced snapshots, cumulative territory recovery and flexible 1–9-player starts remain available.");

@@ -54,7 +54,7 @@ assert.match(bootstrap, /this\.id === "gameCanvas"/);
 const music = fs.readFileSync("music-mode-ui.js", "utf8");
 assert.match(music, /network-v12\.js/);
 assert.doesNotMatch(music, /loadScript\("network-v11\.js"/);
-assert.match(music, /gameplay-v12-ui\.js/);
+assert.doesNotMatch(music, /gameplay-v12-ui\.js/);
 
 const indexHtml = fs.readFileSync("index.html", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");

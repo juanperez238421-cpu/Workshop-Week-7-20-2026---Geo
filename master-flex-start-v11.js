@@ -5,7 +5,10 @@
 
   const previousSend = WebSocket.prototype.send;
   const observed = new WeakSet();
-  let lastLobby = null;
+
+  function setText(node, value) {
+    if (node && node.textContent !== value) node.textContent = value;
+  }
 
   function ensureFlexibleBadge() {
     const controls = document.querySelector(".ai-control-card .section-heading");
@@ -21,11 +24,11 @@
     const heading = [...document.querySelectorAll(".master-card h2")].find((node) => node.textContent.trim() === "Fixed match structure");
     const paragraph = heading?.closest(".master-card")?.querySelector("p");
     if (!paragraph) return;
-    paragraph.innerHTML = "Start with <strong>any number from 1 to 9 approved players</strong>. Teams may be uneven during testing. Every real player currently in the room must be connected and Ready; AI remains optional. Each PC player still represents exactly <strong>3 student names</strong>.";
+    const html = "Start with <strong>any number from 1 to 9 approved players</strong>. Teams may be uneven during testing. Every real player currently in the room must be connected and Ready; AI remains optional. Each PC player still represents exactly <strong>3 student names</strong>.";
+    if (paragraph.innerHTML !== html) paragraph.innerHTML = html;
   }
 
   function renderFlexibleState(message) {
-    lastLobby = message;
     const players = Array.isArray(message.players) ? message.players : [];
     const real = players.filter((player) => !player.isBot);
     const bots = players.filter((player) => player.isBot);
@@ -37,24 +40,22 @@
     const startButton = document.getElementById("startMatchButton");
     const readiness = document.getElementById("startReadiness");
 
-    if (approved) approved.textContent = `${activeCount} / 9 CAPACITY`;
-    if (approvedDetail) approvedDetail.textContent = `${ready}/${activeCount || 1} active ready`;
+    setText(approved, `${activeCount} / 9 CAPACITY`);
+    setText(approvedDetail, `${ready}/${activeCount || 1} active ready`);
 
     if (startButton) {
-      startButton.textContent = activeCount
+      setText(startButton, activeCount
         ? `START MATCH WITH ${activeCount} PLAYER${activeCount === 1 ? "" : "S"}`
-        : "ADD AT LEAST ONE PLAYER";
+        : "ADD AT LEAST ONE PLAYER");
       startButton.disabled = !message.startReady;
       startButton.title = message.startReady
         ? `Start now with ${activeCount} approved player${activeCount === 1 ? "" : "s"}.`
         : (message.startBlockers || []).join(" · ");
     }
 
-    if (readiness) {
-      readiness.textContent = message.startReady
-        ? `READY: ${activeCount} ACTIVE · ${real.length} REAL · ${bots.length} AI · FLEXIBLE START ENABLED`
-        : `WAITING: ${(message.startBlockers || ["add at least one approved player"]).join(" · ").toUpperCase()}`;
-    }
+    setText(readiness, message.startReady
+      ? `READY: ${activeCount} ACTIVE · ${real.length} REAL · ${bots.length} AI · FLEXIBLE START ENABLED`
+      : `WAITING: ${(message.startBlockers || ["add at least one approved player"]).join(" · ").toUpperCase()}`);
 
     ensureFlexibleBadge();
     updateFixedStructureText();
@@ -91,13 +92,6 @@
     }
     return previousSend.call(this, payload);
   };
-
-  const observer = new MutationObserver(() => {
-    ensureFlexibleBadge();
-    updateFixedStructureText();
-    if (lastLobby) renderFlexibleState(lastLobby);
-  });
-  observer.observe(document.documentElement, { childList: true, subtree: true });
 
   ensureFlexibleBadge();
   updateFixedStructureText();

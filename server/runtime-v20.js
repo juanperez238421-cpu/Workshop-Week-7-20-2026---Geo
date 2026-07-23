@@ -186,10 +186,11 @@ function publicIndividualStudentStats(player, includeAnswers = false) {
     player.ready = true;
 `, "automatic reconnect eligibility");
 
-  source = replaceRequired(
+  source = replacePattern(
     source,
-    "victim.alive = false; victim.deaths += 1; victim.lives = Math.max(0, victim.lives - 1); victim.input = { dx: 0, dy: 0, angle: victim.angle, shoot: false, dash: false };",
-    `victim.alive = false; victim.deaths += 1;
+    /    victim\.alive = false;\n    victim\.deaths \+= 1;\n    victim\.lives = Math\.max\(0, victim\.lives - 1\);\n    victim\.input = \{ dx: 0, dy: 0, angle: victim\.angle, shoot: false, dash: false \};/,
+    `    victim.alive = false;
+    victim.deaths += 1;
     if (!victim.isBot) {
       if (!Array.isArray(victim.studentStats) || victim.studentStats.length !== victim.students.length) victim.studentStats = createIndividualStudentStats(victim.students);
       const studentCount = Math.max(1, victim.studentStats.length);
@@ -199,7 +200,8 @@ function publicIndividualStudentStats(player, includeAnswers = false) {
       const assigned = victim.studentStats[assignedIndex];
       if (assigned) assigned.assignedDeaths = (Number(assigned.assignedDeaths) || 0) + 1;
     }
-    victim.lives = Math.max(0, victim.lives - 1); victim.input = { dx: 0, dy: 0, angle: victim.angle, shoot: false, dash: false };`,
+    victim.lives = Math.max(0, victim.lives - 1);
+    victim.input = { dx: 0, dy: 0, angle: victim.angle, shoot: false, dash: false };`,
     "round-robin individual death attribution"
   );
 

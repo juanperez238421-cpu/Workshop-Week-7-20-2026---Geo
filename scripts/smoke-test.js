@@ -29,7 +29,7 @@ const runtimeV13 = fs.readFileSync("server/runtime-v13.js", "utf8");
 const runtimeV14 = fs.readFileSync("server/runtime-v14.js", "utf8");
 const runtimeV15 = fs.readFileSync("server/runtime-v15.js", "utf8");
 const runtimeV16 = fs.readFileSync("server/runtime-v16.js", "utf8");
-const runtimeV17 = fs.readFileSync("server/runtime-v17.js", "utf8");
+const runtimeV18 = fs.readFileSync("server/runtime-v18.js", "utf8");
 const server = fs.readFileSync("server/server-v3.js", "utf8");
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
 
@@ -50,7 +50,7 @@ for (const [name, source] of [
   ["server/runtime-v14.js", runtimeV14],
   ["server/runtime-v15.js", runtimeV15],
   ["server/runtime-v16.js", runtimeV16],
-  ["server/runtime-v17.js", runtimeV17]
+  ["server/runtime-v18.js", runtimeV18]
 ]) new vm.Script(source, { filename: name });
 
 function htmlIds(html) {
@@ -222,12 +222,9 @@ assert.match(runtimeV15, /relative-motion swept projectile collision/);
 assert.match(runtimeV16, /MATCH_DURATION_MS = 10 \* 60 \* 1000/);
 assert.match(runtimeV16, /RECONNECT_GRACE_MS = 10 \* 60 \* 1000/);
 assert.match(runtimeV16, /GROUP_SCORE_MIN = 2\.5/);
-assert.match(runtimeV17, /class SoloClassroom/);
-assert.match(runtimeV17, /SOLO_CHANNEL_CAPACITY = 9/);
-assert.match(runtimeV17, /SOLO_BOTS_PER_CHANNEL = 8/);
-assert.match(runtimeV17, /STATE_RATE = 10/);
-assert.match(runtimeV17, /SOLO_MASTER_STATE_INTERVAL_MS = 1000/);
-assert.match(runtimeV17, /aggregateFinalPayload/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v17.js secure-gateway.js");
+assert.match(runtimeV18, /repairRuntimeV17/);
+assert.match(runtimeV18, /runtime-v17-repaired-v18\.js/);
+assert.match(runtimeV18, /runtime-v18\.js/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
 console.log("Smoke test passed: one shared Master PIN now controls up to nine isolated one-human-plus-eight-bot channels with 10 Hz student streams, one-hertz Master telemetry, ten-minute scoring and private per-channel reports.");

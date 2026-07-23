@@ -69,7 +69,7 @@ assert.match(indexHtml, /student-app-v16\.js/);
 assert.match(indexHtml, /student-combat-v18\.js/);
 assert.match(masterHtml, /REPORTING V18/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
-assert.match(musicMode, /minimap-v10\.js/);
+assert.doesNotMatch(musicMode, /minimap-v10\.js/);
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v13.js secure-gateway.js");
 
-console.log("Gameplay v10 compatibility test passed under runtime v13: the large arena, varied geometry and dedicated supply assets remain configured with the v18 student shell.");
+console.log("Gameplay v10 compatibility test passed under runtime v13: the large arena, varied geometry and dedicated supply assets remain configured with the lightweight v18 student shell.");

@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260723-stableflex1";
+  const ASSET_VERSION = "20260723-hitboxnet12";
   const replacements = [
     ["Nine PC players, three teams and optional bots are available.", "One to nine PC players, three teams and optional bots are available."],
     ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Select an available team name, then mark Ready."],
@@ -11,6 +11,7 @@
     ["team-name voting incomplete", "team selection pending"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
     ["Eliminated · solve trigonometry", "Eliminated · respawning or final-life question"],
+    ["automatic +1 every 10 s", "automatic +1 every 5 s"],
     ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"]
   ];
 
@@ -61,9 +62,10 @@
       loadStyle("team-selection-v8.css", "teamSelectionV8Styles");
       loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
       loadStyle("minimap-v10.css", "minimapV10Styles");
-      loadScript("network-v11.js", "networkV11Script")
+      loadScript("network-v12.js", "networkV12Script")
         .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
         .then(() => loadScript("gameplay-v9.js", "gameplayV9Script"))
+        .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
         .then(() => loadScript("minimap-v10.js", "minimapV10Script"))
         .then(() => loadScript("team-selection-v8.js", "teamSelectionV8Script"))
         .then(() => loadScript("combat-feed.js", "combatFeedScript"))
@@ -73,11 +75,12 @@
 
     loadStyle("master-live-v9.css", "masterLiveV9Styles");
     loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
-    loadScript("network-v11.js", "networkV11Script")
+    loadScript("network-v12.js", "networkV12Script")
       .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
       .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
       .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"))
       .then(() => loadScript("master-live-v9.js", "masterLiveV9Script"))
+      .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
       .then(() => loadScript("combat-feed.js", "combatFeedScript"))
       .catch(() => {});
   }
@@ -89,7 +92,8 @@
       "playerStateLabel",
       "readyButton",
       "startReadiness",
-      "setupStatus"
+      "setupStatus",
+      "ammoRegenTimer"
     ].forEach((id) => rewriteText(document.getElementById(id)));
     rewriteText(document.querySelector(".controls-hint"));
     rewriteText(document.querySelector("#questionOverlay .eyebrow"));

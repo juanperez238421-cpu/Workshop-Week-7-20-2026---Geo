@@ -31,7 +31,7 @@ function patchServerSource(input) {
 
   source = replaceRequired(source, "const PLAYER_SPEED = 450;", "const PLAYER_SPEED = 620;", "faster responsive movement");
   source = replaceRequired(source, "const DASH_SPEED = 1320;", "const DASH_SPEED = 1900;", "stronger dash speed");
-  source = replaceRequired(source, "const DASH_DURATION_MS = 180;", "const DASH_DURATION_MS = 210;", "longer dash impulse");
+  source = replaceRequired(source, "const DASH_DURATION_MS = 220;", "const DASH_DURATION_MS = 210;", "responsive dash impulse");
   source = replaceRequired(source, "const DASH_COOLDOWN_MS = 2600;", "const DASH_COOLDOWN_MS = 1800;", "shorter dash cooldown");
   source = replaceRequired(source, "const PROJECTILE_SPEED = 1550;", "const PROJECTILE_SPEED = 2850;", "fast visible bullets");
   source = replaceRequired(source, "const PROJECTILE_LIFETIME_MS = 5200;", "const PROJECTILE_LIFETIME_MS = 2350;", "bounded projectile range");

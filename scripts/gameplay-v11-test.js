@@ -25,7 +25,7 @@ assert.match(patchedServer, /MAX_PROJECTILES = 180/);
 assert.match(patchedServer, /MIN_PLAYERS_TO_START = 1/);
 assert.match(patchedServer, /sendSocketFrame/);
 assert.match(patchedServer, /_triadLatestStateIsFull/);
-assert.match(patchedServer, /cumulative|currentTerritory\[index\] !== this\.lastTerritorySent\[index\]/);
+assert.match(patchedServer, /currentTerritory\[index\] !== this\.lastTerritorySent\[index\]/);
 assert.match(patchedServer, /pending registration\(s\) must be approved or rejected/);
 assert.match(patchedServer, /flexibleStart: true/);
 assert.match(patchedServer, /this\.projectiles\.size >= MAX_PROJECTILES/);

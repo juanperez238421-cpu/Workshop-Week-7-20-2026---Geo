@@ -9,6 +9,11 @@
   const nativeSend = WebSocket.prototype.send;
   const PC_LABEL_KEY = "triadPcLabel";
   const LABEL_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const SERVER_WAKE_TIMEOUT_MS = 65000;
+
+  let serverReady = false;
+  let warmupPromise = null;
+  let allowRegistrationClick = false;
 
   const $ = (id) => document.getElementById(id);
 
@@ -28,11 +33,14 @@
   }
 
   function ensureAutomaticPcLabel(forceNew = false) {
-    let label = String(localStorage.getItem(PC_LABEL_KEY) || "").trim();
-    if (forceNew || !label || /^assigned automatically$/i.test(label)) {
-      label = createAutomaticPcLabel();
-      localStorage.setItem(PC_LABEL_KEY, label);
+    if (typeof window.__triadEnsurePlayerIdentity === "function") {
+      return window.__triadEnsurePlayerIdentity(forceNew);
     }
+
+    let label = "";
+    try { label = String(localStorage.getItem(PC_LABEL_KEY) || "").trim(); } catch {}
+    if (forceNew || !label || /^assigned automatically$/i.test(label)) label = createAutomaticPcLabel();
+    try { localStorage.setItem(PC_LABEL_KEY, label); } catch {}
 
     const input = $("pcLabelInput");
     if (input) {
@@ -52,7 +60,7 @@
 
   function synchronizeServer() {
     if (!configuredServer) return;
-    localStorage.setItem("triadServerUrl", configuredServer);
+    try { localStorage.setItem("triadServerUrl", configuredServer); } catch {}
     const input = $("serverUrlInput");
     if (input) {
       input.value = configuredServer;
@@ -60,6 +68,55 @@
       input.setAttribute("aria-readonly", "true");
       input.title = "This classroom uses the same configured multiplayer server as the teacher panel.";
     }
+  }
+
+  function healthUrl() {
+    if (!configuredServer) return "";
+    return configuredServer.replace(/^wss:/i, "https:").replace(/^ws:/i, "http:") + "/health";
+  }
+
+  function warmServer() {
+    if (serverReady || !configuredServer) return Promise.resolve();
+    if (warmupPromise) return warmupPromise;
+
+    const wakeUrl = healthUrl();
+    if (wakeUrl) {
+      try { fetch(`${wakeUrl}?wake=${Date.now()}`, { mode: "no-cors", cache: "no-store", credentials: "omit" }).catch(() => {}); } catch {}
+    }
+
+    warmupPromise = new Promise((resolve, reject) => {
+      let settled = false;
+      const socket = new WebSocket(configuredServer);
+      const finish = (error = null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        try { socket.close(); } catch {}
+        if (error) reject(error);
+        else resolve();
+      };
+      const timer = setTimeout(() => finish(new Error("The classroom server did not wake within 65 seconds.")), SERVER_WAKE_TIMEOUT_MS);
+
+      socket.addEventListener("open", () => {
+        setRegistrationStatus("Classroom server connection opened. Waiting for the game protocol…");
+      });
+      socket.addEventListener("message", (event) => {
+        let message;
+        try { message = JSON.parse(event.data); } catch { return; }
+        if (message.type === "hello" && Number(message.protocol) >= 3) {
+          serverReady = true;
+          finish();
+        }
+      });
+      socket.addEventListener("error", () => finish(new Error("Unable to reach the classroom game server.")), { once: true });
+      socket.addEventListener("close", () => {
+        if (!settled && !serverReady) finish(new Error("The classroom server closed the warm-up connection."));
+      }, { once: true });
+    }).finally(() => {
+      warmupPromise = null;
+    });
+
+    return warmupPromise;
   }
 
   function observeRegistrationSocket(socket) {
@@ -70,13 +127,18 @@
       let message;
       try { message = JSON.parse(event.data); } catch { return; }
 
-      if (message.type === "registration_received") {
+      if (message.type === "hello") {
+        serverReady = Number(message.protocol) >= 3;
+      } else if (message.type === "registration_received") {
         clearAcknowledgementTimer(socket);
         setRegistrationStatus("Registration confirmed by the room server. The teacher can now see this PC player.", "success");
       } else if (message.type === "error") {
         clearAcknowledgementTimer(socket);
         const registerButton = $("registerButton");
-        if (registerButton) registerButton.disabled = false;
+        if (registerButton) {
+          registerButton.disabled = false;
+          registerButton.textContent = "REGISTER THIS PC PLAYER";
+        }
         const detail = String(message.message || "Registration was rejected by the server.");
         let guidance = /room not found/i.test(detail)
           ? " Ask the teacher to create a new room and verify the current six-character PIN."
@@ -93,7 +155,10 @@
       if (!acknowledgementTimers.has(socket)) return;
       clearAcknowledgementTimer(socket);
       const registerButton = $("registerButton");
-      if (registerButton) registerButton.disabled = false;
+      if (registerButton) {
+        registerButton.disabled = false;
+        registerButton.textContent = "REGISTER THIS PC PLAYER";
+      }
       setRegistrationStatus("The server connection closed before confirming registration. Reopen the current room and try again.", "error");
     });
   }
@@ -108,12 +173,15 @@
     const timer = setTimeout(() => {
       acknowledgementTimers.delete(socket);
       const registerButton = $("registerButton");
-      if (registerButton) registerButton.disabled = false;
+      if (registerButton) {
+        registerButton.disabled = false;
+        registerButton.textContent = "REGISTER THIS PC PLAYER";
+      }
       setRegistrationStatus(
         `Room ${roomCode} did not confirm the registration. Verify that the teacher panel is using the same current PIN and create a new room if the server was recently redeployed.`,
         "error"
       );
-    }, 12000);
+    }, 15000);
     acknowledgementTimers.set(socket, timer);
   }
 
@@ -131,11 +199,51 @@
     return nativeSend.call(this, payload);
   };
 
+  function installRegistrationWarmup() {
+    const registerButton = $("registerButton");
+    if (!registerButton || registerButton.dataset.warmupBound === "true") return;
+    registerButton.dataset.warmupBound = "true";
+
+    registerButton.addEventListener("click", async (event) => {
+      if (allowRegistrationClick) {
+        allowRegistrationClick = false;
+        return;
+      }
+      if (serverReady) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      ensureAutomaticPcLabel();
+      registerButton.disabled = true;
+      registerButton.textContent = "WAKING CLASSROOM SERVER…";
+      setRegistrationStatus("Waking the classroom server. The first connection may take up to one minute.");
+
+      try {
+        await warmServer();
+        setRegistrationStatus("Server online. Sending registration now…", "success");
+        registerButton.disabled = false;
+        registerButton.textContent = "REGISTER THIS PC PLAYER";
+        allowRegistrationClick = true;
+        registerButton.click();
+      } catch (error) {
+        registerButton.disabled = false;
+        registerButton.textContent = "TRY REGISTRATION AGAIN";
+        setRegistrationStatus(error.message || "The classroom server could not be reached.", "error");
+      }
+    }, true);
+  }
+
   function start() {
     ensureAutomaticPcLabel();
     synchronizeServer();
+    installRegistrationWarmup();
     const summary = document.querySelector(".advanced-server summary");
     if (summary) summary.textContent = "Classroom server connection";
+    warmServer().then(() => {
+      setRegistrationStatus("Game server online. Enter the three student names and register.", "success");
+    }).catch(() => {
+      setRegistrationStatus("Server is still waking. Press Register and keep this page open for up to one minute.");
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });

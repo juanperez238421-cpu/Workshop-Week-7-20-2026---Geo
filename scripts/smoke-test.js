@@ -5,6 +5,7 @@ const assert = require("node:assert/strict");
 const vm = require("node:vm");
 
 const studentHtml = fs.readFileSync("index.html", "utf8");
+const studentBootstrap = fs.readFileSync("student-bootstrap-v17.js", "utf8");
 const studentJs = fs.readFileSync("student-app-v16.js", "utf8");
 const studentCss = fs.readFileSync("student-v16.css", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
@@ -14,6 +15,7 @@ const gateway = fs.readFileSync("server/secure-gateway.js", "utf8");
 const runtimeV12 = fs.readFileSync("server/runtime-v12.js", "utf8");
 const server = fs.readFileSync("server/server-v3.js", "utf8");
 
+new vm.Script(studentBootstrap, { filename: "student-bootstrap-v17.js" });
 new vm.Script(studentJs, { filename: "student-app-v16.js" });
 new vm.Script(masterScroll, { filename: "master-scroll-guard.js" });
 
@@ -32,8 +34,9 @@ assert.equal([...studentHtml.matchAll(/\sid="([^"]+)"/g)].length, ids.size, "Stu
 
 const scripts = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
 assert.deepEqual(scripts, [
-  "config.js?v=20260723-studentrecovery16",
-  "student-app-v16.js?v=20260723-studentrecovery16"
+  "student-bootstrap-v17.js?v=20260723-inputhotfix17",
+  "config.js?v=20260723-inputhotfix17",
+  "student-app-v16.js?v=20260723-inputhotfix17"
 ]);
 
 for (const removedLayer of [
@@ -48,8 +51,16 @@ for (const removedLayer of [
   "question-bank-v10-ui.js",
   "team-selection-v8.js"
 ]) {
-  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on Recovery v16`);
+  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the input hotfix page`);
 }
+
+assert.doesNotMatch(studentBootstrap, /HTMLCanvasElement\.prototype/);
+assert.match(studentBootstrap, /canvas\.getContext = function lazyGetContext/);
+assert.match(studentBootstrap, /registration-before-renderer/);
+assert.match(studentBootstrap, /perCanvasLazyContext: true/);
+assert.match(studentBootstrap, /WRITABLE_INPUT_IDS/);
+assert.match(studentBootstrap, /navigator\.serviceWorker\.getRegistrations/);
+assert.match(studentBootstrap, /document\.body\?\.classList\.contains\("lobby-active"\)/);
 
 assert.doesNotMatch(studentJs, /WebSocket\.prototype/);
 assert.doesNotMatch(studentJs, /HTMLCanvasElement\.prototype/);
@@ -70,8 +81,8 @@ assert.match(studentJs, /thales_height/);
 assert.match(studentJs, /ratio_sin/);
 assert.match(studentJs, /ratio_cos/);
 
-assert.match(studentHtml, /RECOVERY CLIENT V16/);
-assert.match(studentHtml, /input-first lobby/i);
+assert.match(studentHtml, /INPUT HOTFIX V17/);
+assert.match(studentHtml, /registration before renderer/i);
 assert.match(studentHtml, /id="student1Input"[^>]*placeholder="Student 1"/);
 assert.match(studentHtml, /id="student2Input"[^>]*placeholder="Student 2"/);
 assert.match(studentHtml, /id="student3Input"[^>]*placeholder="Student 3"/);
@@ -104,4 +115,4 @@ assert.match(runtimeV12, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
 assert.match(runtimeV12, /sendFullStateTo/);
 assert.match(runtimeV12, /player\.ws !== ws/);
 
-console.log("Smoke test passed: Recovery v16 restores writable student inputs, removes the unsupported team-selection request, keeps one socket, disables lobby rendering, preserves Ready/start flow, and remains compatible with the authoritative Gameplay v12 server.");
+console.log("Smoke test passed: Input Hotfix v17 keeps registration writable before renderer allocation, preserves the single-socket Recovery v16 client, and remains compatible with the authoritative Gameplay v12 server.");

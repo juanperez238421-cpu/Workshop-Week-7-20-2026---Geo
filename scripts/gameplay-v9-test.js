@@ -10,7 +10,8 @@ for (const file of [
   "music-mode-ui.js",
   "server/runtime-v9.js",
   "server/runtime-v10.js",
-  "server/runtime-v11.js"
+  "server/runtime-v11.js",
+  "server/runtime-v12.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -63,6 +64,6 @@ assert.match(patchedGateway, /perMessageDeflate: false/);
 
 assert.match(musicMode, /gameplay-v9\.js/);
 assert.match(musicMode, /master-live-v9\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v11.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v12.js secure-gateway.js");
 
-console.log("Gameplay v9 compatibility test passed under runtime v11: equal visual sizes, swept hitboxes, ammo regeneration, delta snapshots, interpolation and light master rendering remain configured.");
+console.log("Gameplay v9 compatibility test passed under runtime v12: equal visual sizes, swept hitboxes, ammo regeneration, delta snapshots, interpolation and light master rendering remain configured.");

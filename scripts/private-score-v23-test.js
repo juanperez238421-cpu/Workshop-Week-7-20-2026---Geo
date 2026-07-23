@@ -80,13 +80,16 @@ for (const marker of [
   "realPlayersCsv",
   "filter((player) => !player.isBot)",
   "automaticRealPlayerJsonAndCsv: true",
-  "groupScore"
-]) assert.ok(masterReport.includes(marker), `missing private master report marker: ${marker}`);
+  "groupScore",
+  "CHANNEL_STORAGE_KEY",
+  "backupChannel(message)",
+  "perChannelImmediateBrowserBackup: true"
+]) assert.ok(masterReport.includes(marker), `missing private Master report marker: ${marker}`);
 assert.match(masterScore, /MASTER-ONLY PLAYER DATA/);
 assert.match(masterScore, /wrongAnswerPenalty/);
 assert.match(musicMode, /master-team-score-v23\.js/);
 assert.match(rawGateway, /require\("\.\/runtime-v16\.js"\)/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
-assert.match(serverPackage.scripts.test, /runtime-v16\.js/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v17.js secure-gateway.js");
+assert.match(serverPackage.scripts.test, /runtime-v17\.js/);
 
-console.log("Private Score v23 validation passed: ten-minute matches, real-time 2.5–5 scoring, master-only player data, automatic real-player exports and strengthened recovery are present.");
+console.log("Private Score v23 compatibility validation passed beneath Solo Channels v24: ten-minute scores, Master-only reports, per-channel browser backups and automatic combined exports remain present.");

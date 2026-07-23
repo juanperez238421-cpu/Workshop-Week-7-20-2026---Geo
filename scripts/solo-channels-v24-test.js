@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const runtime = require("../server/runtime-v17.js");
+const runtime = require("../server/runtime-v18.js");
 
 const root = path.resolve(__dirname, "..");
 const rawServer = fs.readFileSync(path.join(root, "server", "server-v3.js"), "utf8");
@@ -58,6 +58,12 @@ assert.match(patchedServer, /const GROUP_SCORE_MIN = 2\.5;/);
 assert.match(patchedServer, /const GROUP_SCORE_WRONG_PENALTY = 0\.25;/);
 assert.match(patchedServer, /authoritative-swept-projectile-v20/);
 assert.match(patchedServer, /focused sine-cosine, Pythagoras and Thales question bank/);
+
+const runtimeV18 = fs.readFileSync(path.join(root, "server", "runtime-v18.js"), "utf8");
+assert.match(runtimeV18, /repairRuntimeV17/);
+assert.match(runtimeV18, /runtime-v17-repaired-v18\.js/);
+assert.match(runtimeV18, /runtime-v18\.js/);
+new vm.Script(runtimeV18, { filename: "runtime-v18.js" });
 
 const studentHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const masterHtml = fs.readFileSync(path.join(root, "master.html"), "utf8");
@@ -126,7 +132,8 @@ assert.match(musicMode, /master-solo-channels-v24\.css/);
 assert.match(config, /20260723-solo-nine-channels24/);
 
 const serverPackage = JSON.parse(fs.readFileSync(path.join(root, "server", "package.json"), "utf8"));
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v17.js secure-gateway.js");
-assert.match(serverPackage.scripts.test, /runtime-v17\.js/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
+assert.match(serverPackage.scripts.test, /runtime-v18\.js/);
+assert.doesNotMatch(serverPackage.scripts.test, /node --check runtime-v17\.js/);
 
 console.log("Solo Channels v24 validation passed: one shared Master PIN now routes up to nine real PCs into independent one-human-plus-eight-bot matches with low-bandwidth student streams and private per-channel reporting.");

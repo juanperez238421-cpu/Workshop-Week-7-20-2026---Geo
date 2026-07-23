@@ -1,0 +1,410 @@
+#studentRecoveredArenaCanvasV22 {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0;
+  pointer-events: none;
+  background: #e7edf5;
+  touch-action: none;
+  transition: opacity 100ms linear;
+}
+
+body.recovered-arena-v22-active #studentRecoveredArenaCanvasV22 {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.recovered-arena-v22-active #gameCanvas,
+body.recovered-arena-v22-active #studentMasterViewCanvasV21,
+body.recovered-arena-v22-active #gameplayCanvasV20,
+body.recovered-arena-v22-active #gameplayV9Canvas {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body.recovered-arena-v22-active.recovered-arena-v22-aiming,
+body.recovered-arena-v22-active.recovered-arena-v22-aiming #studentRecoveredArenaCanvasV22 {
+  cursor: crosshair !important;
+}
+
+body.recovered-arena-v22-active .topbar {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.11);
+}
+
+body.recovered-arena-v22-active .scoreboard {
+  top: 80px;
+}
+
+body.recovered-arena-v22-active .team-card {
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.1);
+}
+
+body.recovered-arena-v22-active .player-panel {
+  top: 150px;
+  bottom: auto;
+  left: 18px;
+  width: 292px;
+  background: rgba(255, 255, 255, 0.97);
+}
+
+body.recovered-arena-v22-active .resource-hud-v15 {
+  top: 150px;
+  right: 18px;
+  bottom: auto;
+  left: auto;
+  width: 318px;
+  grid-template-columns: repeat(2, minmax(126px, 1fr));
+}
+
+body.recovered-arena-v22-active .resource-card-v15 {
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.09);
+}
+
+body.recovered-arena-v22-active .minimap-panel {
+  right: 18px;
+  bottom: 18px;
+  background: rgba(255, 255, 255, 0.97);
+}
+
+body.recovered-arena-v22-active .controls-hint {
+  bottom: 16px;
+  background: rgba(16, 24, 40, 0.92);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.2);
+}
+
+.recovered-aim-hud-v22 {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  z-index: 18;
+  display: none;
+  min-width: 300px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: 1px solid #d0d5dd;
+  border-left: 6px solid #667085;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.13);
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+body.recovered-arena-v22-active .recovered-aim-hud-v22 {
+  display: flex;
+}
+
+.recovered-aim-hud-v22[data-active="true"] {
+  border-left-color: #7f56d9;
+  box-shadow: 0 12px 34px rgba(127, 86, 217, 0.22);
+  transform: translateX(-50%) scale(1.025);
+}
+
+.recovered-aim-icon-v22 {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f2f4f7;
+  color: #344054;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.recovered-aim-hud-v22[data-active="true"] .recovered-aim-icon-v22 {
+  background: #f4ebff;
+  color: #7f56d9;
+}
+
+.recovered-aim-hud-v22 > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.recovered-aim-hud-v22 strong {
+  color: #101828;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.recovered-aim-hud-v22 small {
+  margin-top: 2px;
+  color: #667085;
+  font-size: 0.61rem;
+  font-weight: 700;
+}
+
+.recovered-aim-hud-v22 b {
+  color: #7f56d9;
+  font-variant-numeric: tabular-nums;
+}
+
+.three-student-role-panel-v22 {
+  --team-color: #344054;
+  position: fixed;
+  left: 18px;
+  bottom: 64px;
+  z-index: 17;
+  display: none;
+  width: min(500px, calc(100vw - 650px));
+  min-width: 440px;
+  padding: 11px;
+  border: 1px solid rgba(16, 24, 40, 0.14);
+  border-left: 6px solid var(--team-color);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
+  pointer-events: none;
+}
+
+body.recovered-arena-v22-active .three-student-role-panel-v22 {
+  display: block;
+}
+
+.role-panel-heading-v22 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px 8px;
+}
+
+.role-panel-heading-v22 span {
+  color: #667085;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.role-panel-heading-v22 strong {
+  color: var(--team-color);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.role-grid-v22 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.role-grid-v22 > div {
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid #e4e7ec;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.role-grid-v22 span,
+.role-grid-v22 small,
+.role-grid-v22 strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-grid-v22 span {
+  color: #667085;
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.role-grid-v22 strong {
+  margin-top: 3px;
+  color: #101828;
+  font-size: 0.72rem;
+}
+
+.role-grid-v22 small {
+  margin-top: 3px;
+  color: #667085;
+  font-size: 0.56rem;
+}
+
+.pickup-legend-v22 {
+  position: fixed;
+  right: 18px;
+  bottom: 225px;
+  z-index: 16;
+  display: none;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  width: 280px;
+  padding: 7px;
+  border: 1px solid rgba(16, 24, 40, 0.13);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.1);
+  pointer-events: none;
+}
+
+body.recovered-arena-v22-active .pickup-legend-v22 {
+  display: grid;
+}
+
+.pickup-legend-v22 span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #475467;
+  font-size: 0.52rem;
+  font-weight: 800;
+}
+
+.pickup-legend-v22 img {
+  width: 27px;
+  height: 27px;
+  object-fit: contain;
+}
+
+.pickup-toast-v22 {
+  --pickup-color: #f79009;
+  position: fixed;
+  top: 148px;
+  left: 50%;
+  z-index: 22;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 250px;
+  padding: 10px 13px;
+  border: 1px solid rgba(16, 24, 40, 0.13);
+  border-left: 6px solid var(--pickup-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 12px 34px rgba(16, 24, 40, 0.14);
+  opacity: 0;
+  transform: translate(-50%, -8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.pickup-toast-v22.visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.pickup-toast-v22 img {
+  width: 34px;
+  height: 34px;
+}
+
+.pickup-toast-v22 > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.pickup-toast-v22 strong {
+  color: #101828;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+.pickup-toast-v22 small {
+  margin-top: 2px;
+  color: #667085;
+  font-size: 0.62rem;
+}
+
+.cooldown-row.is-ready {
+  filter: drop-shadow(0 0 6px rgba(18, 183, 106, 0.28));
+}
+
+.cooldown-row.is-ready span {
+  color: #067647;
+}
+
+.cooldown-row.is-ready progress::-webkit-progress-value {
+  background: #067647;
+}
+
+.cooldown-row.is-ready progress::-moz-progress-bar {
+  background: #067647;
+}
+
+.cooldown-row.is-cooling progress::-webkit-progress-value {
+  background: #344054;
+}
+
+.cooldown-row.is-cooling progress::-moz-progress-bar {
+  background: #344054;
+}
+
+@media (max-width: 1180px) {
+  .three-student-role-panel-v22 {
+    width: 430px;
+    min-width: 0;
+  }
+
+  body.recovered-arena-v22-active .resource-hud-v15 {
+    width: 286px;
+  }
+}
+
+@media (max-width: 980px) {
+  body.recovered-arena-v22-active .player-panel {
+    top: 218px;
+    width: 250px;
+  }
+
+  body.recovered-arena-v22-active .resource-hud-v15 {
+    top: 218px;
+    width: 280px;
+  }
+
+  .three-student-role-panel-v22,
+  .pickup-legend-v22 {
+    display: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.recovered-arena-v22-active .player-panel,
+  body.recovered-arena-v22-active .resource-hud-v15 {
+    display: none !important;
+  }
+
+  .recovered-aim-hud-v22 {
+    bottom: 54px;
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 620px) {
+  .recovered-aim-hud-v22 {
+    width: calc(100vw - 24px);
+    min-width: 0;
+  }
+
+  body.recovered-arena-v22-active .controls-hint {
+    width: calc(100vw - 20px);
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #studentRecoveredArenaCanvasV22,
+  .recovered-aim-hud-v22,
+  .pickup-toast-v22 {
+    transition: none;
+  }
+}

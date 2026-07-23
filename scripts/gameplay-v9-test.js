@@ -8,21 +8,23 @@ for (const file of [
   "gameplay-v9.js",
   "master-live-v9.js",
   "music-mode-ui.js",
+  "master-solo-channels-v24.js",
   "server/runtime-v9.js",
   "server/runtime-v10.js",
   "server/runtime-v11.js",
   "server/runtime-v12.js",
   "server/runtime-v13.js",
   "server/runtime-v14.js",
-  "server/runtime-v15.js"
-]) {
-  new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
-}
+  "server/runtime-v15.js",
+  "server/runtime-v16.js",
+  "server/runtime-v18.js"
+]) new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 
 const gameplay = fs.readFileSync("gameplay-v9.js", "utf8");
 const master = fs.readFileSync("master-live-v9.js", "utf8");
 const masterCss = fs.readFileSync("master-live-v9.css", "utf8");
 const musicMode = fs.readFileSync("music-mode-ui.js", "utf8");
+const soloMaster = fs.readFileSync("master-solo-channels-v24.js", "utf8");
 const runtime = fs.readFileSync("server/runtime-v9.js", "utf8");
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
 const runtimeModule = require("../server/runtime-v9.js");
@@ -66,7 +68,9 @@ assert.match(patchedServer, /territoryDelta/);
 assert.match(patchedGateway, /perMessageDeflate: false/);
 
 assert.match(musicMode, /gameplay-v9\.js/);
-assert.match(musicMode, /master-live-v9\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
+assert.match(musicMode, /master-solo-channels-v24\.js/);
+assert.doesNotMatch(musicMode, /loadScript\("master-live-v9\.js"/);
+assert.match(soloMaster, /masterAggregateHz: 1/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
-console.log("Gameplay v9 compatibility test passed under runtime v15: the proven interpolation, delta territory and low-latency foundations remain available beneath Gameplay v20.");
+console.log("Gameplay v9 compatibility test passed beneath Solo Channels v24: proven interpolation and delta-territory foundations remain available while the Master uses one-hertz aggregate channel telemetry.");

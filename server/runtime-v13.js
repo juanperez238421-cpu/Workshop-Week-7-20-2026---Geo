@@ -191,8 +191,7 @@ function buildMatchMetadata(report) {
     },
     scoreFormula: SCORE_FORMULA
   };
-}
-const app = express();`,
+}`,
     "global score store"
   );
 

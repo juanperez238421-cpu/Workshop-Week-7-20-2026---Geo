@@ -42,7 +42,7 @@ function patchServerSource(input) {
     answers: []
   }));
 }
-function publicIndividualStudentStats(player) {
+function publicIndividualStudentStats(player, includeAnswers = false) {
   const rows = Array.isArray(player?.studentStats) ? player.studentStats : createIndividualStudentStats(player?.students);
   return rows.map((row) => ({
     studentIndex: Number(row.studentIndex) || 0,
@@ -54,7 +54,7 @@ function publicIndividualStudentStats(player) {
     timeouts: Number(row.timeouts) || 0,
     averageResponseMs: Number(row.attempts) ? Math.round((Number(row.totalResponseMs) || 0) / Number(row.attempts)) : null,
     accuracy: Number(row.attempts) ? (Number(row.correct) || 0) / Number(row.attempts) : null,
-    answers: Array.isArray(row.answers) ? row.answers.slice() : []
+    ...(includeAnswers ? { answers: Array.isArray(row.answers) ? row.answers.slice() : [] } : {})
   }));
 }`, "individual student helpers and native room timer policy");
 
@@ -149,7 +149,7 @@ function publicIndividualStudentStats(player) {
     "remove player ready toggle"
   );
 
-  source = replaceRequired(source, `    if (!player.ready) throw new Error("Channel ${channelNumber} real player is not ready.");\n`, "", "remove ready start blocker");
+  source = replaceRequired(source, '    if (!player.ready) throw new Error(`Channel ${channelNumber} real player is not ready.`);\n', "", "remove ready start blocker");
   source = replaceRequired(
     source,
     `    const ready = this.realEntries().filter(({ channel, player }) => channel.room.phase === "lobby" && player.connected && player.ready);
@@ -290,7 +290,7 @@ function publicIndividualStudentStats(player) {
       report.botsInChannel = SOLO_BOTS_PER_CHANNEL;
       report.realPlayerId = player.id;
       const realPlayerReport = report.players.find((entry) => entry.id === player.id) || null;
-      const individualStudents = publicIndividualStudentStats(player).map((entry) => ({
+      const individualStudents = publicIndividualStudentStats(player, true).map((entry) => ({
         ...entry,
         roomCode: externalCode,
         channelNumber,

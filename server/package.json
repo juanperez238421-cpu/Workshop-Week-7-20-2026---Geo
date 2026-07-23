@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "40.0.0",
+  "version": "41.0.0",
   "private": true,
-  "description": "Stable Autostart v26: nine isolated human-vs-five-bot channels with native 30 Hz room ticks, 10 Hz snapshots, state recovery, Master-controlled starts and individual student reporting.",
+  "description": "Stable Autostart v26: nine isolated human-vs-five-bot channels with native 30 Hz room ticks, restored ammunition regeneration, state recovery, Master-controlled starts and individual student reporting.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-v20.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check runtime-v16.js && node --check runtime-v18.js && node --check runtime-v19.js && node --check runtime-v20.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v21.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check runtime-v16.js && node --check runtime-v18.js && node --check runtime-v19.js && node --check runtime-v20.js && node --check runtime-v21.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

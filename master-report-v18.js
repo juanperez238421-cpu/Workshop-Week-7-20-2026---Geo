@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const BUILD = "20260723-auto-report18";
+  const BUILD = "20260723-private-report23";
   const STORAGE_KEY = "triadGlobalScoreStoreV18";
   const observedSockets = new WeakSet();
   const exportedMatches = new Set();
@@ -38,6 +38,9 @@
         teamName: player.teamName,
         isBot: player.isBot,
         won: Boolean(player.won ?? winningTeams.has(player.team)),
+        groupScore: Number(player.groupScore) || 2.5,
+        teamRank: Number(player.teamRank) || 3,
+        wrongAnswerPenalty: Number(player.wrongAnswerPenalty) || 0,
         matchScore: Number(player.matchScore) || 0,
         territory: Number(player.territory) || 0,
         kills: Number(player.kills) || 0,
@@ -59,6 +62,7 @@
           matches: 0,
           wins: 0,
           score: 0,
+          groupScoreTotal: 0,
           territory: 0,
           eliminations: 0,
           deaths: 0,
@@ -77,6 +81,8 @@
         current.matches += 1;
         current.wins += won ? 1 : 0;
         current.score += Number(player.matchScore) || 0;
+        current.groupScoreTotal = Number(current.groupScoreTotal || 0) + (Number(player.groupScore) || 2.5);
+        current.averageGroupScore = current.matches ? current.groupScoreTotal / current.matches : null;
         current.territory += Number(player.territory) || 0;
         current.eliminations += Number(player.kills) || 0;
         current.deaths += Number(player.deaths) || 0;
@@ -100,6 +106,7 @@
       startedAt: report.startedAt,
       endedAt: report.endedAt,
       winners,
+      teamScores: report.teamScores,
       metadata: report.metadata,
       players: compactPlayers
     };
@@ -122,8 +129,48 @@
     return String(value || "report").replace(/[^a-z0-9_-]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 80) || "report";
   }
 
-  function downloadJson(value, filename) {
-    const blob = new Blob([JSON.stringify(value, null, 2)], { type: "application/json;charset=utf-8" });
+  function csvCell(value) {
+    const text = String(value ?? "");
+    return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  }
+
+  function realPlayersCsv(report) {
+    const realPlayers = (report.players || []).filter((player) => !player.isBot);
+    const rows = [[
+      "room_code", "match_id", "pc_player", "students", "team", "team_rank", "group_score_1_to_5", "wrong_answer_penalty",
+      "territory", "kills", "deaths", "shots_fired", "shots_hit", "combat_accuracy", "questions_presented", "questions_answered",
+      "correct", "wrong", "timeouts", "question_accuracy", "average_response_ms"
+    ]];
+    for (const player of realPlayers) {
+      rows.push([
+        report.roomCode, report.matchId, player.pcLabel, (player.students || []).join(" | "), player.teamName, player.teamRank,
+        player.groupScore, player.wrongAnswerPenalty, player.territory, player.kills, player.deaths, player.shotsFired, player.shotsHit,
+        player.combatAccuracy ?? "", player.questionsPresented, player.questionsAnswered, player.correct, player.wrong, player.timeouts,
+        player.accuracy ?? "", player.averageResponseMs ?? ""
+      ]);
+    }
+    rows.push([]);
+    rows.push(["pc_player", "students", "question_type", "prompt", "selected_option", "correct_option", "outcome", "response_ms", "answered_at"]);
+    for (const player of realPlayers) {
+      for (const answer of player.answers || []) {
+        rows.push([
+          player.pcLabel,
+          (player.students || []).join(" | "),
+          answer.type,
+          answer.prompt,
+          answer.selectedIndex == null ? "" : answer.options?.[answer.selectedIndex],
+          answer.correctIndex == null ? "" : answer.options?.[answer.correctIndex],
+          answer.outcome,
+          answer.responseMs,
+          answer.answeredAt ?? ""
+        ]);
+      }
+    }
+    return rows.map((row) => row.map(csvCell).join(",")).join("\n");
+  }
+
+  function download(content, filename, mime) {
+    const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -132,7 +179,7 @@
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
   function updateReportNotice(text) {
@@ -147,29 +194,44 @@
 
   function exportMatch(message) {
     const report = message?.report;
-    if (!report?.globalScore) return;
+    if (!report?.globalScore || !Array.isArray(report.players)) return;
     const storeResult = mergeMatch(readStore(), report, message.winners || []);
     const matchId = storeResult.matchId;
     if (exportedMatches.has(matchId)) return;
     exportedMatches.add(matchId);
 
+    const realPlayers = report.players.filter((player) => !player.isBot);
     const payload = {
-      exportVersion: 1,
+      exportVersion: 2,
       build: BUILD,
       exportedAt: new Date().toISOString(),
       automaticDownload: true,
+      teacherOnlyPrivateData: true,
       match: report,
+      teamScores: report.teamScores,
+      realPlayers,
       questionMetadata: report.metadata,
       serverGlobalScore: report.globalScore,
       browserGlobalScore: browserScoreSnapshot(storeResult.store)
     };
-    const filename = `triad-${safeFilename(report.roomCode)}-${safeFilename(matchId)}-complete-metadata.json`;
+
+    const stem = `triad-${safeFilename(report.roomCode)}-${safeFilename(matchId)}`;
+    const jsonFilename = `${stem}-teacher-private-complete.json`;
+    const csvFilename = `${stem}-real-players.csv`;
     setTimeout(() => {
       try {
-        downloadJson(payload, filename);
-        updateReportNotice(`Complete metadata downloaded automatically as ${filename}. A cumulative backup was also saved in this teacher browser.`);
+        download(JSON.stringify(payload, null, 2), jsonFilename, "application/json;charset=utf-8");
+        updateReportNotice(`Private teacher report downloaded automatically as ${jsonFilename}. Preparing the real-player CSV…`);
+        setTimeout(() => {
+          try {
+            download(realPlayersCsv(report), csvFilename, "text/csv;charset=utf-8");
+            updateReportNotice(`${realPlayers.length} real player record(s) downloaded automatically in JSON and CSV. A cumulative backup was also saved in this teacher browser.`);
+          } catch {
+            updateReportNotice(`The complete private JSON was downloaded and the browser backup was saved. Use DOWNLOAD CSV if the browser blocked the second automatic file.`);
+          }
+        }, 900);
       } catch {
-        updateReportNotice("The match metadata was saved in this teacher browser. Use DOWNLOAD JSON if the browser blocked the automatic file download.");
+        updateReportNotice("The private match data was saved in this teacher browser. Use DOWNLOAD JSON if the browser blocked automatic download.");
       }
     }, 700);
   }
@@ -191,6 +253,8 @@
   window.__triadMasterReportV18 = Object.freeze({
     build: BUILD,
     storageKey: STORAGE_KEY,
+    privateTeacherReports: true,
+    automaticRealPlayerJsonAndCsv: true,
     getBrowserGlobalScore: () => browserScoreSnapshot(readStore())
   });
 })();

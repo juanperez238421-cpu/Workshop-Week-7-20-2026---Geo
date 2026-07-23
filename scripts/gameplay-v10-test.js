@@ -68,11 +68,11 @@ assert.match(questionUi, /90 - degrees/);
 assert.match(questionUi, /diagram\.mirror/);
 
 assert.match(indexHtml, /student-app-v16\.js/);
-assert.match(indexHtml, /student-gameplay-v20\.js/);
+assert.match(indexHtml, /student-master-view-v21\.js/);
 assert.match(indexHtml, /question-ui-v19\.js/);
 assert.match(masterHtml, /REPORTING V18/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
 assert.doesNotMatch(musicMode, /minimap-v10\.js/);
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
 
-console.log("Gameplay v10 compatibility test passed under runtime v15: the large arena, pickup assets and focused geometry UI remain compatible with the new v20 student renderer.");
+console.log("Gameplay v10 compatibility test passed under runtime v15: large-arena assets and focused geometry remain compatible with Master View Gameplay v21.");

@@ -1,0 +1,192 @@
+/* Student Recovery v16: input-first lobby and bounded gameplay rendering. */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Full-screen GPU blur was a major risk on classroom PCs. */
+.overlay,
+.modal,
+.topbar,
+.team-card,
+.player-panel,
+.minimap-panel,
+.resource-hud-v15,
+.resource-card-v15 {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+#gameCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  background: #eef2f7;
+}
+
+body.lobby-active {
+  background: #eef2f7;
+}
+
+body.lobby-active #gameCanvas,
+body.lobby-active .scoreboard,
+body.lobby-active .player-panel,
+body.lobby-active .minimap-panel,
+body.lobby-active .resource-hud-v15,
+body.lobby-active .controls-hint {
+  visibility: hidden !important;
+}
+
+body.lobby-active .topbar {
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.overlay {
+  z-index: 100 !important;
+  background: rgba(238, 242, 247, 0.98) !important;
+}
+
+.overlay.visible {
+  display: grid !important;
+  pointer-events: auto !important;
+}
+
+.registration-modal {
+  position: relative;
+  z-index: 101;
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto !important;
+  background: #ffffff;
+}
+
+#registrationForm,
+#registrationForm *,
+#approvedPanel,
+#approvedPanel *,
+#waitingPanel,
+#waitingPanel * {
+  pointer-events: auto !important;
+}
+
+#registrationForm input:not([readonly]),
+#registrationForm select,
+#registrationForm button {
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: manipulation;
+}
+
+#registrationForm input:not([readonly]) {
+  cursor: text;
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+#registerButton:disabled,
+#readyButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.student-recovery-note {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #344054;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.student-recovery-note strong {
+  color: #101828;
+}
+
+/* The server assigns a team during teacher approval. */
+.team-selection-panel-v15 {
+  display: none !important;
+}
+
+.resource-hud-v15 {
+  position: fixed;
+  left: 18px;
+  bottom: 64px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 8px;
+  width: min(660px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.resource-card-v15 {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(152, 162, 179, 0.55);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+.resource-card-v15 span,
+.resource-card-v15 small {
+  display: block;
+  color: #667085;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.resource-card-v15 strong {
+  display: block;
+  margin: 3px 0;
+  overflow: hidden;
+  color: #101828;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice[data-kind="success"] {
+  background: #ecfdf3;
+}
+
+.notice[data-kind="error"] {
+  background: #fef3f2;
+}
+
+@media (max-width: 900px) {
+  .resource-hud-v15 {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .overlay {
+    padding: 8px !important;
+  }
+
+  .registration-modal {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 18px;
+  }
+
+  .resource-hud-v15 {
+    left: 8px;
+    bottom: 54px;
+    width: calc(100vw - 16px);
+  }
+}

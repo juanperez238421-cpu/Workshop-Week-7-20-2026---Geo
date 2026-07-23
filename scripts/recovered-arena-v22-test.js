@@ -70,7 +70,7 @@ assert.doesNotMatch(html, /student-gameplay-v20\.js/);
 assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-arena-v22.js"));
 assert.ok(html.indexOf("student-arena-v22.js") < html.indexOf("student-app-v16.js"));
 assert.match(html, /HOLD RIGHT CLICK on the arena to aim/);
-assert.match(html, /Spacebar remains the only shooting control/);
+assert.match(html, /SPACE fires|Spacebar remains the only shooting control/);
 assert.match(html, /Connection architecture preserved/);
 assert.match(config, /20260723-recoveredarena22/);
 

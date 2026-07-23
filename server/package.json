@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "35.0.0",
+  "version": "36.0.0",
   "private": true,
-  "description": "Gameplay v20 backend with visible swept projectiles, responsive movement telemetry, stable reporting v18 and focused geometry bank v19.",
+  "description": "Ten-minute Gameplay v23 backend with master-only private reports, live 2.5–5 group scoring, stronger reconnect protection, swept projectiles, Reporting v18 and Geometry v19.",
   "main": "secure-gateway.js",
   "scripts": {
     "start": "node --require ./runtime-v15.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check secure-gateway.js && node --check server-v3.js"
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check runtime-v12.js && node --check runtime-v13.js && node --check runtime-v14.js && node --check runtime-v15.js && node --check runtime-v16.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

@@ -71,7 +71,7 @@ assert.doesNotMatch(html, /student-combat-v18\.js/);
 assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-arena-v22.js"));
 assert.ok(html.indexOf("student-arena-v22.js") < html.indexOf("student-app-v16.js"));
 assert.ok(html.indexOf("question-ui-v19.js") < html.indexOf("student-app-v16.js"));
-assert.match(html, /stable single-socket connection/i);
+assert.match(html, /stable single-socket (?:connection|recovery)/i);
 assert.match(html, /GEOMETRY BANK V19/);
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
 

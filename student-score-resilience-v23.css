@@ -1,0 +1,181 @@
+.team-card {
+  position: relative;
+}
+
+.team-grade-v23 {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 5px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(16, 24, 40, 0.08);
+}
+
+.team-grade-v23 span {
+  color: #667085;
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.team-grade-v23 strong {
+  color: var(--team-color, #344054);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-card[data-rank="1"] {
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.13), 0 0 0 2px color-mix(in srgb, var(--team-color, #344054) 22%, transparent);
+}
+
+.current-group-score-v23 {
+  --team-color: #344054;
+  position: fixed;
+  top: 150px;
+  left: 50%;
+  z-index: 17;
+  display: none;
+  min-width: 300px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 13px;
+  border: 1px solid rgba(16, 24, 40, 0.14);
+  border-left: 6px solid var(--team-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.13);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+body.recovered-arena-v22-active .current-group-score-v23 {
+  display: flex;
+}
+
+.current-group-score-copy-v23 {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.current-group-score-copy-v23 span,
+.current-group-score-rank-v23 span {
+  color: #667085;
+  font-size: 0.57rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.current-group-score-copy-v23 strong {
+  margin-top: 2px;
+  color: var(--team-color);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.current-group-score-copy-v23 small {
+  margin-top: 3px;
+  overflow: hidden;
+  color: #667085;
+  font-size: 0.58rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-group-score-rank-v23 {
+  display: grid;
+  min-width: 54px;
+  place-items: center;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: #f2f4f7;
+}
+
+.current-group-score-rank-v23 b {
+  margin-top: 2px;
+  color: #101828;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.current-group-score-v23[data-connection="recovering"],
+.current-group-score-v23[data-connection="resyncing"] {
+  border-left-color: #f79009;
+}
+
+.current-group-score-v23[data-connection="recovering"]::after,
+.current-group-score-v23[data-connection="resyncing"]::after {
+  content: "RECOVERING CONNECTION";
+  position: absolute;
+  top: -9px;
+  right: 10px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #fffaeb;
+  color: #b54708;
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.final-grade-v23 {
+  display: block;
+  margin-top: 5px;
+  color: var(--team-color, #344054);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.student-private-report-note-v23 {
+  margin: 16px 0 0;
+  padding: 13px 15px;
+  border: 1px solid #d0d5dd;
+  border-left: 5px solid #344054;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475467;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.student-private-report-note-v23 strong {
+  color: #101828;
+}
+
+.student-private-report-disabled-v23 {
+  display: none !important;
+}
+
+@media (max-width: 1180px) {
+  .current-group-score-v23 {
+    top: 216px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 760px) {
+  .current-group-score-v23 {
+    top: 214px;
+    width: calc(100vw - 24px);
+    min-width: 0;
+  }
+
+  .current-group-score-copy-v23 small {
+    max-width: 210px;
+  }
+}
+
+@media (max-width: 620px) {
+  .current-group-score-v23 {
+    top: 204px;
+  }
+
+  .current-group-score-copy-v23 small {
+    display: none;
+  }
+}

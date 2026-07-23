@@ -1,8 +1,8 @@
-# Triad Territory Rush — Combat and Reporting v18
+# Triad Territory Rush — Gameplay v20 · Reporting v18 · Geometry v19
 
 [![Validate classroom game](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml/badge.svg)](https://github.com/juanperez238421-cpu/Workshop-Week-7-20-2026---Geo/actions/workflows/validate.yml)
 
-A real-time classroom territory game for **1–9 PC-player slots**. Each real PC represents **exactly three registered students**. The teacher controls registration, approval, match start and final reporting from a separate password-protected page.
+A real-time classroom territory game for **1–9 PC-player slots**. Each real PC represents **exactly three registered students**. The teacher controls registration, approval, team assignment, match start and final reporting from a separate password-protected page.
 
 ## Live pages
 
@@ -10,42 +10,76 @@ A real-time classroom territory game for **1–9 PC-player slots**. Each real PC
 - **Master teacher control:** `master.html`
 - **Teacher alias:** `teacher.html` redirects to `master.html`
 - **Secure public gateway:** `server/secure-gateway.js`
-- **Authoritative game engine:** `server/server-v3.js`, extended at runtime by `server/runtime-v13.js`
+- **Authoritative engine:** `server/server-v3.js`, extended by `server/runtime-v15.js`
 - **Match duration:** 5 minutes
 - **Winner:** team controlling the largest territory
 
-The student page contains no link to the master console. The teacher password is verified by the secure WebSocket gateway. The browser receives a temporary teacher token, and protected commands are rejected when the token is missing, invalid or expired.
+The student page contains no master-console link. The teacher password is verified by the secure WebSocket gateway, and protected commands require a temporary server-issued teacher token. The current classroom password is `9109`.
 
-The classroom password is currently `9109`. It is not stored by the browser. Reloading or logging out requires entering it again.
+## Gameplay v20
 
-## What changed in v18
+Gameplay v20 restores the responsive dynamics from the strongest earlier projectile/interpolation versions while keeping the current stable connection and reporting stack.
 
-### Fast top-down shooting
+### Movement and camera
 
-Combat now uses **server-authoritative semi-automatic hitscan**:
+- local player movement is predicted visually between authoritative snapshots;
+- remote players are interpolated and briefly extrapolated instead of jumping between state packets;
+- the camera follows smoothly with movement and aiming look-ahead;
+- player speed is **620 units/s**;
+- dash speed is **1900 units/s** for **210 ms**;
+- dash cooldown is **1.8 seconds**;
+- movement dust, dash trails, player shadows and elimination particles improve motion readability.
+
+Prediction is visual only. Position, collision, territory and eliminations remain server-authoritative.
+
+### Visible projectile combat
 
 - hold right click to aim;
-- **tap Space once per shot**;
-- the server resolves the shot immediately along the aim ray;
-- a short tracer and muzzle flash communicate the shot to the player;
-- holding Space does not create uncontrolled automatic fire for human players;
-- ammunition remains limited to five charges and recovers by one charge every five seconds;
-- the existing three-life and geometry-respawn structure is preserved.
+- tap **Space** to fire normally;
+- normal human fire remains semi-automatic;
+- the Rapid power permits held automatic fire;
+- bullets travel visibly at **2850 units/s**;
+- bullet lifetime is **2350 ms**;
+- collision uses a relative-motion swept segment against the target's movement segment;
+- a small bounded long-shot allowance compensates for network and snapshot spacing without turning the hitbox into a large circle;
+- immediate local muzzle feedback hides input latency, while the server decides every real hit;
+- authoritative projectile x/y/velocity data drives bullet streaks on every client.
 
-The implementation is inspired by the responsiveness of fast top-down action games. It does not copy proprietary art, audio, maps or source code.
+Five ammunition charges and one-charge-per-five-seconds regeneration remain unchanged. The three-life and geometry-respawn structure also remains unchanged.
 
-### Full-name registration
+### Cooldown feedback
 
-Student fields isolate keyboard input from gameplay controls. Students can type or paste names and surnames using:
+The server now includes the actual shot and dash cooldown durations in each player state. The student HUD animates both progress bars continuously from server time instead of using old hard-coded durations.
 
-- spaces;
-- accents;
-- arrow keys;
-- normal clipboard shortcuts.
+## Stable classroom infrastructure preserved
 
-Gameplay canvases remain lazy until the match begins, preserving the registration-first recovery introduced in v17. Names may contain up to 60 characters on both client and server.
+Gameplay v20 does not replace the stable control path:
 
-### Automatic classroom report
+- registration-first rendering and writable full-name fields;
+- one existing WebSocket per student browser;
+- reconnect tokens and stale-socket protection;
+- soft full-state recovery before hard reconnect;
+- delta territory snapshots on the same **40×25** grid;
+- server-verified master authentication;
+- immediate teacher registration inbox;
+- 1–9-player flexible start and optional AI fill;
+- complete automatic metadata export and cumulative global scoring.
+
+`student-gameplay-v20.js` observes the existing socket. It never creates a second multiplayer connection.
+
+## Focused Geometry v19
+
+Respawn questions remain restricted to:
+
+1. sine or cosine ratio recognition with all three sides shown and no decimal calculation;
+2. one unknown right-triangle side using the Pythagorean theorem;
+3. one unknown height using Thales' theorem and similar triangles.
+
+## Full-name registration
+
+Student fields isolate typing from combat controls. Spaces, accents, arrow keys and clipboard shortcuts work normally. Each of the three names may contain up to 60 characters on client and server.
+
+## Automatic classroom report
 
 When the fight ends, the teacher browser automatically downloads one complete JSON file containing:
 
@@ -56,20 +90,14 @@ When the fight ends, the teacher browser automatically downloads one complete JS
 - the three students represented by each PC;
 - territory, eliminations and deaths;
 - shots fired, hits and combat accuracy;
-- number of questions presented and answered;
+- questions presented and answered;
 - correct, wrong and timed-out attempts;
-- every question prompt and answer option;
-- selected and correct options;
-- response time and outcome for each attempt;
+- every question prompt, answer option, selected answer, correct answer and response time;
 - match score and cumulative global score.
 
-Manual **DOWNLOAD CSV** and **DOWNLOAD JSON** buttons remain available.
+Manual **DOWNLOAD CSV** and **DOWNLOAD JSON** controls remain available.
 
 ## Global score model
-
-Each real student's cumulative record is keyed by a normalized version of the registered full name. One PC's match performance is credited to each of its three represented students.
-
-Current per-match score:
 
 ```text
 score = territory cells
@@ -79,49 +107,29 @@ score = territory cells
       + 100 when the player's team wins
 ```
 
-The score is never allowed to become negative.
-
-Global score durability uses three layers:
-
-1. **Server process/file:** `server/global-score.json` is updated when the deployment filesystem permits it.
-2. **Teacher browser backup:** every unique `matchId` is stored once in `localStorage` and aggregated independently.
-3. **Automatic JSON export:** the complete match and global-score snapshot is downloaded after every fight.
-
-The browser backup and downloaded JSON are important because some cloud deployment filesystems may be ephemeral across restarts or redeployments.
+The score cannot become negative. Global-score durability uses the server file when writable, the teacher browser's per-match local ledger and the automatic final JSON export.
 
 ## Protected master actions
 
-The gateway requires a valid teacher token for:
-
-- creating or restoring a master room;
-- approving or rejecting registrations;
-- removing player groups;
-- changing ready state;
-- locking registration;
-- adding or removing AI replacements;
-- starting, ending or resetting a match.
-
-Student registration, movement, shooting and geometry answers continue to be processed by the authoritative engine.
+A valid teacher token is required for creating/restoring rooms, approving/rejecting registrations, assigning teams, changing readiness, locking registration, managing AI, and starting/ending/resetting matches. Student movement, shooting and geometry answers remain authoritative-engine operations.
 
 ## Real-test launch sequence
 
-1. Open `master.html` on the teacher computer and enter `9109`.
-2. Wait until the server reports Protocol 3 online.
-3. Select **CREATE ROOM**.
-4. Copy the six-character PIN to the students.
-5. Each PC registers exactly three full student names.
-6. Review each request under **Student registration requests** and approve or reject it.
-7. Ensure every included real player is connected and Ready.
-8. Start the match with 1–9 approved players; AI fill remains optional.
-9. At the end, confirm the complete metadata JSON downloads automatically.
-10. Keep the automatic file before resetting the room.
+1. Open `master.html` and enter `9109`.
+2. Wait for Protocol 3 to report online.
+3. Create a room and share its six-character PIN.
+4. Each PC registers exactly three full student names.
+5. Review and approve each registration, assigning its team.
+6. Confirm every included real player is connected and Ready.
+7. Start with 1–9 approved players; AI fill is optional.
+8. At the end, retain the automatic complete metadata JSON before resetting.
 
 ## Render deployment
 
 `server/package.json` starts:
 
 ```bash
-node --require ./runtime-v13.js secure-gateway.js
+node --require ./runtime-v15.js secure-gateway.js
 ```
 
 Recommended environment variables:
@@ -137,14 +145,10 @@ Optional persistent score path:
 GLOBAL_SCORE_FILE=/persistent/path/global-score.json
 ```
 
-Expected health response includes Protocol 3 and teacher authentication.
-
 ## Validation
-
-From the repository root:
 
 ```bash
 npm test
 ```
 
-The validation suite checks JavaScript syntax, student/master separation, server-verified teacher authentication, registration behavior, runtime patch compatibility, authoritative hitscan markers, tracer metadata, complete report fields, automatic export integration, flexible match start and the largest-territory winner rule.
+The suite checks syntax, student/master separation, authentication, registration and reconnect behavior, v9/v12 compatibility foundations, visible swept projectile combat, movement/cooldown telemetry, Reporting v18, Geometry v19, flexible match start and the largest-territory winner rule.

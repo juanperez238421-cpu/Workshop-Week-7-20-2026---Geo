@@ -12,7 +12,8 @@ for (const file of [
   "server/runtime-v11.js",
   "server/runtime-v12.js",
   "server/runtime-v13.js",
-  "server/runtime-v14.js"
+  "server/runtime-v14.js",
+  "server/runtime-v15.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -67,11 +68,11 @@ assert.match(questionUi, /90 - degrees/);
 assert.match(questionUi, /diagram\.mirror/);
 
 assert.match(indexHtml, /student-app-v16\.js/);
-assert.match(indexHtml, /student-combat-v18\.js/);
+assert.match(indexHtml, /student-gameplay-v20\.js/);
 assert.match(indexHtml, /question-ui-v19\.js/);
 assert.match(masterHtml, /REPORTING V18/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
 assert.doesNotMatch(musicMode, /minimap-v10\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v14.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
 
-console.log("Gameplay v10 compatibility test passed under runtime v14: the large arena, varied geometry, dedicated supply assets and focused v19 question UI remain configured with the lightweight v18 student shell.");
+console.log("Gameplay v10 compatibility test passed under runtime v15: the large arena, pickup assets and focused geometry UI remain compatible with the new v20 student renderer.");

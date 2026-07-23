@@ -23,12 +23,12 @@ for (const requiredText of [
   "teacherBrowserBackupRecommended",
   "buildMatchMetadata"
 ]) {
-  assert.ok(patchedServer.includes(requiredText), `missing server feature marker: ${requiredText}`);
+  assert.ok(patchedServer.includes(requiredText), `missing reporting-v18 compatibility marker: ${requiredText}`);
 }
-assert.ok(patchedGateway.includes("hitscan-combat-and-automatic-reporting-v18"), "gateway v18 architecture marker missing");
-assert.ok(patchedServer.includes("shootPressed && !player.shootHeld"), "human semi-auto edge trigger missing");
-assert.ok(patchedServer.includes("startX"), "tracer start metadata missing");
-assert.ok(patchedServer.includes("endX"), "tracer end metadata missing");
+assert.ok(patchedGateway.includes("hitscan-combat-and-automatic-reporting-v18"), "gateway v18 compatibility marker missing");
+assert.ok(patchedServer.includes("shootPressed && !player.shootHeld"), "v18 human semi-auto edge trigger missing");
+assert.ok(patchedServer.includes("startX"), "v18 tracer start metadata missing");
+assert.ok(patchedServer.includes("endX"), "v18 tracer end metadata missing");
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "triad-v13-"));
 try {
@@ -43,18 +43,19 @@ try {
 }
 
 const studentInput = fs.readFileSync(path.join(root, "student-input-v18.js"), "utf8");
-const studentCombat = fs.readFileSync(path.join(root, "student-combat-v18.js"), "utf8");
+const gameplayV20 = fs.readFileSync(path.join(root, "student-gameplay-v20.js"), "utf8");
 const masterReport = fs.readFileSync(path.join(root, "master-report-v18.js"), "utf8");
 const studentHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const masterHtml = fs.readFileSync(path.join(root, "master.html"), "utf8");
 
 assert.ok(studentInput.includes("event.stopPropagation()"), "editable key isolation missing");
 assert.ok(!studentInput.includes("event.preventDefault()"), "editable fields must not prevent spaces/default text entry");
-assert.ok(studentCombat.includes("combatFxCanvasV18"), "hitscan visual overlay missing");
+assert.ok(gameplayV20.includes("gameplayCanvasV20"), "v20 gameplay canvas missing");
+assert.ok(gameplayV20.includes("authoritative-swept-projectile-v20"), "v20 projectile model missing");
 assert.ok(masterReport.includes("automaticDownload: true"), "automatic report export marker missing");
 assert.ok(masterReport.includes("triadGlobalScoreStoreV18"), "teacher browser global score backup missing");
 assert.ok(studentHtml.indexOf("student-input-v18.js") < studentHtml.indexOf("student-app-v16.js"), "input fix must load before main student app");
-assert.ok(studentHtml.indexOf("student-combat-v18.js") < studentHtml.indexOf("student-app-v16.js"), "combat observer must load before main student app");
+assert.ok(studentHtml.indexOf("student-gameplay-v20.js") < studentHtml.indexOf("student-app-v16.js"), "v20 gameplay observer must load before main student app");
 assert.ok(masterHtml.indexOf("master-report-v18.js") < masterHtml.indexOf("teacher-auth.js"), "automatic report observer must load before teacher controls");
 
-console.log("Gameplay v13 / UI v18 validation passed.");
+console.log("Reporting v18 compatibility validation passed beneath Gameplay v20.");

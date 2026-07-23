@@ -110,11 +110,11 @@ assert.match(ui, /cos = adjacent \/ hypotenuse/);
 assert.match(ui, /reference height \/ reference shadow = h \/ target shadow/);
 
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
-assert.match(html, /focused geometry bank v19/i);
+assert.match(html, /GEOMETRY BANK V19/i);
 assert.match(html, /question-ui-v19\.js/);
 assert.ok(html.indexOf("question-ui-v19.js") < html.indexOf("student-app-v16.js"));
 
 const serverPackage = JSON.parse(fs.readFileSync(path.join(root, "server", "package.json"), "utf8"));
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v14.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
 
-console.log("Focused Geometry v19 test passed: the online game only generates sine/cosine ratio recognition, exact Pythagorean unknown-side questions and Thales height proportions.");
+console.log("Focused Geometry v19 test passed beneath runtime v15: the question bank remains limited to sine/cosine ratios, exact Pythagorean unknown sides and Thales heights.");

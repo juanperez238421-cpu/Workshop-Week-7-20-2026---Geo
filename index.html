@@ -8,18 +8,25 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-studentfix14" />
-  <link rel="stylesheet" href="online.css?v=20260723-studentfix14" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-studentfix14" />
+  <link rel="stylesheet" href="styles.css?v=20260723-studentstable15" />
+  <link rel="stylesheet" href="online.css?v=20260723-studentstable15" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-studentstable15" />
+  <link rel="stylesheet" href="student-v15.css?v=20260723-studentstable15" />
 </head>
 <body>
   <main id="app">
     <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
-      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>Student fix v14 · reliable server wake-up · automatic player identity · fresh master links · reduced duplicate rendering</span></div>
+      <div class="brand">
+        <strong>TRIAD TERRITORY RUSH</strong>
+        <span>Student Stable v15 · one WebSocket · one renderer · bounded memory · reliable classroom registration</span>
+      </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
-      <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
+      <div class="topbar-actions">
+        <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
+        <button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button>
+      </div>
     </header>
 
     <section class="scoreboard" aria-label="Team scoreboard">
@@ -39,26 +46,44 @@
       <div class="cooldown-row"><span>DASH</span><progress id="dashCooldown" max="1" value="1"></progress></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Persistent authoritative territory · lightweight 5 FPS lobby map</small></aside>
+    <aside class="resource-hud-v15" aria-label="Player resources">
+      <div class="resource-card-v15"><span>Lives</span><strong id="lifeDisplay">♥ ♥ ♥</strong><small>Question after final life</small></div>
+      <div class="resource-card-v15"><span>Ammo</span><strong id="ammoDisplay">● ● ● ● ●</strong><small id="ammoRegenTimer">Full · +1 every 5 s</small></div>
+      <div class="resource-card-v15"><span>Power</span><strong id="powerDisplay">NONE</strong><small>Collect a supply box</small></div>
+      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Authoritative server state</small></div>
+    </aside>
+
+    <aside class="minimap-panel">
+      <canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas>
+      <small>Authoritative territory · 5 FPS memory-safe map</small>
+    </aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
-    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK and move the mouse to aim · release to lock · SPACE fires · SHIFT dashes</div>
+    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · STUDENT FIX V14</p><h1>Register a classroom PC player</h1><p class="lead">Enter the current six-character room code and exactly three student names. The page generates a unique player title before registration and wakes the classroom server automatically. On the first connection, keep this page open for up to one minute; once the server confirms the request, the teacher will see this PC immediately.</p></div>
+          <div>
+            <p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · STABLE CLIENT V15</p>
+            <h1>Register a classroom PC player</h1>
+            <p class="lead">Enter the current six-character room PIN and exactly three student names. This browser receives one automatic player identity, opens one server connection, and uses one bounded renderer. The teacher will see the request as soon as the room server confirms it.</p>
+          </div>
         </div>
 
-        <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Waking classroom server…</strong><small id="serverHealthText">The first Render connection may take up to one minute. Registration continues automatically when the server is ready.</small></div></div>
-        <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" /></label></details>
+        <div class="student-stability-note"><strong>Memory-safe client</strong><span>The previous layered client has been removed from this page. No global animation override, duplicate canvas renderer, dynamic script chain, or repeated WebSocket wrapper is loaded.</span></div>
+
+        <div class="server-health-card">
+          <span id="serverHealthDot" class="health-dot"></span>
+          <div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects when registration is submitted.</small></div>
+        </div>
+        <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
 
         <section id="registrationForm">
           <div class="registration-grid registration-top-row">
-            <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
+            <label>Room PIN<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
             <label>Automatic PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Generating…" readonly title="A unique title is generated for this browser." /></label>
           </div>
-          <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
-          <p class="approval-note">One submitted PC equals one active player slot. The teacher approves the registration first; then the player may select any team with available capacity and mark Ready. A match may start with 1–9 approved players.</p>
+          <p class="approval-note">One submitted computer equals one active player slot representing exactly three students. After teacher approval, select a team with capacity and mark Ready.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
@@ -66,11 +91,15 @@
           </div>
           <button id="registerButton" class="primary-button" type="button">REGISTER THIS PC PLAYER</button>
         </section>
-        <div id="lobbyStatus" class="notice">Preparing a reliable connection to the classroom server…</div>
+        <div id="lobbyStatus" class="notice" aria-live="polite">Preparing the student client…</div>
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC player</span><b id="waitingPcLabel">—</b></div><div><span>Team</span><b>Selected after approval</b><b id="waitingTeam" hidden aria-hidden="true"></b></div></div>
+          <div class="waiting-meta">
+            <div><span>Room</span><b id="waitingRoomCode">------</b></div>
+            <div><span>PC player</span><b id="waitingPcLabel">—</b></div>
+            <div><span>Team</span><b>Selected after approval</b></div>
+          </div>
           <div class="registered-students"><span>THREE STUDENTS REPRESENTED BY THIS PLAYER</span><strong id="waitingStudents">—</strong></div>
         </section>
 
@@ -82,33 +111,19 @@
 
           <section class="assigned-team-card">
             <span id="assignedTeamColor" class="large-color-dot"></span>
-            <div><small>CURRENT MUSIC TEAM</small><strong id="assignedTeamName">Select an available team</strong><span id="teamNamingStatus" hidden aria-hidden="true"></span></div>
+            <div><small>CURRENT TEAM</small><strong id="assignedTeamName">Select an available team</strong></div>
           </section>
 
-          <section id="proposalPanel" class="ballot-panel hidden" hidden aria-hidden="true">
-            <div class="ballot-heading"><div><h2>Automatic team naming</h2></div><span id="proposalProgress">3 / 3 sent</span></div>
-            <div class="student-ballot-grid">
-              <label><span id="proposal1Label">Student 1</span><input id="proposal1Input" maxlength="28" autocomplete="off" /></label>
-              <label><span id="proposal2Label">Student 2</span><input id="proposal2Input" maxlength="28" autocomplete="off" /></label>
-              <label><span id="proposal3Label">Student 3</span><input id="proposal3Input" maxlength="28" autocomplete="off" /></label>
-            </div>
-            <button id="submitProposalsButton" class="secondary-button" type="button">AUTOMATIC</button>
-          </section>
-
-          <section id="votePanel" class="ballot-panel hidden" hidden aria-hidden="true">
-            <div class="ballot-heading"><div><h2>Automatic team naming</h2></div><span id="voteProgress">3 / 3 votes</span></div>
-            <div id="candidateBoard" class="candidate-board"></div>
-            <div class="student-ballot-grid">
-              <label><span id="vote1Label">Student 1</span><select id="vote1Select" disabled><option value="">Automatic</option></select></label>
-              <label><span id="vote2Label">Student 2</span><select id="vote2Select" disabled><option value="">Automatic</option></select></label>
-              <label><span id="vote3Label">Student 3</span><select id="vote3Select" disabled><option value="">Automatic</option></select></label>
-            </div>
-            <button id="submitVotesButton" class="secondary-button" type="button" disabled>AUTOMATIC</button>
+          <section class="team-selection-panel-v15" aria-labelledby="teamSelectionTitle">
+            <div><span>PLAYER TEAM SELECTION</span><strong id="teamSelectionTitle">Choose an available team</strong><small>Cancel Ready before changing teams.</small></div>
+            <label for="playerTeamChoice">Team<select id="playerTeamChoice"></select></label>
+            <button id="confirmTeamChoice" class="secondary-button" type="button">SELECT THIS TEAM</button>
+            <p id="teamSelectionStatus" class="team-selection-status-v15" aria-live="polite">Waiting for teacher approval.</p>
           </section>
 
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">Select a team with capacity and mark Ready. The teacher can start with 1–9 approved players; teams may be uneven during testing and AI remains optional.</p>
+          <p class="approval-note">The teacher may start with 1–9 approved players. Every included real player must remain connected and Ready.</p>
         </section>
 
         <div class="rule-grid"><div><b>1–9</b><span>active players</span></div><div><b>3</b><span>lives before question</span></div><div><b>5</b><span>ammo charges</span></div><div><b>5 s</b><span>automatic ammo recovery</span></div></div>
@@ -116,18 +131,27 @@
     </section>
 
     <section id="questionOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="questionTitle">
-      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">GEOMETRY RESPAWN CHALLENGE</p><h2 id="questionTitle">Solve to restore three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Geometry problem diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
+      <div class="modal question-modal">
+        <div class="question-header"><div><p class="eyebrow">GEOMETRY RESPAWN CHALLENGE</p><h2 id="questionTitle">Solve to restore three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div>
+        <canvas id="questionCanvas" width="560" height="250" aria-label="Geometry problem diagram"></canvas>
+        <p id="questionPrompt" class="question-prompt"></p>
+        <div id="questionOptions" class="question-options"></div>
+        <p id="questionFeedback" class="question-feedback" aria-live="polite"></p>
+      </div>
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
-      <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Active player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
+      <div class="modal end-modal">
+        <p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p>
+        <div id="finalRanking" class="final-ranking"></div>
+        <div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Player rosters and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button>
+      </div>
     </section>
   </main>
-  <script src="renderer-bootstrap-v12.js?v=20260723-studentfix14"></script>
-  <script src="config.js?v=20260723-studentfix14"></script>
-  <script src="student-v3.js?v=20260723-studentfix14"></script>
-  <script src="student-registration-sync.js?v=20260723-studentfix14"></script>
-  <script src="music-mode-ui.js?v=20260723-studentfix14"></script>
-  <script src="question-bank-v10-ui.js?v=20260723-studentfix14"></script>
+
+  <script src="config.js?v=20260723-studentstable15"></script>
+  <script src="student-app-v15.js?v=20260723-studentstable15"></script>
 </body>
 </html>

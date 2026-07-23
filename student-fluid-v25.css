@@ -1,0 +1,373 @@
+/* Fluid Client v25: compact HUD, reduced paint cost and overlap-safe classroom layout. */
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .topbar,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-card,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-panel,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-card-v15,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-hud-v15,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .minimap-panel,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .three-student-role-panel-v22,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-hud-v22 {
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.09) !important;
+  contain: layout paint style;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .topbar {
+  inset: 8px 8px auto;
+  height: 48px;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(120px, 1fr);
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: 10px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .brand strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .brand span {
+  display: none;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .match-status {
+  gap: 7px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .match-status span {
+  font-size: 0.58rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .match-status strong {
+  font-size: 1.12rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .topbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .connection-badge,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .icon-button {
+  min-height: 28px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 0.58rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .scoreboard {
+  top: 62px;
+  grid-template-columns: repeat(3, minmax(102px, 132px));
+  gap: 5px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-card {
+  gap: 0 6px;
+  min-height: 44px;
+  padding: 5px 8px;
+  border-radius: 8px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-card span {
+  overflow: hidden;
+  font-size: 0.55rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-card strong {
+  font-size: 0.82rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-card small {
+  font-size: 0.54rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-panel {
+  top: auto;
+  right: auto;
+  bottom: 10px;
+  left: 10px;
+  width: 238px;
+  padding: 9px;
+  border-radius: 10px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-row {
+  gap: 7px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-row strong {
+  font-size: 0.72rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-row small {
+  margin-top: 1px;
+  font-size: 0.56rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active #playerMembersLabel {
+  display: none;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .team-dot {
+  width: 10px;
+  height: 10px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 7px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .stat-grid div {
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  min-height: 34px;
+  padding: 4px 5px;
+  border-radius: 6px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .stat-grid span {
+  overflow: hidden;
+  font-size: 0.47rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .stat-grid b {
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .cooldown-row {
+  grid-template-columns: 34px 1fr;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .cooldown-row span {
+  font-size: 0.5rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active progress {
+  height: 5px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-hud-v15 {
+  top: 62px;
+  right: 10px;
+  bottom: auto;
+  left: auto;
+  width: 250px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-card-v15 {
+  min-height: 48px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-card-v15 span,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-card-v15 small {
+  font-size: 0.5rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-card-v15 strong {
+  margin: 2px 0;
+  font-size: 0.72rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .minimap-panel {
+  right: 10px;
+  bottom: 10px;
+  width: 202px;
+  padding: 5px;
+  border-radius: 9px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .minimap-panel small {
+  display: none;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active #minimapCanvas {
+  border-radius: 6px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .three-student-role-panel-v22 {
+  left: 10px;
+  bottom: 176px;
+  width: 238px;
+  min-width: 0;
+  padding: 6px;
+  border-left-width: 4px;
+  border-radius: 9px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-panel-heading-v22 {
+  padding: 0 2px 4px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-panel-heading-v22 span,
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-panel-heading-v22 strong {
+  font-size: 0.48rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-grid-v22 {
+  gap: 3px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-grid-v22 > div {
+  padding: 4px 5px;
+  border-radius: 6px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-grid-v22 span {
+  font-size: 0.43rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-grid-v22 strong {
+  margin-top: 1px;
+  font-size: 0.55rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .role-grid-v22 small {
+  display: none;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22 {
+  top: 172px;
+  right: 10px;
+  bottom: auto;
+  width: 202px;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22 span {
+  gap: 0;
+  overflow: hidden;
+  font-size: 0;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22 img {
+  width: 20px;
+  height: 20px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-hud-v22 {
+  bottom: 38px;
+  min-width: 190px;
+  gap: 6px;
+  padding: 5px 8px;
+  border-left-width: 4px;
+  border-radius: 8px;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-icon-v22 {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
+  font-size: 0.8rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-hud-v22 strong {
+  font-size: 0.56rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-hud-v22 small {
+  font-size: 0.5rem;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .controls-hint {
+  bottom: 8px;
+  max-width: calc(100vw - 500px);
+  overflow: hidden;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 0.55rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.triad-fluid-client-v25 body.recovered-arena-v22-active .event-banner {
+  top: 112px;
+  max-width: 420px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.62rem;
+}
+
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .three-student-role-panel-v22,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .pickup-legend-v22 {
+  display: none !important;
+}
+
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .topbar,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .team-card,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .player-panel,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .resource-card-v15,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .minimap-panel,
+html.triad-fluid-client-v25 body.triad-low-detail-v25.recovered-arena-v22-active .recovered-aim-hud-v22 {
+  box-shadow: none !important;
+}
+
+@media (max-width: 1100px) {
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .scoreboard {
+    grid-template-columns: repeat(3, minmax(92px, 112px));
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-panel,
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .three-student-role-panel-v22 {
+    width: 218px;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-hud-v15 {
+    width: 220px;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .minimap-panel,
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22 {
+    width: 180px;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .controls-hint {
+    max-width: calc(100vw - 450px);
+  }
+}
+
+@media (max-width: 820px), (max-height: 680px) {
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .three-student-role-panel-v22,
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .pickup-legend-v22,
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .minimap-panel {
+    display: none !important;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .player-panel {
+    width: 210px;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .resource-hud-v15 {
+    width: 205px;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .controls-hint {
+    display: none;
+  }
+
+  html.triad-fluid-client-v25 body.recovered-arena-v22-active .recovered-aim-hud-v22 {
+    bottom: 10px;
+  }
+}

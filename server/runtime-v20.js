@@ -149,7 +149,7 @@ function publicIndividualStudentStats(player, includeAnswers = false) {
     "remove player ready toggle"
   );
 
-  source = replaceRequired(source, '    if (!player.ready) throw new Error(`Channel ${channelNumber} real player is not ready.`);\n', "", "remove ready start blocker");
+  source = replaceRequired(source, '    if (!player.ready) throw new Error("Channel " + channelNumber + " real player is not ready.");\n', "", "remove ready start blocker");
   source = replaceRequired(
     source,
     `    const ready = this.realEntries().filter(({ channel, player }) => channel.room.phase === "lobby" && player.connected && player.ready);

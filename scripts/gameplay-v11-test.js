@@ -6,7 +6,7 @@ const vm = require("node:vm");
 const crypto = require("node:crypto");
 const runtime = require("../server/runtime-v11.js");
 
-for (const file of ["network-v11.js", "network-v12.js", "master-flex-start-v11.js", "music-mode-ui.js", "server/runtime-v11.js", "server/runtime-v12.js", "server/runtime-v13.js", "server/runtime-v14.js", "server/runtime-v15.js"]) {
+for (const file of ["network-v11.js", "network-v12.js", "master-flex-start-v11.js", "music-mode-ui.js", "server/runtime-v11.js", "server/runtime-v12.js", "server/runtime-v13.js", "server/runtime-v14.js", "server/runtime-v15.js", "server/runtime-v16.js", "server/runtime-v18.js"]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
 
@@ -61,7 +61,7 @@ const gameplayLoaderIndex = music.indexOf('loadScript("gameplay-v9.js"');
 assert.ok(networkLoaderIndex >= 0 && gameplayLoaderIndex >= 0 && networkLoaderIndex < gameplayLoaderIndex);
 
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
 const fakeServer = { on(){}, listen(){}, close(callback){ if (callback) callback(); } };
 const fakeApp = { disable(){}, use(){}, get(){} };
@@ -104,4 +104,4 @@ assert.equal(room.canStart(), true);
 room.start(controller);
 assert.equal(room.phase, "countdown");
 
-console.log("Gameplay v11 compatibility test passed under runtime v15: coalesced snapshots, cumulative territory recovery and flexible 1–9-player starts remain available.");
+console.log("Gameplay v11 compatibility test passed beneath runtime v18: coalesced snapshots and cumulative territory recovery remain the foundation for isolated 10 Hz channels.");

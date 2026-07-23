@@ -8,27 +8,27 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-recoveredarena22" />
-  <link rel="stylesheet" href="online.css?v=20260723-recoveredarena22" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-recoveredarena22" />
-  <link rel="stylesheet" href="student-v16.css?v=20260723-recoveredarena22" />
-  <link rel="stylesheet" href="student-arena-v22.css?v=20260723-recoveredarena22" />
-  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260723-private-score23" />
+  <link rel="stylesheet" href="styles.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="online.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="student-v16.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="student-arena-v22.css?v=20260723-solo-nine-channels24" />
+  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260723-solo-nine-channels24" />
 </head>
 <body class="lobby-active">
   <main id="app">
-    <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
+    <canvas id="gameCanvas" aria-label="Triad Territory Rush isolated human-versus-bots arena"></canvas>
 
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Recovered Arena v22 · 10-minute match · private teacher reporting · live group score · stable single-socket recovery</span>
+        <span>Solo Channels v24 · one real PC vs eight server bots · 10-minute match · 10 Hz optimized connection · private teacher reporting</span>
       </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">10:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
     </header>
 
-    <section class="scoreboard" aria-label="Team scoreboard">
+    <section class="scoreboard" aria-label="Channel team scoreboard">
       <article id="team0Card" class="team-card"><span id="team0Name">TEAM 1</span><strong id="team0Territory">0%</strong><small><b id="team0Kills">0</b> eliminations</small></article>
       <article id="team1Card" class="team-card"><span id="team1Name">TEAM 2</span><strong id="team1Territory">0%</strong><small><b id="team1Kills">0</b> eliminations</small></article>
       <article id="team2Card" class="team-card"><span id="team2Name">TEAM 3</span><strong id="team2Territory">0%</strong><small><b id="team2Kills">0</b> eliminations</small></article>
@@ -49,10 +49,10 @@
       <div class="resource-card-v15"><span>Lives</span><strong id="lifeDisplay">♥ ♥ ♥</strong><small>Question after final life</small></div>
       <div class="resource-card-v15"><span>Ammo</span><strong id="ammoDisplay">● ● ● ● ●</strong><small id="ammoRegenTimer">Full · +1 every 5 s</small></div>
       <div class="resource-card-v15"><span>Power</span><strong id="powerDisplay">NONE</strong><small>Collect a supply box</small></div>
-      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Authoritative server state</small></div>
+      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Private 10 Hz channel stream</small></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative territory · lightweight 5 FPS map</small></aside>
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Isolated channel minimap"></canvas><small>Only this PC channel · authoritative territory · lightweight 5 FPS map</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · HOLD RIGHT CLICK on the arena to aim · release to lock · SPACE fires · SHIFT dashes</div>
 
@@ -60,47 +60,47 @@
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
           <div>
-            <p class="eyebrow">STUDENT GAME · RECOVERED ARENA V22 · PRIVATE SCORE V23 · GEOMETRY BANK V19</p>
-            <h1>Register a classroom PC player</h1>
-            <p class="lead">Enter the current six-character room PIN and exactly three complete student names. Registration, teacher approval, reconnection, authoritative combat and the recovered visual design remain unchanged. Each match now lasts ten minutes. Every team receives a live score from 2.50 to 5.00: the current leader starts from 5.00, second place from 4.00 and third place from 3.00; each wrong geometry answer subtracts 0.25, with a minimum score of 2.50. Ranking is determined by territory, then eliminations, correct answers and fewer wrong answers. Students see only team ranking and their current group score. Individual names, answers and complete player data are delivered only to the authenticated Master page and downloaded there automatically after the match.</p>
+            <p class="eyebrow">STUDENT GAME · SOLO CHANNELS V24 · RECOVERED ARENA V22 · PRIVATE SCORE V23</p>
+            <h1>Register one isolated PC team</h1>
+            <p class="lead">All nine classroom PCs use the same six-character Master PIN, but they no longer share one synchronized arena. After approval, this PC receives its own isolated channel containing one real player and eight optimized server bots. The same powers, ammunition, territory, mouse aim, movement, projectile combat, geometry respawns and 10-minute score system are preserved. Each channel can start, reconnect, finish and reset independently, so one weak classroom connection cannot freeze the other eight games. Students see only their own channel and current 2.50–5.00 score. The authenticated Master page receives the individual results for every real PC team: student names, correct and wrong answers, deaths, eliminations, territory, response history and final score.</p>
           </div>
         </div>
 
-        <div class="student-recovery-note"><strong>Connection architecture preserved and strengthened.</strong> The visual and scoring layers observe the existing student WebSocket and never open a second multiplayer connection. The server keeps a ten-minute reconnect grace, checks connection health every fifteen seconds and supports automatic full-state resynchronization.</div>
+        <div class="student-recovery-note"><strong>Optimized isolated connection.</strong> This PC opens one WebSocket and receives only its own human-versus-bots channel at 10 snapshots per second. The Master receives a lightweight one-hertz aggregate instead of nine complete arena feeds. Ten-minute reconnect grace and full-state resynchronization remain active.</div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects only after Register is pressed.</small></div></div>
         <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
 
         <section id="registrationForm">
           <div class="registration-grid registration-top-row">
-            <label>Room PIN<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
-            <label>PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned by server" readonly /></label>
+            <label>Shared Master room PIN<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
+            <label>Isolated PC channel<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned by server" readonly /></label>
           </div>
-          <p class="approval-note">One submitted computer equals one active player slot representing exactly three students. The teacher assigns the team during approval. After approval, press <strong>I AM READY</strong>.</p>
+          <p class="approval-note">One submitted computer becomes one isolated channel representing exactly three students. The server assigns Channel 1–9 and creates eight bots automatically. After teacher approval, press <strong>I AM READY</strong>; the Master may start this channel independently.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
             <label>Student 3 full name<input id="student3Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
           </div>
-          <button id="registerButton" class="primary-button" type="button">REGISTER THIS PC PLAYER</button>
+          <button id="registerButton" class="primary-button" type="button">REGISTER THIS ISOLATED PC CHANNEL</button>
         </section>
-        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter the PIN and three full names.</div>
+        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter the shared PIN and three full names.</div>
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Room</span><b id="waitingRoomCode">------</b></div><div><span>PC player</span><b id="waitingPcLabel">—</b></div><div><span>Team</span><b>Assigned by teacher</b></div></div>
-          <div class="registered-students"><span>THREE STUDENTS REPRESENTED BY THIS PLAYER</span><strong id="waitingStudents">—</strong></div>
+          <div class="waiting-meta"><div><span>Shared room</span><b id="waitingRoomCode">------</b></div><div><span>PC channel</span><b id="waitingPcLabel">—</b></div><div><span>Opponents</span><b>8 server bots after approval</b></div></div>
+          <div class="registered-students"><span>THREE STUDENTS REPRESENTED BY THIS REAL PLAYER</span><strong id="waitingStudents">—</strong></div>
         </section>
 
         <section id="approvedPanel" class="room-panel hidden" aria-live="polite">
-          <div class="room-heading"><div><span>APPROVED PLAYER IN ROOM</span><strong id="roomCodeLarge">------</strong></div><button id="readyButton" class="primary-button compact-button" type="button" disabled>I AM READY</button></div>
-          <section class="assigned-team-card"><span id="assignedTeamColor" class="large-color-dot"></span><div><small>ASSIGNED TEAM</small><strong id="assignedTeamName">Waiting for teacher assignment</strong></div></section>
+          <div class="room-heading"><div><span>APPROVED ISOLATED CHANNEL</span><strong id="roomCodeLarge">------</strong></div><button id="readyButton" class="primary-button compact-button" type="button" disabled>I AM READY</button></div>
+          <section class="assigned-team-card"><span id="assignedTeamColor" class="large-color-dot"></span><div><small>YOUR CHANNEL TEAM</small><strong id="assignedTeamName">Waiting for channel assignment</strong></div></section>
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">The teacher can start with 1–9 approved players. Every included real player must remain connected and Ready.</p>
+          <p class="approval-note">This roster contains only your real PC team and the eight bots in your private channel. Other classroom PCs play in separate channels and cannot affect this arena or connection.</p>
         </section>
 
-        <div class="rule-grid"><div><b>10 min</b><span>match duration</span></div><div><b>3</b><span>lives before question</span></div><div><b>2.5–5</b><span>live group score</span></div><div><b>5 s</b><span>automatic ammo recovery</span></div></div>
+        <div class="rule-grid"><div><b>1 + 8</b><span>real PC vs bots</span></div><div><b>10 min</b><span>independent match</span></div><div><b>2.5–5</b><span>live channel score</span></div><div><b>10 Hz</b><span>optimized snapshots</span></div></div>
       </div>
     </section>
 
@@ -110,27 +110,27 @@
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
       <div class="modal end-modal">
-        <p class="eyebrow">FINAL TEAM RESULT · PRIVATE PLAYER DATA</p>
-        <h2 id="endTitle">Match complete</h2>
+        <p class="eyebrow">FINAL ISOLATED CHANNEL RESULT · PRIVATE PLAYER DATA</p>
+        <h2 id="endTitle">Channel complete</h2>
         <p id="winnerSummary" class="lead"></p>
         <div id="finalRanking" class="final-ranking"></div>
-        <p class="student-private-report-note-v23"><strong>Your screen contains only the final team ranking and group score.</strong> The complete report with student names, individual statistics and every geometry answer is visible and downloaded only on the authenticated Master page.</p>
+        <p class="student-private-report-note-v23"><strong>Your screen contains only this channel's team ranking and score.</strong> The complete report with the three student names, individual statistics and every geometry answer is delivered only to the authenticated Master page.</p>
         <div class="student-private-report-disabled-v23" hidden aria-hidden="true">
           <button id="downloadCsvButton" type="button" disabled></button>
           <button id="downloadJsonButton" type="button" disabled></button>
           <table><tbody id="reportTableBody"></tbody></table>
         </div>
-        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button>
+        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO CHANNEL REGISTRATION</button>
       </div>
     </section>
   </main>
 
-  <script src="student-bootstrap-v17.js?v=20260723-recoveredarena22"></script>
-  <script src="student-input-v18.js?v=20260723-recoveredarena22"></script>
-  <script src="student-arena-v22.js?v=20260723-recoveredarena22"></script>
-  <script src="student-score-resilience-v23.js?v=20260723-private-score23"></script>
-  <script src="config.js?v=20260723-recoveredarena22"></script>
-  <script src="question-ui-v19.js?v=20260723-recoveredarena22"></script>
-  <script src="student-app-v16.js?v=20260723-recoveredarena22"></script>
+  <script src="student-bootstrap-v17.js?v=20260723-solo-nine-channels24"></script>
+  <script src="student-input-v18.js?v=20260723-solo-nine-channels24"></script>
+  <script src="student-arena-v22.js?v=20260723-solo-nine-channels24"></script>
+  <script src="student-score-resilience-v23.js?v=20260723-solo-nine-channels24"></script>
+  <script src="config.js?v=20260723-solo-nine-channels24"></script>
+  <script src="question-ui-v19.js?v=20260723-solo-nine-channels24"></script>
+  <script src="student-app-v16.js?v=20260723-solo-nine-channels24"></script>
 </body>
 </html>

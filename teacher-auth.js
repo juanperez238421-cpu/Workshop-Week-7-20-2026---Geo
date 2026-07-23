@@ -17,7 +17,10 @@
     "remove_bots",
     "start_match",
     "end_match",
-    "reset_room"
+    "reset_room",
+    "start_channel",
+    "end_channel",
+    "reset_channel"
   ]);
 
   const $ = (id) => document.getElementById(id);
@@ -116,7 +119,7 @@
     if (controlScriptLoaded || document.querySelector('script[data-teacher-controls="true"]')) return;
     controlScriptLoaded = true;
     const script = document.createElement("script");
-    script.src = "master-v3.js?v=20260722-smooth2";
+    script.src = "master-v3.js?v=20260723-solo-nine-channels24";
     script.dataset.teacherControls = "true";
     script.addEventListener("error", () => {
       controlScriptLoaded = false;

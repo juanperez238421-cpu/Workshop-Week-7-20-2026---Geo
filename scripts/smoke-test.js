@@ -4,123 +4,94 @@ const fs = require("node:fs");
 const assert = require("node:assert/strict");
 const vm = require("node:vm");
 
-const files = [
+const studentHtml = fs.readFileSync("index.html", "utf8");
+const studentJs = fs.readFileSync("student-app-v15.js", "utf8");
+const studentCss = fs.readFileSync("student-v15.css", "utf8");
+const masterHtml = fs.readFileSync("master.html", "utf8");
+const masterScroll = fs.readFileSync("master-scroll-guard.js", "utf8");
+const teacherAuth = fs.readFileSync("teacher-auth.js", "utf8");
+const gateway = fs.readFileSync("server/secure-gateway.js", "utf8");
+const runtimeV12 = fs.readFileSync("server/runtime-v12.js", "utf8");
+const server = fs.readFileSync("server/server-v3.js", "utf8");
+
+new vm.Script(studentJs, { filename: "student-app-v15.js" });
+new vm.Script(masterScroll, { filename: "master-scroll-guard.js" });
+
+function htmlIds(html) {
+  return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
+}
+
+function referencedIds(js) {
+  return new Set([...js.matchAll(/\$\("([A-Za-z0-9_-]+)"\)/g)].map((match) => match[1]));
+}
+
+const missingStudentIds = [...referencedIds(studentJs)].filter((id) => !htmlIds(studentHtml).has(id));
+assert.deepEqual(missingStudentIds, [], `Stable student page missing IDs: ${missingStudentIds.join(", ")}`);
+
+const scriptSources = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
+assert.equal(scriptSources.length, 2, `Student page must load exactly two scripts, found ${scriptSources.length}`);
+assert.match(scriptSources[0], /^config\.js\?v=20260723-studentstable15$/);
+assert.match(scriptSources[1], /^student-app-v15\.js\?v=20260723-studentstable15$/);
+
+for (const removedLayer of [
   "renderer-bootstrap-v12.js",
   "student-v3.js",
   "student-registration-sync.js",
-  "gameplay-v8.js",
-  "gameplay-v9.js",
-  "gameplay-v12-ui.js",
-  "minimap-v10.js",
-  "pickup-assets-v10.js",
-  "question-bank-v10-ui.js",
-  "network-v12.js",
-  "team-selection-v8.js",
-  "master-v3.js",
-  "master-enhancements.js",
-  "master-live-game.js",
-  "master-live-v9.js",
-  "master-ready-control.js",
-  "master-flex-start-v11.js",
-  "master-scroll-guard.js",
-  "teacher-auth.js",
   "music-mode-ui.js",
-  "config.js",
-  "server/runtime-patch.js",
-  "server/runtime-v6.js",
-  "server/runtime-v8.js",
-  "server/runtime-v10.js",
-  "server/runtime-v11.js",
-  "server/runtime-v12.js",
-  "server/server-v3.js",
-  "server/secure-gateway.js"
-];
-for (const file of files) new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
-
-const studentHtml = fs.readFileSync("index.html", "utf8");
-const masterHtml = fs.readFileSync("master.html", "utf8");
-const teacherAliasHtml = fs.readFileSync("teacher.html", "utf8");
-const studentJs = fs.readFileSync("student-v3.js", "utf8");
-const masterJs = fs.readFileSync("master-v3.js", "utf8");
-const masterEnhancementsJs = fs.readFileSync("master-enhancements.js", "utf8");
-const masterLiveGameJs = fs.readFileSync("master-live-game.js", "utf8");
-const teacherAuthJs = fs.readFileSync("teacher-auth.js", "utf8");
-const gameplayV8Js = fs.readFileSync("gameplay-v8.js", "utf8");
-const gameplayV9Js = fs.readFileSync("gameplay-v9.js", "utf8");
-const minimapV10Js = fs.readFileSync("minimap-v10.js", "utf8");
-const pickupAssetsV10Js = fs.readFileSync("pickup-assets-v10.js", "utf8");
-const questionV10Js = fs.readFileSync("question-bank-v10-ui.js", "utf8");
-const networkV12Js = fs.readFileSync("network-v12.js", "utf8");
-const rendererBootstrap = fs.readFileSync("renderer-bootstrap-v12.js", "utf8");
-const flexV11Js = fs.readFileSync("master-flex-start-v11.js", "utf8");
-const masterLiveV9Js = fs.readFileSync("master-live-v9.js", "utf8");
-const runtimeV12Js = fs.readFileSync("server/runtime-v12.js", "utf8");
-const serverJs = fs.readFileSync("server/server-v3.js", "utf8");
-const gatewayJs = fs.readFileSync("server/secure-gateway.js", "utf8");
-
-function ids(html) {
-  return new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
-}
-function jsIds(js) {
-  return new Set([...js.matchAll(/\$\("([^"]+)"\)/g)].map((match) => match[1]));
-}
-for (const [name, html, js] of [
-  ["student", studentHtml, studentJs],
-  ["master", masterHtml, masterJs],
-  ["master-enhancements", masterHtml, masterEnhancementsJs],
-  ["master-live-game", masterHtml, masterLiveGameJs],
-  ["master-auth", masterHtml, teacherAuthJs]
+  "gameplay-v9.js",
+  "network-v12.js",
+  "minimap-v10.js",
+  "question-bank-v10-ui.js",
+  "team-selection-v8.js"
 ]) {
-  const missing = [...jsIds(js)].filter((id) => !ids(html).has(id));
-  assert.deepEqual(missing, [], `${name} page missing IDs: ${missing.join(", ")}`);
+  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not be loaded by the stable student page`);
 }
 
-assert.match(serverJs, /const PROTOCOL = 3/);
-assert.match(serverJs, /const MAX_PLAYERS = 9/);
-assert.match(serverJs, /const STUDENTS_PER_PC = 3/);
-assert.match(runtimeV12Js, /PROJECTILE_LIFETIME_MS = 5200/);
-assert.match(runtimeV12Js, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
-assert.match(runtimeV12Js, /relativeStartX/);
-assert.match(runtimeV12Js, /sendFullStateTo/);
-assert.match(runtimeV12Js, /player\.ws !== ws/);
+assert.doesNotMatch(studentJs, /WebSocket\.prototype/);
+assert.doesNotMatch(studentJs, /HTMLCanvasElement\.prototype/);
+assert.doesNotMatch(studentJs, /window\.requestAnimationFrame\s*=/);
+assert.doesNotMatch(studentJs, /MutationObserver/);
+assert.doesNotMatch(studentJs, /appendChild\(script\)|createElement\("script"\)/);
+assert.match(studentJs, /single-socket-single-render-loop/);
+assert.match(studentJs, /2_500_000/);
+assert.match(studentJs, /LOBBY_FRAME_INTERVAL_MS = 200/);
+assert.match(studentJs, /GAME_FRAME_INTERVAL_MS = 33/);
+assert.match(studentJs, /MAX_SOCKET_BUFFER = 64 \* 1024/);
+assert.match(studentJs, /territoryDelta/);
+assert.match(studentJs, /type: "select_team"/);
+assert.match(studentJs, /type: "set_ready"/);
+assert.match(studentJs, /type: "register_student"/);
+assert.match(studentJs, /type: "reconnect_student"/);
+assert.match(studentJs, /type: "ping"/);
+assert.match(studentJs, /thales_height/);
+assert.match(studentJs, /ratio_sin/);
+assert.match(studentJs, /ratio_cos/);
+assert.match(studentJs, /unknown side/i);
 
-assert.match(studentHtml, /Register a classroom PC player/);
-assert.match(studentHtml, /1–9 active players|1 to 9 approved players/);
+assert.match(studentHtml, /STABLE CLIENT V15/);
+assert.match(studentHtml, /one WebSocket · one renderer · bounded memory/i);
 assert.match(studentHtml, /exactly three students/i);
-assert.match(studentHtml, /<b>3<\/b><span>lives before question<\/span>/);
-assert.match(studentHtml, /<b>5<\/b><span>ammo charges<\/span>/);
+assert.match(studentHtml, /id="playerTeamChoice"/);
+assert.match(studentHtml, /id="readyButton"/);
+assert.match(studentHtml, /GEOMETRY RESPAWN CHALLENGE/);
 assert.match(studentHtml, /<b>5 s<\/b><span>automatic ammo recovery<\/span>/);
-assert.match(studentHtml, /moving-target long-shot hitboxes/);
-assert.match(studentHtml, /renderer-bootstrap-v12\.js/);
-assert.match(studentHtml, /question-bank-v10-ui\.js/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
-
-assert.match(gameplayV8Js, /AIMING WITH MOUSE/);
-assert.match(gameplayV8Js, /message\.shoot = spacePressed/);
-assert.match(gameplayV9Js, /territoryDelta/);
-assert.match(minimapV10Js, /original\.replaceWith\(canvas\)/);
-assert.match(minimapV10Js, /ctx\.drawImage\(buffer/);
-assert.match(pickupAssetsV10Js, /assets\/pickups\/ammo\.svg/);
-assert.match(questionV10Js, /DIFFERENT ANGLES AND ORIENTATIONS/);
-assert.match(networkV12Js, /SOFT_STREAM_STALL_MS = 2800/);
-assert.match(networkV12Js, /HARD_STREAM_STALL_MS = 12000/);
-assert.match(networkV12Js, /request_state/);
-assert.match(rendererBootstrap, /legacyRendererSuppressed/);
+assert.match(studentCss, /max-height: calc\(100dvh - 32px\)/);
+assert.match(studentCss, /resource-hud-v15/);
 
 assert.match(masterHtml, /SERVER-VERIFIED MASTER PAGE/);
-assert.match(masterHtml, /GAMEPLAY V12/);
-assert.match(masterHtml, /ADD AT LEAST ONE PLAYER/);
-assert.match(masterHtml, /masterPlayerFrame/);
-assert.match(masterHtml, /network-v12\.js/);
-assert.match(masterHtml, /master-flex-start-v11\.js/);
-assert.match(masterHtml, /1 charge every 5 seconds/);
-assert.match(flexV11Js, /START MATCH WITH/);
-assert.match(flexV11Js, /FLEXIBLE START ENABLED/);
-assert.match(masterLiveV9Js, /masterRealtimeCanvas/);
-assert.match(masterLiveGameJs, /JOIN AS PLAYER HERE|Teacher Player/);
-assert.match(teacherAliasHtml, /master\.html/);
-assert.match(teacherAuthJs, /authenticate_teacher/);
-assert.doesNotMatch(teacherAuthJs, /["']9109["']/);
-assert.match(gatewayJs, /DEFAULT_TEACHER_PASSWORD = "9109"/);
+assert.match(masterScroll, /clientBuild/);
+assert.match(masterScroll, /url\.searchParams\.set\("v", STUDENT_BUILD\)/);
+assert.match(teacherAuth, /authenticate_teacher/);
+assert.doesNotMatch(teacherAuth, /["']9109["']/);
+assert.match(gateway, /DEFAULT_TEACHER_PASSWORD = "9109"/);
 
-console.log("Smoke test passed: Gameplay v12 long-shot collision, five-second ammo recovery, soft resync, stale-socket protection, flexible starts, secure teacher access and live supervision are present.");
+assert.match(server, /const PROTOCOL = 3/);
+assert.match(server, /const MAX_PLAYERS = 9/);
+assert.match(server, /const STUDENTS_PER_PC = 3/);
+assert.match(runtimeV12, /PROJECTILE_LIFETIME_MS = 5200/);
+assert.match(runtimeV12, /AMMO_REGEN_INTERVAL_MS = 5 \* 1000/);
+assert.match(runtimeV12, /sendFullStateTo/);
+assert.match(runtimeV12, /player\.ws !== ws/);
+
+console.log("Smoke test passed: Student Stable v15 uses one socket, one bounded renderer, direct registration/team/ready controls, integrated geometry questions, secure teacher separation and the authoritative Gameplay v12 server.");

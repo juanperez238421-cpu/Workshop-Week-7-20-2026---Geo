@@ -57,7 +57,9 @@ assert.match(patchedServer, /const RECONNECT_GRACE_MS = 10 \* 60 \* 1000;/);
 assert.match(patchedServer, /const GROUP_SCORE_MIN = 2\.5;/);
 assert.match(patchedServer, /const GROUP_SCORE_WRONG_PENALTY = 0\.25;/);
 assert.match(patchedServer, /authoritative-swept-projectile-v20/);
-assert.match(patchedServer, /focused sine-cosine, Pythagoras and Thales question bank/);
+for (const questionMarker of ["ratio_sin", "ratio_cos", "pythagoras", "thales_height", "Do not calculate a decimal value", "knownSides: 2"]) {
+  assert.ok(patchedServer.includes(questionMarker), `focused geometry question marker missing: ${questionMarker}`);
+}
 
 const runtimeV18 = fs.readFileSync(path.join(root, "server", "runtime-v18.js"), "utf8");
 assert.match(runtimeV18, /repairRuntimeV17/);

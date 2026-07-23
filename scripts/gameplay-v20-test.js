@@ -46,10 +46,12 @@ assert.doesNotMatch(patchedServer, /type: "tracer"/);
 const legacyClient = fs.readFileSync(path.join(root, "student-gameplay-v20.js"), "utf8");
 const activeClient = fs.readFileSync(path.join(root, "student-arena-v22.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const soloRuntime = fs.readFileSync(path.join(root, "server", "runtime-v18.js"), "utf8");
 const serverPackage = JSON.parse(fs.readFileSync(path.join(root, "server", "package.json"), "utf8"));
 
 new vm.Script(legacyClient, { filename: "student-gameplay-v20.js" });
 new vm.Script(activeClient, { filename: "student-arena-v22.js" });
+new vm.Script(soloRuntime, { filename: "runtime-v18.js" });
 
 for (const marker of [
   "function syncPlayers",
@@ -71,8 +73,9 @@ assert.doesNotMatch(html, /student-combat-v18\.js/);
 assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-arena-v22.js"));
 assert.ok(html.indexOf("student-arena-v22.js") < html.indexOf("student-app-v16.js"));
 assert.ok(html.indexOf("question-ui-v19.js") < html.indexOf("student-app-v16.js"));
-assert.match(html, /stable single-socket (?:connection|recovery)/i);
-assert.match(html, /GEOMETRY BANK V19/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
+assert.match(html, /one WebSocket/i);
+assert.match(html, /GEOMETRY BANK V19|geometry respawns/i);
+assert.match(soloRuntime, /repairRuntimeV17/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
-console.log("Gameplay v20 server validation passed beneath Recovered Arena v22: swept projectiles, stable connection, Reporting v18 and Geometry v19 remain authoritative.");
+console.log("Gameplay v20 server validation passed beneath Solo Channels v24: swept projectiles, Recovered Arena visuals, private reporting and Geometry v19 remain authoritative in each isolated channel.");

@@ -89,7 +89,7 @@ assert.match(masterScore, /MASTER-ONLY PLAYER DATA/);
 assert.match(masterScore, /wrongAnswerPenalty/);
 assert.match(musicMode, /master-team-score-v23\.js/);
 assert.match(rawGateway, /require\("\.\/runtime-v16\.js"\)/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v17.js secure-gateway.js");
-assert.match(serverPackage.scripts.test, /runtime-v17\.js/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
+assert.match(serverPackage.scripts.test, /runtime-v18\.js/);
 
 console.log("Private Score v23 compatibility validation passed beneath Solo Channels v24: ten-minute scores, Master-only reports, per-channel browser backups and automatic combined exports remain present.");

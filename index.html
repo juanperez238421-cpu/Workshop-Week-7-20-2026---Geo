@@ -8,11 +8,11 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-fluidgameplay20" />
-  <link rel="stylesheet" href="online.css?v=20260723-fluidgameplay20" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-fluidgameplay20" />
-  <link rel="stylesheet" href="student-v16.css?v=20260723-fluidgameplay20" />
-  <link rel="stylesheet" href="student-gameplay-v20.css?v=20260723-fluidgameplay20" />
+  <link rel="stylesheet" href="styles.css?v=20260723-masterviewaim21" />
+  <link rel="stylesheet" href="online.css?v=20260723-masterviewaim21" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-masterviewaim21" />
+  <link rel="stylesheet" href="student-v16.css?v=20260723-masterviewaim21" />
+  <link rel="stylesheet" href="student-master-view-v21.css?v=20260723-masterviewaim21" />
 </head>
 <body class="lobby-active">
   <main id="app">
@@ -21,7 +21,7 @@
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Gameplay v20 · fluid predicted movement · visible swept bullets · focused geometry v19 · complete reporting</span>
+        <span>Master View Gameplay v21 · reliable right-click mouse aim · swept bullets · geometry v19 · complete reporting</span>
       </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
@@ -53,19 +53,19 @@
 
     <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Authoritative territory · lightweight 5 FPS map</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
-    <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK to aim · TAP SPACE to fire · SHIFT dashes</div>
+    <div class="controls-hint">WASD / arrows move · HOLD RIGHT CLICK and move mouse to aim · TAP SPACE to fire · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
           <div>
-            <p class="eyebrow">STUDENT GAME · FLUID GAMEPLAY V20 · GEOMETRY BANK V19</p>
+            <p class="eyebrow">STUDENT GAME · MASTER VIEW GAMEPLAY V21 · GEOMETRY BANK V19</p>
             <h1>Register a classroom PC player</h1>
-            <p class="lead">Enter the current six-character room PIN and exactly three complete student names. The stable registration, approval and recovery flow is unchanged. During the match, Gameplay v20 adds locally predicted movement, interpolated opponents, faster dashes, visible server-authoritative bullets, swept moving-target hitboxes and live shot/dash cooldown feedback. Respawn questions remain limited to sine/cosine ratio recognition, exact Pythagorean unknown sides and Thales height proportions.</p>
+            <p class="lead">Enter the current six-character room PIN and exactly three complete student names. Registration, teacher approval, reconnection and reporting remain unchanged. During the match, the student arena now uses the same clean visual language as the teacher's live Master View: white arena, colored territory grid, compact triangular players, visible projectile trails, supply symbols and life/ammo labels. Hold right click directly on the arena and move the mouse to rotate the character and aim; release right click to lock that direction.</p>
           </div>
         </div>
 
-        <div class="student-recovery-note"><strong>Registration-first recovery.</strong> Gameplay canvases remain lazy until the match begins, and form fields isolate Space/WASD from combat controls.</div>
+        <div class="student-recovery-note"><strong>Registration-first recovery.</strong> The gameplay context remains lazy until the match begins, and form fields isolate Space, WASD and Shift from student-name typing.</div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects only after Register is pressed.</small></div></div>
         <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
@@ -112,11 +112,11 @@
     </section>
   </main>
 
-  <script src="student-bootstrap-v17.js?v=20260723-fluidgameplay20"></script>
-  <script src="student-input-v18.js?v=20260723-fluidgameplay20"></script>
-  <script src="student-gameplay-v20.js?v=20260723-fluidgameplay20"></script>
-  <script src="config.js?v=20260723-fluidgameplay20"></script>
-  <script src="question-ui-v19.js?v=20260723-fluidgameplay20"></script>
-  <script src="student-app-v16.js?v=20260723-fluidgameplay20"></script>
+  <script src="student-bootstrap-v17.js?v=20260723-masterviewaim21"></script>
+  <script src="student-input-v18.js?v=20260723-masterviewaim21"></script>
+  <script src="student-master-view-v21.js?v=20260723-masterviewaim21"></script>
+  <script src="config.js?v=20260723-masterviewaim21"></script>
+  <script src="question-ui-v19.js?v=20260723-masterviewaim21"></script>
+  <script src="student-app-v16.js?v=20260723-masterviewaim21"></script>
 </body>
 </html>

@@ -1,0 +1,59 @@
+#gameplayCanvasV20 {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 120ms linear;
+}
+
+body.gameplay-v20-active #gameplayCanvasV20 {
+  opacity: 1;
+}
+
+body.gameplay-v20-active #gameCanvas {
+  opacity: 0;
+}
+
+.cooldown-row {
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.cooldown-row.is-ready {
+  filter: drop-shadow(0 0 7px rgba(18, 183, 106, 0.34));
+}
+
+.cooldown-row.is-ready span {
+  color: #067647;
+}
+
+.cooldown-row.is-ready progress::-webkit-progress-value {
+  background: #067647;
+}
+
+.cooldown-row.is-ready progress::-moz-progress-bar {
+  background: #067647;
+}
+
+.cooldown-row.is-cooling progress::-webkit-progress-value {
+  background: #344054;
+}
+
+.cooldown-row.is-cooling progress::-moz-progress-bar {
+  background: #344054;
+}
+
+body.gameplay-v20-active .controls-hint {
+  background: rgba(16, 24, 40, 0.88);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gameplayCanvasV20,
+  .cooldown-row {
+    transition: none;
+  }
+}

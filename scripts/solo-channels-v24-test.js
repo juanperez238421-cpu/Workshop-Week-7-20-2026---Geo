@@ -107,7 +107,7 @@ for (const marker of [
   "same six-character Master PIN",
   "one real player and eight optimized server bots",
   "Each channel can start, reconnect, finish and reset independently",
-  "10 Hz optimized snapshots"
+  "10 Hz optimized connection"
 ]) assert.match(studentHtml, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
 
 assert.match(masterHtml, /SOLO CHANNELS V24/);

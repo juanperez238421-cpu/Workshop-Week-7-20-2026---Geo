@@ -1,0 +1,6 @@
+node_modules/
+server/node_modules/
+server/global-score.json
+server/global-score.json.tmp
+*.log
+.DS_Store

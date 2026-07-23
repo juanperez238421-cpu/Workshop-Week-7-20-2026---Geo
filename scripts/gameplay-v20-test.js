@@ -52,7 +52,6 @@ new vm.Script(legacyClient, { filename: "student-gameplay-v20.js" });
 new vm.Script(activeClient, { filename: "student-master-view-v21.js" });
 
 for (const marker of [
-  "authoritative-swept-projectile-v20",
   "function syncPlayers",
   "function syncProjectiles",
   "function updateCooldownHud",

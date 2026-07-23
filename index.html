@@ -8,13 +8,14 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="online.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="student-v16.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="student-arena-v22.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260723-fluid-clean25" />
-  <link rel="stylesheet" href="student-fluid-v25.css?v=20260723-fluid-clean25" />
+  <link rel="stylesheet" href="styles.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="online.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-v3.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-v16.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-arena-v22.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-fluid-v25.css?v=20260724-stable-autostart26" />
+  <link rel="stylesheet" href="student-stable-v26.css?v=20260724-stable-autostart26" />
 </head>
 <body class="lobby-active">
   <main id="app">
@@ -23,7 +24,7 @@
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Fluid Client v25 · one real PC vs eight server bots · balanced 30 Hz physics · 10 Hz snapshots · private teacher reporting</span>
+        <span>Stable Autostart v26 · one real PC vs five server bots · native 30 Hz physics · 10 Hz snapshots · individual student reporting</span>
       </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">10:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
@@ -38,7 +39,7 @@
     <aside class="player-panel">
       <div class="player-row"><span id="playerTeamDot" class="team-dot"></span><div><strong id="playerNameLabel">PC PLAYER</strong><small id="playerStateLabel">Not registered</small><small id="playerMembersLabel">Exactly three student names required</small></div></div>
       <div class="stat-grid">
-        <div><span>Room</span><b id="roomCodeLabel">—</b></div><div><span>Ready</span><b id="playerReadyLabel">NO</b></div>
+        <div><span>Room</span><b id="roomCodeLabel">—</b></div><div><span>Start</span><b id="playerReadyLabel">MASTER</b></div>
         <div><span>Territory</span><b id="playerTerritoryLabel">0</b></div><div><span>Eliminations</span><b id="playerKillsLabel">0</b></div>
         <div><span>Deaths</span><b id="playerDeathsLabel">0</b></div><div><span>Combat accuracy</span><b id="playerAccuracyLabel">—</b></div>
       </div>
@@ -50,10 +51,10 @@
       <div class="resource-card-v15"><span>Lives</span><strong id="lifeDisplay">♥ ♥ ♥</strong><small>Question after final life</small></div>
       <div class="resource-card-v15"><span>Ammo</span><strong id="ammoDisplay">● ● ● ● ●</strong><small id="ammoRegenTimer">Full · +1 every 5 s</small></div>
       <div class="resource-card-v15"><span>Power</span><strong id="powerDisplay">NONE</strong><small>Collect a supply box</small></div>
-      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Private 10 Hz channel stream</small></div>
+      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Watchdog + private stream</small></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Isolated channel minimap"></canvas><small>Only this PC channel · authoritative territory · lightweight 5 FPS map</small></aside>
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Isolated channel minimap"></canvas><small>Only this PC channel · authoritative territory · lightweight map</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · HOLD RIGHT CLICK to aim · release to lock · SPACE fires · SHIFT dashes</div>
 
@@ -61,13 +62,13 @@
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
           <div>
-            <p class="eyebrow">STUDENT GAME · FLUID CLIENT V25 · SOLO CHANNELS V24 · PRIVATE SCORE V23</p>
+            <p class="eyebrow">STUDENT GAME · STABLE AUTOSTART V26 · FLUID CLIENT V25 · PRIVATE SCORE V23</p>
             <h1>Register one isolated PC team</h1>
-            <p class="lead">All nine classroom PCs use the same six-character Master PIN, but each PC plays in its own isolated channel against eight optimized server bots. Fluid Client v25 removes the duplicate hidden arena renderer, limits display resolution on slower classroom computers, uses adaptive frame pacing and activates a reduced-detail recovery mode after long browser tasks. Server physics are staggered across the nine channels, bot decisions run at a lower independent frequency and only nearby projectiles are streamed. Powers, ammunition, territory, mouse aim, movement, projectile combat, geometry respawns, the 10-minute match and the 2.50–5.00 score remain unchanged.</p>
+            <p class="lead">All nine classroom PCs use the same six-character Master PIN. Each PC plays in its own isolated channel against five optimized server bots, producing six total combatants arranged as two players per team. This replaces the previous eight-bot channel and cuts the classroom server's bot population from 72 to 45 while preserving three teams, powers, ammunition, territory, mouse aim, movement, projectile combat, geometry respawns, the 10-minute match and the 2.50–5.00 score. The student Ready step has been removed: after teacher approval, the Master may start this channel immediately.</p>
           </div>
         </div>
 
-        <div class="student-recovery-note"><strong>Balanced classroom performance.</strong> This PC opens one WebSocket and receives only its own channel at 10 snapshots per second. Local prediction keeps movement fluid between snapshots, while the server runs balanced 30 Hz physics and distributes the nine channel timers across each simulation frame. Ten-minute reconnect grace and full-state resynchronization remain active.</div>
+        <div class="student-recovery-note"><strong>Movement and timer recovery.</strong> Each channel now keeps its native authoritative simulation timer instead of replacing it with a delayed interval. A student-side state watchdog requests an immediate full state when the stream stalls, and the visible timer continues locally between server snapshots. This PC still opens only one WebSocket.</div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects only after Register is pressed.</small></div></div>
         <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
@@ -77,7 +78,7 @@
             <label>Shared Master room PIN<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
             <label>Isolated PC channel<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned by server" readonly /></label>
           </div>
-          <p class="approval-note">One submitted computer becomes one isolated channel representing exactly three students. The server assigns Channel 1–9 and creates eight bots automatically. After teacher approval, press <strong>I AM READY</strong>; the Master may start this channel independently.</p>
+          <p class="approval-note">One submitted computer represents exactly three students. The server assigns Channel 1–9 and creates five bots automatically. After teacher approval there is no Ready button; wait for the Master to start the channel.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
@@ -89,19 +90,19 @@
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
           <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Shared room</span><b id="waitingRoomCode">------</b></div><div><span>PC channel</span><b id="waitingPcLabel">—</b></div><div><span>Opponents</span><b>8 server bots after approval</b></div></div>
+          <div class="waiting-meta"><div><span>Shared room</span><b id="waitingRoomCode">------</b></div><div><span>PC channel</span><b id="waitingPcLabel">—</b></div><div><span>Opponents</span><b>5 server bots after approval</b></div></div>
           <div class="registered-students"><span>THREE STUDENTS REPRESENTED BY THIS REAL PLAYER</span><strong id="waitingStudents">—</strong></div>
         </section>
 
         <section id="approvedPanel" class="room-panel hidden" aria-live="polite">
-          <div class="room-heading"><div><span>APPROVED ISOLATED CHANNEL</span><strong id="roomCodeLarge">------</strong></div><button id="readyButton" class="primary-button compact-button" type="button" disabled>I AM READY</button></div>
+          <div class="room-heading"><div><span>APPROVED · MASTER-CONTROLLED START</span><strong id="roomCodeLarge">------</strong></div></div>
           <section class="assigned-team-card"><span id="assignedTeamColor" class="large-color-dot"></span><div><small>YOUR CHANNEL TEAM</small><strong id="assignedTeamName">Waiting for channel assignment</strong></div></section>
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">This roster contains only your real PC team and the eight bots in your private channel. Other classroom PCs play in separate channels and cannot affect this arena or connection.</p>
+          <p class="approval-note">This roster contains your real PC team and five bots. The Master may start immediately after approval. Geometry questions rotate through the three registered students; assigned deaths and each answer attempt are stored separately.</p>
         </section>
 
-        <div class="rule-grid"><div><b>1 + 8</b><span>real PC vs bots</span></div><div><b>10 min</b><span>independent match</span></div><div><b>2.5–5</b><span>live channel score</span></div><div><b>30 / 10</b><span>physics / snapshots</span></div></div>
+        <div class="rule-grid"><div><b>1 + 5</b><span>real PC vs bots</span></div><div><b>10 min</b><span>independent match</span></div><div><b>3 records</b><span>individual answers</span></div><div><b>AUTO</b><span>Master-controlled start</span></div></div>
       </div>
     </section>
 
@@ -115,7 +116,7 @@
         <h2 id="endTitle">Channel complete</h2>
         <p id="winnerSummary" class="lead"></p>
         <div id="finalRanking" class="final-ranking"></div>
-        <p class="student-private-report-note-v23"><strong>Your screen contains only this channel's team ranking and score.</strong> The complete report with the three student names, individual statistics and every geometry answer is delivered only to the authenticated Master page.</p>
+        <p class="student-private-report-note-v23"><strong>Your screen contains only this channel's team ranking and score.</strong> The authenticated Master receives a separate record for each registered student, including assigned deaths, correct answers, wrong answers, timeouts, response times and complete answer history.</p>
         <div class="student-private-report-disabled-v23" hidden aria-hidden="true">
           <button id="downloadCsvButton" type="button" disabled></button>
           <button id="downloadJsonButton" type="button" disabled></button>
@@ -126,13 +127,14 @@
     </section>
   </main>
 
-  <script src="student-bootstrap-v25.js?v=20260723-fluid-clean25"></script>
-  <script src="student-fluid-v25.js?v=20260723-fluid-clean25"></script>
-  <script src="student-input-v18.js?v=20260723-fluid-clean25"></script>
-  <script src="student-arena-v22.js?v=20260723-fluid-clean25"></script>
-  <script src="student-score-resilience-v23.js?v=20260723-fluid-clean25"></script>
-  <script src="config.js?v=20260723-fluid-clean25"></script>
-  <script src="question-ui-v19.js?v=20260723-fluid-clean25"></script>
-  <script src="student-app-v16.js?v=20260723-fluid-clean25"></script>
+  <script src="student-bootstrap-v25.js?v=20260724-stable-autostart26"></script>
+  <script src="student-fluid-v25.js?v=20260724-stable-autostart26"></script>
+  <script src="student-input-v18.js?v=20260724-stable-autostart26"></script>
+  <script src="student-arena-v22.js?v=20260724-stable-autostart26"></script>
+  <script src="student-score-resilience-v23.js?v=20260724-stable-autostart26"></script>
+  <script src="config.js?v=20260724-stable-autostart26"></script>
+  <script src="question-ui-v19.js?v=20260724-stable-autostart26"></script>
+  <script src="student-stable-v26.js?v=20260724-stable-autostart26"></script>
+  <script src="student-app-v16.js?v=20260724-stable-autostart26"></script>
 </body>
 </html>

@@ -4,7 +4,13 @@
   if (typeof HTMLCanvasElement === "undefined") return;
 
   const nativeGetContext = HTMLCanvasElement.prototype.getContext;
+  const nativeRequestAnimationFrame = window.requestAnimationFrame.bind(window);
   const suppressedContexts = new WeakMap();
+  const LEGACY_FRAME_INTERVAL_MS = 200;
+
+  let captureLegacyRenderer = true;
+  let legacyRendererCallback = null;
+  let lastLegacyFrameAt = 0;
 
   function makeGradientStub() {
     return { addColorStop() {} };
@@ -33,7 +39,29 @@
     });
   }
 
-  HTMLCanvasElement.prototype.getContext = function triadV12GetContext(type, ...args) {
+  function scheduleLegacyFrame(callback) {
+    const tick = (frameAt) => {
+      if (document.hidden || frameAt - lastLegacyFrameAt < LEGACY_FRAME_INTERVAL_MS) {
+        nativeRequestAnimationFrame(tick);
+        return;
+      }
+      lastLegacyFrameAt = frameAt;
+      callback(frameAt);
+    };
+    return nativeRequestAnimationFrame(tick);
+  }
+
+  window.requestAnimationFrame = function triadV13RequestAnimationFrame(callback) {
+    if (captureLegacyRenderer && !legacyRendererCallback) legacyRendererCallback = callback;
+    if (callback === legacyRendererCallback) return scheduleLegacyFrame(callback);
+    return nativeRequestAnimationFrame(callback);
+  };
+
+  window.__triadFinishLegacyCapture = () => {
+    captureLegacyRenderer = false;
+  };
+
+  HTMLCanvasElement.prototype.getContext = function triadV13GetContext(type, ...args) {
     if (this.id === "gameCanvas" && type === "2d") {
       let context = suppressedContexts.get(this);
       if (!context) {
@@ -47,4 +75,5 @@
   };
 
   window.__triadLegacyRendererSuppressed = true;
+  window.__triadLegacyRendererFps = Math.round(1000 / LEGACY_FRAME_INTERVAL_MS);
 })();

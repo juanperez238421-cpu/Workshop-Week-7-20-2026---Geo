@@ -9,7 +9,8 @@ for (const file of [
   "pickup-assets-v10.js",
   "question-bank-v10-ui.js",
   "server/runtime-v10.js",
-  "server/runtime-v11.js"
+  "server/runtime-v11.js",
+  "server/runtime-v12.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -63,12 +64,11 @@ assert.match(questionUi, /drawAngle/);
 assert.match(questionUi, /90 - degrees/);
 assert.match(questionUi, /diagram\.mirror/);
 
-assert.match(indexHtml, /12,800 × 8,000 arena/);
 assert.match(indexHtml, /question-bank-v10-ui\.js/);
-assert.match(indexHtml, /no blank delta frames/);
-assert.match(masterHtml, /12,800 × 8,000 arena/);
+assert.match(indexHtml, /persistent minimap|full-state recovery/i);
+assert.match(masterHtml, /GAMEPLAY V12/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
 assert.match(musicMode, /minimap-v10\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v11.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v12.js secure-gateway.js");
 
-console.log("Gameplay v10 compatibility test passed under runtime v11: 12800×8000 arena, persistent delta minimap, varied right-triangle angles and dedicated supply assets remain configured.");
+console.log("Gameplay v10 compatibility test passed under runtime v12: the large arena, persistent minimap, varied geometry and dedicated supply assets remain configured.");

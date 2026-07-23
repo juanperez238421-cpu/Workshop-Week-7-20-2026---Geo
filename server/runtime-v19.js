@@ -45,7 +45,7 @@ const SOLO_TICK_STAGGER_STEP_MS = Math.max(1, Math.floor((1000 / TICK_RATE) / SO
 
   source = replacePattern(
     source,
-    /  updateBots\(now\) \{[^\n]+\}/,
+    /  updateBots\(now\) \{[\s\S]*?\n  \}\n  tick\(\)/,
     `  updateBots(now) {
     if (this.phase !== "playing" || now < (this._nextBotThinkAt || 0)) return;
     this._nextBotThinkAt = now + SOLO_BOT_THINK_INTERVAL_MS;
@@ -78,7 +78,8 @@ const SOLO_TICK_STAGGER_STEP_MS = Math.max(1, Math.floor((1000 / TICK_RATE) / SO
       };
       if (dash) bot.ai.nextDashAt = now + 3000 + crypto.randomInt(2400);
     }
-  }`,
+  }
+  tick()`,
     "throttled nearest-target bot decisions"
   );
 
@@ -93,11 +94,10 @@ const SOLO_TICK_STAGGER_STEP_MS = Math.max(1, Math.floor((1000 / TICK_RATE) / SO
     "student-centered state focus"
   );
 
-  source = replaceRequired(
-    source,
+  if (!source.includes("        students: player.students,")) throw new Error("Triad v19 patch could not find: repeated player student aliases");
+  source = source.replaceAll(
     "        students: player.students,",
-    "        students: player.isBot ? undefined : player.students,",
-    "omit repeated bot student aliases"
+    "        students: player.isBot ? undefined : player.students,"
   );
 
   source = replaceRequired(

@@ -7,12 +7,13 @@ const vm = require("node:vm");
 const studentHtml = fs.readFileSync("index.html", "utf8");
 const studentBootstrap = fs.readFileSync("student-bootstrap-v17.js", "utf8");
 const studentInput = fs.readFileSync("student-input-v18.js", "utf8");
-const studentGameplay = fs.readFileSync("student-gameplay-v20.js", "utf8");
+const studentGameplay = fs.readFileSync("student-master-view-v21.js", "utf8");
 const questionUi = fs.readFileSync("question-ui-v19.js", "utf8");
 const studentJs = fs.readFileSync("student-app-v16.js", "utf8");
 const studentCss = fs.readFileSync("student-v16.css", "utf8");
-const gameplayCss = fs.readFileSync("student-gameplay-v20.css", "utf8");
+const gameplayCss = fs.readFileSync("student-master-view-v21.css", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
+const masterLive = fs.readFileSync("master-live-v9.js", "utf8");
 const masterReport = fs.readFileSync("master-report-v18.js", "utf8");
 const masterScroll = fs.readFileSync("master-scroll-guard.js", "utf8");
 const teacherAuth = fs.readFileSync("teacher-auth.js", "utf8");
@@ -26,9 +27,10 @@ const server = fs.readFileSync("server/server-v3.js", "utf8");
 for (const [name, source] of [
   ["student-bootstrap-v17.js", studentBootstrap],
   ["student-input-v18.js", studentInput],
-  ["student-gameplay-v20.js", studentGameplay],
+  ["student-master-view-v21.js", studentGameplay],
   ["question-ui-v19.js", questionUi],
   ["student-app-v16.js", studentJs],
+  ["master-live-v9.js", masterLive],
   ["master-report-v18.js", masterReport],
   ["master-scroll-guard.js", masterScroll],
   ["server/runtime-v13.js", runtimeV13],
@@ -51,12 +53,12 @@ assert.equal([...studentHtml.matchAll(/\sid="([^"]+)"/g)].length, ids.size, "Stu
 
 const scripts = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
 assert.deepEqual(scripts, [
-  "student-bootstrap-v17.js?v=20260723-fluidgameplay20",
-  "student-input-v18.js?v=20260723-fluidgameplay20",
-  "student-gameplay-v20.js?v=20260723-fluidgameplay20",
-  "config.js?v=20260723-fluidgameplay20",
-  "question-ui-v19.js?v=20260723-fluidgameplay20",
-  "student-app-v16.js?v=20260723-fluidgameplay20"
+  "student-bootstrap-v17.js?v=20260723-masterviewaim21",
+  "student-input-v18.js?v=20260723-masterviewaim21",
+  "student-master-view-v21.js?v=20260723-masterviewaim21",
+  "config.js?v=20260723-masterviewaim21",
+  "question-ui-v19.js?v=20260723-masterviewaim21",
+  "student-app-v16.js?v=20260723-masterviewaim21"
 ]);
 
 for (const removedLayer of [
@@ -65,13 +67,14 @@ for (const removedLayer of [
   "student-registration-sync.js",
   "student-app-v15.js",
   "student-combat-v18.js",
+  "student-gameplay-v20.js",
   "music-mode-ui.js",
   "gameplay-v9.js",
   "network-v12.js",
   "minimap-v10.js",
   "question-bank-v10-ui.js",
   "team-selection-v8.js"
-]) assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the v20 student page`);
+]) assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the v21 student page`);
 
 assert.doesNotMatch(studentBootstrap, /HTMLCanvasElement\.prototype/);
 assert.match(studentBootstrap, /canvas\.getContext = function lazyGetContext/);
@@ -85,15 +88,34 @@ assert.match(studentInput, /event\.stopPropagation\(\)/);
 assert.doesNotMatch(studentInput, /event\.preventDefault\(\)/);
 assert.match(studentInput, /fullNamesWithSpaces: true/);
 
-assert.match(studentGameplay, /gameplayCanvasV20/);
-assert.match(studentGameplay, /predicted-local-interpolated-remote/);
-assert.match(studentGameplay, /authoritative-swept-projectile-v20/);
-assert.match(studentGameplay, /function predictLocal/);
-assert.match(studentGameplay, /function smoothRemotePlayers/);
-assert.match(studentGameplay, /function spawnLocalShotFx/);
+assert.match(studentGameplay, /studentMasterViewCanvasV21/);
+assert.match(studentGameplay, /visualReference: "master-live-v9"/);
+assert.match(studentGameplay, /player-centered-master-view/);
+assert.match(studentGameplay, /observe-existing-single-socket/);
+assert.match(studentGameplay, /function syncPlayers/);
+assert.match(studentGameplay, /function syncProjectiles/);
+assert.match(studentGameplay, /function updateTransform/);
 assert.match(studentGameplay, /function updateCooldownHud/);
+assert.match(studentGameplay, /function spawnPredictedShot/);
+assert.match(studentGameplay, /message\.angle = aim\.angle/);
+assert.match(studentGameplay, /addEventListener\("pointerdown"/);
+assert.match(studentGameplay, /addEventListener\("contextmenu"/);
+assert.match(studentGameplay, /setPointerCapture/);
 assert.doesNotMatch(studentGameplay, /new WebSocket\s*\(/);
-assert.match(gameplayCss, /body\.gameplay-v20-active #gameplayCanvasV20/);
+assert.match(gameplayCss, /body\.master-view-v21-active #studentMasterViewCanvasV21/);
+assert.match(gameplayCss, /pointer-events: auto/);
+assert.match(gameplayCss, /cursor: crosshair/);
+
+for (const sharedVisualMarker of [
+  'ctx.fillStyle = "#e8eef6"',
+  'ctx.fillStyle = "#fbfcfe"',
+  'ctx.moveTo(size * 1.45, 0)',
+  'ctx.lineTo(-size, size * 0.92)',
+  'L${player.lives ?? 3} · A${player.ammo ?? 5}'
+]) {
+  assert.ok(masterLive.includes(sharedVisualMarker), `master live visual marker missing: ${sharedVisualMarker}`);
+  assert.ok(studentGameplay.includes(sharedVisualMarker), `student master-view marker missing: ${sharedVisualMarker}`);
+}
 
 assert.doesNotMatch(studentJs, /WebSocket\.prototype/);
 assert.doesNotMatch(studentJs, /HTMLCanvasElement\.prototype/);
@@ -117,9 +139,10 @@ assert.match(questionUi, /sin = opposite \/ hypotenuse/);
 assert.match(questionUi, /cos = adjacent \/ hypotenuse/);
 assert.match(questionUi, /reference height \/ reference shadow = h \/ target shadow/);
 
-assert.match(studentHtml, /FLUID GAMEPLAY V20/);
+assert.match(studentHtml, /MASTER VIEW GAMEPLAY V21/);
 assert.match(studentHtml, /GEOMETRY BANK V19/);
-assert.match(studentHtml, /visible server-authoritative bullets/i);
+assert.match(studentHtml, /HOLD RIGHT CLICK and move mouse to aim/);
+assert.match(studentHtml, /release right click to lock that direction/i);
 assert.match(studentHtml, /Pythagorean/);
 assert.match(studentHtml, /Thales/);
 assert.match(studentHtml, /id="student1Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
@@ -166,4 +189,4 @@ assert.match(runtimeV15, /relative-motion swept projectile collision/);
 assert.match(runtimeV15, /shotCooldownMs/);
 assert.match(runtimeV15, /dashCooldownMs/);
 
-console.log("Smoke test passed: v20 preserves registration-first networking, reporting v18 and focused geometry v19 while restoring fluid predicted movement and visible swept projectile combat.");
+console.log("Smoke test passed: Master View Gameplay v21 restores reliable mouse aim and matches the teacher live-panel visual language while preserving stable networking, Reporting v18, Geometry v19 and the v20 authoritative server.");

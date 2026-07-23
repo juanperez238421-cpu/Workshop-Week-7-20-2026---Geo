@@ -9,12 +9,12 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Master Teacher Control</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="master.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="master-v3.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="teacher-auth.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="master-layout-fix.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="master-live-game.css?v=20260723-hitboxnet12" />
+  <link rel="stylesheet" href="styles.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="master.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="master-v3.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="teacher-auth.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="master-layout-fix.css?v=20260723-hitscanreport18" />
+  <link rel="stylesheet" href="master-live-game.css?v=20260723-hitscanreport18" />
   <style id="master-critical-scroll-fix">
     html,
     body {
@@ -69,9 +69,9 @@
   <main id="teacherApp" class="master-shell teacher-app" hidden>
     <header class="master-topbar">
       <div>
-        <p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3 · GAMEPLAY V12</p>
+        <p class="eyebrow">SECURE CLASSROOM CONTROL · PROTOCOL 3 · COMBAT / REPORTING V18</p>
         <h1>Triad Territory Rush</h1>
-        <span>1–9 players · soft full-state resync · stale-socket protection · moving-target long-shot collision · 5-second ammo recovery</span>
+        <span>1–9 players · authoritative semi-auto hitscan · automatic complete metadata export · cumulative global score backup</span>
       </div>
       <div class="master-status teacher-session-actions">
         <span id="connectionBadge" class="connection-badge offline">OFFLINE</span>
@@ -125,7 +125,7 @@
         <div class="section-heading">
           <div>
             <h2 id="registrationInboxTitle">Student registration requests</h2>
-            <p>Every submitted PC appears here immediately with exactly three student names. Review the names, then approve or reject that single player slot.</p>
+            <p>Every submitted PC appears here immediately with exactly three student names. Review the full names, then approve or reject that single player slot.</p>
           </div>
           <span id="pendingInboxBadge" class="registration-state-pill"><b id="pendingInboxCount">0</b> WAITING</span>
         </div>
@@ -153,7 +153,7 @@
         <div class="master-live-toolbar">
           <div>
             <h2 id="masterLiveGameTitle">Live arena and master player station</h2>
-            <p>Watch the authoritative arena with soft resynchronization before reconnection, protected restored sessions, relative-motion projectile collision and stable interpolation.</p>
+            <p>Watch the authoritative arena with protected restored sessions, server-resolved hitscan combat and stable state synchronization.</p>
           </div>
           <div class="button-row">
             <button id="masterFullscreenButton" class="secondary-button" type="button">FULLSCREEN LIVE ARENA</button>
@@ -178,7 +178,7 @@
           <div class="master-player-station-head">
             <div>
               <h3>Master browser player station</h3>
-              <p>Register this browser as a normal PC player with three represented names. Approve it in the registration inbox, then use WASD and Shift for movement, hold right click to aim, and press Space to shoot.</p>
+              <p>Register this browser as a normal PC player with three represented names. Approve it in the registration inbox, then use WASD and Shift for movement, hold right click to aim, and tap Space to fire.</p>
             </div>
             <div class="button-row">
               <button id="masterResetPlayerButton" class="secondary-button" type="button">RESET PLAYER SESSION</button>
@@ -196,7 +196,7 @@
         <div class="section-heading">
           <div>
             <h2>Current match structure and combat rules</h2>
-            <p>Start with <strong>1–9 approved players</strong>. Teams may be uneven. Every real player must be connected and Ready. Long shots remain active for a greater range, use moving-target swept collision and receive a limited distance allowance. Ammunition recovers by <strong>1 charge every 5 seconds</strong>.</p>
+            <p>Start with <strong>1–9 approved players</strong>. Teams may be uneven. Every real player must be connected and Ready. Tap Space for an immediate server-authoritative hitscan shot; holding Space does not create uncontrolled automatic fire. Ammunition recovers by <strong>1 charge every 5 seconds</strong>.</p>
           </div>
         </div>
       </section>
@@ -228,22 +228,23 @@
 
       <section id="reportPanel" class="master-card hidden">
         <div class="section-heading">
-          <div><h2>Final classroom report</h2><p id="winnerSummary"></p></div>
+          <div><h2>Final classroom report</h2><p id="winnerSummary"></p><p id="automaticReportStatus">At match end, a complete JSON file downloads automatically and a cumulative browser backup is updated.</p></div>
           <div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div>
         </div>
         <div id="finalRanking" class="final-ranking"></div>
-        <div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Kills</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Question accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div>
       </section>
     </section>
   </main>
-  <script src="config.js?v=20260723-hitboxnet12"></script>
-  <script src="master-registration-sync.js?v=20260723-hitboxnet12"></script>
-  <script src="master-enhancements.js?v=20260723-hitboxnet12"></script>
-  <script src="master-live-game.js?v=20260723-hitboxnet12"></script>
-  <script src="teacher-auth.js?v=20260723-hitboxnet12"></script>
-  <script id="networkV12Script" src="network-v12.js?v=20260723-hitboxnet12"></script>
-  <script id="masterFlexStartV11Script" src="master-flex-start-v11.js?v=20260723-hitboxnet12"></script>
-  <script src="music-mode-ui.js?v=20260723-hitboxnet12"></script>
-  <script src="master-scroll-guard.js?v=20260723-hitboxnet12"></script>
+  <script src="config.js?v=20260723-hitscanreport18"></script>
+  <script src="master-report-v18.js?v=20260723-hitscanreport18"></script>
+  <script src="master-registration-sync.js?v=20260723-hitscanreport18"></script>
+  <script src="master-enhancements.js?v=20260723-hitscanreport18"></script>
+  <script src="master-live-game.js?v=20260723-hitscanreport18"></script>
+  <script src="teacher-auth.js?v=20260723-hitscanreport18"></script>
+  <script id="networkV12Script" src="network-v12.js?v=20260723-hitscanreport18"></script>
+  <script id="masterFlexStartV11Script" src="master-flex-start-v11.js?v=20260723-hitscanreport18"></script>
+  <script src="music-mode-ui.js?v=20260723-hitscanreport18"></script>
+  <script src="master-scroll-guard.js?v=20260723-hitscanreport18"></script>
 </body>
 </html>

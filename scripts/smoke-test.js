@@ -115,7 +115,7 @@ assert.match(gameplayCss, /pointer-events: auto/);
 assert.match(gameplayCss, /cursor: crosshair/);
 
 for (const marker of [
-  "student-score-resilience-v23",
+  "20260723-private-score23",
   "teamScores",
   "YOUR GROUP SCORE",
   "request_state",

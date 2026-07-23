@@ -76,7 +76,6 @@
       return loadScript("network-v12.js", "networkV12Script")
         .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
         .then(() => loadScript("gameplay-v9.js", "gameplayV9Script"))
-        .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
         .then(() => loadScript("team-selection-v8.js", "teamSelectionV8Script"))
         .then(() => loadScript("combat-feed.js", "combatFeedScript"));
     }
@@ -88,7 +87,6 @@
       .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
       .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"))
       .then(() => loadScript("master-live-v9.js", "masterLiveV9Script"))
-      .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
       .then(() => loadScript("combat-feed.js", "combatFeedScript"));
   }
 

@@ -62,7 +62,8 @@ const indexHtml = fs.readFileSync("index.html", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
 assert.match(indexHtml, /student-bootstrap-v17\.js/);
 assert.match(indexHtml, /5 s|5-second|5 seconds/);
-assert.match(indexHtml, /visible swept bullets/i);
+assert.match(indexHtml, /Master View Gameplay v21/i);
+assert.match(indexHtml, /student-master-view-v21\.js/);
 assert.match(indexHtml, /question-ui-v19\.js/);
 assert.match(masterHtml, /REPORTING V18/);
 assert.match(masterHtml, /network-v12\.js/);
@@ -121,4 +122,4 @@ assert.equal(player.ws, currentSocket);
 room.sendFullStateTo(currentSocket, Date.now());
 assert.ok(sent.some((message) => message.type === "state" && message.resync === true && Array.isArray(message.territory)));
 
-console.log("Gameplay v12 compatibility test passed under runtime v15: five-second ammo recovery, full-state resync and stale-socket protection remain active beneath Gameplay v20.");
+console.log("Gameplay v12 compatibility test passed under runtime v15: five-second ammo recovery, full-state resync and stale-socket protection remain active beneath Master View Gameplay v21.");

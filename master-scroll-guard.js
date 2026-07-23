@@ -4,7 +4,7 @@
   const root = document.documentElement;
   const body = document.body;
   const app = document.getElementById("teacherApp");
-  const STUDENT_BUILD = String(window.TRIAD_CONFIG?.clientBuild || "20260723-studentfix14");
+  const STUDENT_BUILD = String(window.TRIAD_CONFIG?.clientBuild || "20260723-studentstable15");
 
   function applyMasterViewport() {
     root.style.setProperty("width", "100%", "important");
@@ -103,8 +103,8 @@
     const frame = document.getElementById("masterPlayerFrame");
     const feed = document.getElementById("masterLiveFeedStatus");
 
-    if (joinButton && joinButton.dataset.studentV14Bound !== "true") {
-      joinButton.dataset.studentV14Bound = "true";
+    if (joinButton && joinButton.dataset.studentStableV15Bound !== "true") {
+      joinButton.dataset.studentStableV15Bound = "true";
       joinButton.addEventListener("click", (event) => {
         const url = studentUrl("master");
         if (!url || !station || !frame) return;
@@ -118,8 +118,8 @@
       }, true);
     }
 
-    if (openButton && openButton.dataset.studentV14Bound !== "true") {
-      openButton.dataset.studentV14Bound = "true";
+    if (openButton && openButton.dataset.studentStableV15Bound !== "true") {
+      openButton.dataset.studentStableV15Bound = "true";
       openButton.addEventListener("click", (event) => {
         const url = studentUrl("master");
         if (!url) return;

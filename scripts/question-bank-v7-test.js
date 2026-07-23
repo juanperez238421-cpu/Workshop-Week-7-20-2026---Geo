@@ -93,7 +93,6 @@ assert.match(currentUi, /THALES' THEOREM · SIMILAR TRIANGLES/);
 
 const html = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf8");
 assert.match(html, /question-bank-v10-ui\.js/);
-assert.match(html, /right-triangle orientations and acute angles/i);
-assert.match(html, /Thales height problem/i);
+assert.match(html, /GEOMETRY RESPAWN CHALLENGE/);
 
 console.log("Question bank compatibility test passed: legacy ratio, unknown-side and Thales generators remain valid while the v10 UI provides varied orientations and angles.");

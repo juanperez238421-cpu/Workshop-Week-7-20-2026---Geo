@@ -37,7 +37,10 @@
 
   function targetFps(callbackName) {
     if (document.hidden) return 12;
-    if (callbackName === "frame") return 20;
+    // student-app-v16 keeps the clock, question timer and minimap alive in its
+    // callback named "frame". Its full arena canvas is virtual in v25, so five
+    // support updates per second are enough and avoid a second high-rate world loop.
+    if (callbackName === "frame") return 5;
     if (lowDetailActive()) return 38;
     if (hardwareThreads <= 4 || deviceMemory <= 4) return 45;
     return 52;
@@ -93,6 +96,7 @@
     normalTargetFps: 52,
     recoveryTargetFps: 38,
     hiddenTabTargetFps: 12,
+    legacySupportLoopFps: 5,
     legacyRendererDisabledByBootstrap: true,
     opensAdditionalSocket: false,
     stop() {

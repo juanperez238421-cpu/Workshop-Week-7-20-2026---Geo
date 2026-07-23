@@ -8,12 +8,15 @@ for (const file of [
   "minimap-v10.js",
   "pickup-assets-v10.js",
   "question-bank-v10-ui.js",
+  "master-solo-channels-v24.js",
   "server/runtime-v10.js",
   "server/runtime-v11.js",
   "server/runtime-v12.js",
   "server/runtime-v13.js",
   "server/runtime-v14.js",
-  "server/runtime-v15.js"
+  "server/runtime-v15.js",
+  "server/runtime-v16.js",
+  "server/runtime-v18.js"
 ]) new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 
 const runtimeModule = require("../server/runtime-v10.js");
@@ -28,6 +31,7 @@ const questionUi = fs.readFileSync("question-bank-v10-ui.js", "utf8");
 const indexHtml = fs.readFileSync("index.html", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
 const musicMode = fs.readFileSync("music-mode-ui.js", "utf8");
+const soloMaster = fs.readFileSync("master-solo-channels-v24.js", "utf8");
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
 
 assert.match(patchedServer, /width: 12800, height: 8000, gridWidth: 40, gridHeight: 25/);
@@ -69,9 +73,12 @@ assert.match(indexHtml, /student-app-v16\.js/);
 assert.match(indexHtml, /student-arena-v22\.js/);
 assert.match(indexHtml, /question-ui-v19\.js/);
 assert.doesNotMatch(indexHtml, /student-master-view-v21\.js/);
-assert.match(masterHtml, /REPORTING V18/);
+assert.match(masterHtml, /SOLO CHANNELS V24/);
+assert.match(masterHtml, /master-solo-channels-v24\.js/);
 assert.match(musicMode, /pickup-assets-v10\.js/);
+assert.match(musicMode, /master-solo-channels-v24\.js/);
 assert.doesNotMatch(musicMode, /minimap-v10\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
+assert.match(soloMaster, /masterAggregateHz: 1/);
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v18.js secure-gateway.js");
 
-console.log("Gameplay v10 compatibility test passed under runtime v15: large-arena assets and focused geometry remain compatible with Recovered Arena v22.");
+console.log("Gameplay v10 compatibility test passed beneath Solo Channels v24: large-arena assets and focused geometry remain compatible with one-human-plus-eight-bot channels and aggregate Master telemetry.");

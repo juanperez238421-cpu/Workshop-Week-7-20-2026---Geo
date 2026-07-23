@@ -8,16 +8,16 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="online.css?v=20260723-hitboxnet12" />
-  <link rel="stylesheet" href="student-v3.css?v=20260723-hitboxnet12" />
+  <link rel="stylesheet" href="styles.css?v=20260723-studentfix13" />
+  <link rel="stylesheet" href="online.css?v=20260723-studentfix13" />
+  <link rel="stylesheet" href="student-v3.css?v=20260723-studentfix13" />
 </head>
 <body>
   <main id="app">
     <canvas id="gameCanvas" aria-label="Triad Territory Rush online arena"></canvas>
 
     <header class="topbar">
-      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>Gameplay v12 · moving-target long-shot hitboxes · soft state resync · 5-second ammo recovery · 1–9 active players</span></div>
+      <div class="brand"><strong>TRIAD TERRITORY RUSH</strong><span>Student fix v13 · automatic player identity · direct teacher approval · reduced duplicate rendering · 1–9 active players</span></div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">05:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
     </header>
@@ -39,14 +39,14 @@
       <div class="cooldown-row"><span>DASH</span><progress id="dashCooldown" max="1" value="1"></progress></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Persistent authoritative territory · full-state recovery on demand</small></aside>
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Arena minimap"></canvas><small>Persistent authoritative territory · lightweight 5 FPS lobby map</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · hold RIGHT CLICK and move the mouse to aim · release to lock · SPACE fires · SHIFT dashes</div>
 
     <section id="lobbyOverlay" class="overlay visible" aria-modal="true" role="dialog">
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
-          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · GAMEPLAY V12</p><h1>Register a classroom PC player</h1><p class="lead">This computer controls one arena player representing exactly three students. The teacher may start with any number from 1 to 9 approved players. Gameplay v12 suppresses the duplicate legacy arena renderer, requests a complete authoritative state before disconnecting, protects a newly restored socket from stale close events, and reconnects only when soft recovery fails. Long shots now use relative-motion collision against the target's complete movement segment, receive a small distance-based hitbox allowance, and remain active for a longer valid range. Every ammunition charge recovers automatically after 5 seconds.</p></div>
+          <div><p class="eyebrow">STUDENT GAME · ONLINE MULTIPLAYER · STUDENT FIX V13</p><h1>Register a classroom PC player</h1><p class="lead">Enter the current six-character room code and exactly three student names. This browser receives a unique player title automatically, sends one registration request to the teacher, and can mark Ready immediately after approval. The lightweight student client keeps the enhanced arena while removing duplicate full-speed render and minimap loops.</p></div>
         </div>
 
         <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Checking game server…</strong><small id="serverHealthText">The configured Render service will be tested automatically.</small></div></div>
@@ -55,10 +55,10 @@
         <section id="registrationForm">
           <div class="registration-grid registration-top-row">
             <label>Room code<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
-            <label>Random PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned automatically" readonly title="The server assigns a unique random title after submission." /></label>
+            <label>Automatic PC / player title<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned automatically" readonly title="A unique title is generated for this browser." /></label>
           </div>
           <select id="teamSelect" hidden aria-hidden="true" tabindex="-1"><option value="0" selected>Random assignment</option></select>
-          <p class="approval-note">One submitted PC equals one active player slot. The teacher approves the registration first; then the player selects any team name with available capacity. The room can start before reaching nine players.</p>
+          <p class="approval-note">One submitted PC equals one active player slot. The teacher approves the registration first; then the player may select any team with available capacity and mark Ready. A match may start with 1–9 approved players.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="24" autocomplete="off" placeholder="Student 1" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="24" autocomplete="off" placeholder="Student 2" /></label>
@@ -108,7 +108,7 @@
 
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">The teacher can start with 1–9 approved players. Teams may be uneven during testing. Select a team with capacity and mark Ready; AI remains optional.</p>
+          <p class="approval-note">Select a team with capacity and mark Ready. The teacher can start with 1–9 approved players; teams may be uneven during testing and AI remains optional.</p>
         </section>
 
         <div class="rule-grid"><div><b>1–9</b><span>active players</span></div><div><b>3</b><span>lives before question</span></div><div><b>5</b><span>ammo charges</span></div><div><b>5 s</b><span>automatic ammo recovery</span></div></div>
@@ -123,11 +123,11 @@
       <div class="modal end-modal"><p class="eyebrow">FINAL SERVER REPORT</p><h2 id="endTitle">Match complete</h2><p id="winnerSummary" class="lead"></p><div id="finalRanking" class="final-ranking"></div><div class="report-toolbar"><div><strong>Questionnaire data</strong><span>Active player slots, three-student rosters, AI status and geometry attempts</span></div><div class="button-row"><button id="downloadCsvButton" class="secondary-button" type="button">DOWNLOAD CSV</button><button id="downloadJsonButton" class="secondary-button" type="button">DOWNLOAD JSON</button></div></div><div class="table-wrap"><table><thead><tr><th>PC player</th><th>Three students</th><th>Team</th><th>Type</th><th>Territory</th><th>Deaths</th><th>Attempts</th><th>Correct</th><th>Wrong</th><th>Timeouts</th><th>Accuracy</th></tr></thead><tbody id="reportTableBody"></tbody></table></div><button id="returnLobbyButton" class="primary-button" type="button">RETURN TO REGISTRATION</button></div>
     </section>
   </main>
-  <script src="renderer-bootstrap-v12.js?v=20260723-hitboxnet12"></script>
-  <script src="config.js?v=20260723-hitboxnet12"></script>
-  <script src="student-v3.js?v=20260723-hitboxnet12"></script>
-  <script src="student-registration-sync.js?v=20260723-hitboxnet12"></script>
-  <script src="music-mode-ui.js?v=20260723-hitboxnet12"></script>
-  <script src="question-bank-v10-ui.js?v=20260723-hitboxnet12"></script>
+  <script src="renderer-bootstrap-v12.js?v=20260723-studentfix13"></script>
+  <script src="config.js?v=20260723-studentfix13"></script>
+  <script src="student-v3.js?v=20260723-studentfix13"></script>
+  <script src="student-registration-sync.js?v=20260723-studentfix13"></script>
+  <script src="music-mode-ui.js?v=20260723-studentfix13"></script>
+  <script src="question-bank-v10-ui.js?v=20260723-studentfix13"></script>
 </body>
 </html>

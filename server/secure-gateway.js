@@ -1,5 +1,7 @@
 "use strict";
 
+require("./runtime-v16.js");
+
 const crypto = require("node:crypto");
 const http = require("node:http");
 const path = require("node:path");
@@ -238,13 +240,3 @@ function shutdown() {
 
 process.on("SIGTERM", shutdown);
 process.on("SIGINT", shutdown);
-
-module.exports = {
-  DEFAULT_TEACHER_PASSWORD,
-  PROTECTED_TEACHER_MESSAGES,
-  passwordMatches,
-  protectedTeacherMessage,
-  teacherTokenValid,
-  issueTeacherToken,
-  originAllowed
-};

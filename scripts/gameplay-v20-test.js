@@ -44,33 +44,35 @@ assert.doesNotMatch(patchedServer, /const HITSCAN_RANGE = 3900/);
 assert.doesNotMatch(patchedServer, /type: "tracer"/);
 
 const legacyClient = fs.readFileSync(path.join(root, "student-gameplay-v20.js"), "utf8");
-const activeClient = fs.readFileSync(path.join(root, "student-master-view-v21.js"), "utf8");
+const activeClient = fs.readFileSync(path.join(root, "student-arena-v22.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const serverPackage = JSON.parse(fs.readFileSync(path.join(root, "server", "package.json"), "utf8"));
 
 new vm.Script(legacyClient, { filename: "student-gameplay-v20.js" });
-new vm.Script(activeClient, { filename: "student-master-view-v21.js" });
+new vm.Script(activeClient, { filename: "student-arena-v22.js" });
 
 for (const marker of [
   "function syncPlayers",
   "function syncProjectiles",
   "function updateCooldownHud",
   "message.angle = aim.angle",
-  "studentMasterViewCanvasV21",
-  "observe-existing-single-socket"
-]) assert.ok(activeClient.includes(marker), `missing active v21 compatibility marker: ${marker}`);
+  "studentRecoveredArenaCanvasV22",
+  "observe-existing-single-socket",
+  "connectionConfigurationPreserved: true"
+]) assert.ok(activeClient.includes(marker), `missing active v22 compatibility marker: ${marker}`);
 
-assert.doesNotMatch(activeClient, /new WebSocket\s*\(/, "v21 must observe the stable student socket rather than opening a second connection");
+assert.doesNotMatch(activeClient, /new WebSocket\s*\(/, "v22 must observe the stable student socket rather than opening a second connection");
 assert.match(activeClient, /WebSocket\.prototype\.send/);
-assert.match(html, /student-master-view-v21\.css/);
-assert.match(html, /student-master-view-v21\.js/);
+assert.match(html, /student-arena-v22\.css/);
+assert.match(html, /student-arena-v22\.js/);
+assert.doesNotMatch(html, /student-master-view-v21\.js/);
 assert.doesNotMatch(html, /student-gameplay-v20\.js/);
 assert.doesNotMatch(html, /student-combat-v18\.js/);
-assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-master-view-v21.js"));
-assert.ok(html.indexOf("student-master-view-v21.js") < html.indexOf("student-app-v16.js"));
+assert.ok(html.indexOf("student-input-v18.js") < html.indexOf("student-arena-v22.js"));
+assert.ok(html.indexOf("student-arena-v22.js") < html.indexOf("student-app-v16.js"));
 assert.ok(html.indexOf("question-ui-v19.js") < html.indexOf("student-app-v16.js"));
-assert.match(html, /complete reporting/i);
+assert.match(html, /stable single-socket connection/i);
 assert.match(html, /GEOMETRY BANK V19/);
 assert.equal(serverPackage.scripts.start, "node --require ./runtime-v15.js secure-gateway.js");
 
-console.log("Gameplay v20 server validation passed beneath Master View Gameplay v21: swept projectiles, stable reporting and Geometry v19 remain authoritative.");
+console.log("Gameplay v20 server validation passed beneath Recovered Arena v22: swept projectiles, stable connection, Reporting v18 and Geometry v19 remain authoritative.");

@@ -22,13 +22,12 @@ for (const requiredText of [
   "globalScore",
   "teacherBrowserBackupRecommended",
   "buildMatchMetadata"
-]) {
-  assert.ok(patchedServer.includes(requiredText), `missing reporting-v18 compatibility marker: ${requiredText}`);
-}
-assert.ok(patchedGateway.includes("hitscan-combat-and-automatic-reporting-v18"), "gateway v18 compatibility marker missing");
-assert.ok(patchedServer.includes("shootPressed && !player.shootHeld"), "v18 human semi-auto edge trigger missing");
-assert.ok(patchedServer.includes("startX"), "v18 tracer start metadata missing");
-assert.ok(patchedServer.includes("endX"), "v18 tracer end metadata missing");
+]) assert.ok(patchedServer.includes(requiredText), `missing reporting-v18 compatibility marker: ${requiredText}`);
+
+assert.ok(patchedGateway.includes("hitscan-combat-and-automatic-reporting-v18"));
+assert.ok(patchedServer.includes("shootPressed && !player.shootHeld"));
+assert.ok(patchedServer.includes("startX"));
+assert.ok(patchedServer.includes("endX"));
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "triad-v13-"));
 try {
@@ -43,20 +42,21 @@ try {
 }
 
 const studentInput = fs.readFileSync(path.join(root, "student-input-v18.js"), "utf8");
-const gameplayV21 = fs.readFileSync(path.join(root, "student-master-view-v21.js"), "utf8");
+const gameplayV22 = fs.readFileSync(path.join(root, "student-arena-v22.js"), "utf8");
 const masterReport = fs.readFileSync(path.join(root, "master-report-v18.js"), "utf8");
 const studentHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const masterHtml = fs.readFileSync(path.join(root, "master.html"), "utf8");
 
-assert.ok(studentInput.includes("event.stopPropagation()"), "editable key isolation missing");
-assert.ok(!studentInput.includes("event.preventDefault()"), "editable fields must not prevent spaces/default text entry");
-assert.ok(gameplayV21.includes("studentMasterViewCanvasV21"), "v21 gameplay canvas missing");
-assert.ok(gameplayV21.includes("message.angle = aim.angle"), "v21 reliable aim override missing");
-assert.ok(gameplayV21.includes("observe-existing-single-socket"), "v21 must retain the stable socket architecture");
-assert.ok(masterReport.includes("automaticDownload: true"), "automatic report export marker missing");
-assert.ok(masterReport.includes("triadGlobalScoreStoreV18"), "teacher browser global score backup missing");
-assert.ok(studentHtml.indexOf("student-input-v18.js") < studentHtml.indexOf("student-app-v16.js"), "input fix must load before main student app");
-assert.ok(studentHtml.indexOf("student-master-view-v21.js") < studentHtml.indexOf("student-app-v16.js"), "v21 gameplay observer must load before main student app");
-assert.ok(masterHtml.indexOf("master-report-v18.js") < masterHtml.indexOf("teacher-auth.js"), "automatic report observer must load before teacher controls");
+assert.ok(studentInput.includes("event.stopPropagation()"));
+assert.ok(!studentInput.includes("event.preventDefault()"));
+assert.ok(gameplayV22.includes("studentRecoveredArenaCanvasV22"));
+assert.ok(gameplayV22.includes("message.angle = aim.angle"));
+assert.ok(gameplayV22.includes("observe-existing-single-socket"));
+assert.ok(gameplayV22.includes("connectionConfigurationPreserved: true"));
+assert.ok(masterReport.includes("automaticDownload: true"));
+assert.ok(masterReport.includes("triadGlobalScoreStoreV18"));
+assert.ok(studentHtml.indexOf("student-input-v18.js") < studentHtml.indexOf("student-app-v16.js"));
+assert.ok(studentHtml.indexOf("student-arena-v22.js") < studentHtml.indexOf("student-app-v16.js"));
+assert.ok(masterHtml.indexOf("master-report-v18.js") < masterHtml.indexOf("teacher-auth.js"));
 
-console.log("Reporting v18 compatibility validation passed beneath Master View Gameplay v21.");
+console.log("Reporting v18 compatibility validation passed beneath Recovered Arena v22.");

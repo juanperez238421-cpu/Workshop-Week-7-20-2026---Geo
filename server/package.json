@@ -1,12 +1,12 @@
 {
   "name": "triad-territory-rush-server",
-  "version": "30.0.0",
+  "version": "31.0.0",
   "private": true,
-  "description": "Low-latency classroom gateway with a 12800x8000 arena, stable territory deltas, varied right-triangle questions, swept projectile collisions, automatic ammunition regeneration and dedicated supply assets.",
+  "description": "Stable low-latency classroom gateway with coalesced state frames, cumulative territory deltas, heartbeat recovery, bounded projectiles and flexible one-to-nine-player matches.",
   "main": "secure-gateway.js",
   "scripts": {
-    "start": "node --require ./runtime-v10.js secure-gateway.js",
-    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check secure-gateway.js && node --check server-v3.js"
+    "start": "node --require ./runtime-v11.js secure-gateway.js",
+    "test": "node --check runtime-patch.js && node --check runtime-v6.js && node --check runtime-v7.js && node --check runtime-v8.js && node --check runtime-v9.js && node --check runtime-v10.js && node --check runtime-v11.js && node --check secure-gateway.js && node --check server-v3.js"
   },
   "engines": { "node": ">=20" },
   "dependencies": {

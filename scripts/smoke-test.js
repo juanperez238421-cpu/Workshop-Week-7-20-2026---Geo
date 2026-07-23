@@ -8,6 +8,7 @@ const studentHtml = fs.readFileSync("index.html", "utf8");
 const studentBootstrap = fs.readFileSync("student-bootstrap-v17.js", "utf8");
 const studentInput = fs.readFileSync("student-input-v18.js", "utf8");
 const studentCombat = fs.readFileSync("student-combat-v18.js", "utf8");
+const questionUi = fs.readFileSync("question-ui-v19.js", "utf8");
 const studentJs = fs.readFileSync("student-app-v16.js", "utf8");
 const studentCss = fs.readFileSync("student-v16.css", "utf8");
 const masterHtml = fs.readFileSync("master.html", "utf8");
@@ -17,16 +18,19 @@ const teacherAuth = fs.readFileSync("teacher-auth.js", "utf8");
 const gateway = fs.readFileSync("server/secure-gateway.js", "utf8");
 const runtimeV12 = fs.readFileSync("server/runtime-v12.js", "utf8");
 const runtimeV13 = fs.readFileSync("server/runtime-v13.js", "utf8");
+const runtimeV14 = fs.readFileSync("server/runtime-v14.js", "utf8");
 const server = fs.readFileSync("server/server-v3.js", "utf8");
 
 for (const [name, source] of [
   ["student-bootstrap-v17.js", studentBootstrap],
   ["student-input-v18.js", studentInput],
   ["student-combat-v18.js", studentCombat],
+  ["question-ui-v19.js", questionUi],
   ["student-app-v16.js", studentJs],
   ["master-report-v18.js", masterReport],
   ["master-scroll-guard.js", masterScroll],
-  ["server/runtime-v13.js", runtimeV13]
+  ["server/runtime-v13.js", runtimeV13],
+  ["server/runtime-v14.js", runtimeV14]
 ]) new vm.Script(source, { filename: name });
 
 function htmlIds(html) {
@@ -44,11 +48,12 @@ assert.equal([...studentHtml.matchAll(/\sid="([^"]+)"/g)].length, ids.size, "Stu
 
 const scripts = [...studentHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map((match) => match[1]);
 assert.deepEqual(scripts, [
-  "student-bootstrap-v17.js?v=20260723-hitscanreport18",
-  "student-input-v18.js?v=20260723-hitscanreport18",
-  "student-combat-v18.js?v=20260723-hitscanreport18",
-  "config.js?v=20260723-hitscanreport18",
-  "student-app-v16.js?v=20260723-hitscanreport18"
+  "student-bootstrap-v17.js?v=20260723-geometryquestions19",
+  "student-input-v18.js?v=20260723-geometryquestions19",
+  "student-combat-v18.js?v=20260723-geometryquestions19",
+  "config.js?v=20260723-geometryquestions19",
+  "question-ui-v19.js?v=20260723-geometryquestions19",
+  "student-app-v16.js?v=20260723-geometryquestions19"
 ]);
 
 for (const removedLayer of [
@@ -63,7 +68,7 @@ for (const removedLayer of [
   "question-bank-v10-ui.js",
   "team-selection-v8.js"
 ]) {
-  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the v18 student page`);
+  assert.doesNotMatch(studentHtml, new RegExp(removedLayer.replaceAll(".", "\\.")), `${removedLayer} must not load on the v19 student page`);
 }
 
 assert.doesNotMatch(studentBootstrap, /HTMLCanvasElement\.prototype/);
@@ -100,8 +105,18 @@ assert.match(studentJs, /thales_height/);
 assert.match(studentJs, /ratio_sin/);
 assert.match(studentJs, /ratio_cos/);
 
-assert.match(studentHtml, /COMBAT V18/);
-assert.match(studentHtml, /Spaces, surnames, accents and paste shortcuts work normally/);
+assert.match(questionUi, /ALL THREE SIDES GIVEN · NO DECIMAL CALCULATION/);
+assert.match(questionUi, /TWO SIDES GIVEN · PYTHAGOREAN THEOREM/);
+assert.match(questionUi, /THALES' THEOREM · SIMILAR TRIANGLES/);
+assert.match(questionUi, /sin = opposite \/ hypotenuse/);
+assert.match(questionUi, /cos = adjacent \/ hypotenuse/);
+assert.match(questionUi, /reference height \/ reference shadow = h \/ target shadow/);
+
+assert.match(studentHtml, /GEOMETRY BANK V19/);
+assert.match(studentHtml, /focused geometry bank v19/i);
+assert.match(studentHtml, /all three sides shown and no decimal calculation/i);
+assert.match(studentHtml, /Pythagorean theorem/);
+assert.match(studentHtml, /Thales' theorem and similar triangles/);
 assert.match(studentHtml, /id="student1Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
 assert.match(studentHtml, /id="student2Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
 assert.match(studentHtml, /id="student3Input"[^>]*maxlength="60"[^>]*placeholder="Name and surname"/);
@@ -109,7 +124,7 @@ assert.doesNotMatch(studentHtml, /id="student[123]Input"[^>]*(?:disabled|readonl
 assert.match(studentHtml, /id="registerButton"/);
 assert.match(studentHtml, /id="readyButton"/);
 assert.doesNotMatch(studentHtml, /id="playerTeamChoice"/);
-assert.match(studentHtml, /GEOMETRY RESPAWN CHALLENGE/);
+assert.match(studentHtml, /FOCUSED GEOMETRY RESPAWN CHALLENGE/);
 assert.match(studentHtml, /<b>5 s<\/b><span>automatic ammo recovery<\/span>/);
 assert.doesNotMatch(studentHtml, /href="(?:master|teacher)\.html"/);
 
@@ -140,5 +155,9 @@ assert.match(runtimeV12, /player\.ws !== ws/);
 assert.match(runtimeV13, /HITSCAN_RANGE = 3900/);
 assert.match(runtimeV13, /questionsPresented/);
 assert.match(runtimeV13, /teacherBrowserBackupRecommended/);
+assert.match(runtimeV14, /focused sine-cosine, Pythagoras and Thales question bank/);
+assert.match(runtimeV14, /showAllSides: true/);
+assert.match(runtimeV14, /knownSides: 2/);
+assert.match(runtimeV14, /thales_height/);
 
-console.log("Smoke test passed: v18 preserves registration-first rendering, accepts complete names with spaces, loads authoritative hitscan visuals and enables automatic teacher-only metadata reporting.");
+console.log("Smoke test passed: v19 preserves registration-first rendering and authoritative hitscan while restricting respawn questions to sine/cosine ratios, Pythagorean unknown sides and Thales heights.");

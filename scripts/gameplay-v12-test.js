@@ -12,7 +12,8 @@ for (const file of [
   "gameplay-v12-ui.js",
   "music-mode-ui.js",
   "server/runtime-v12.js",
-  "server/runtime-v13.js"
+  "server/runtime-v13.js",
+  "server/runtime-v14.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -61,12 +62,13 @@ const masterHtml = fs.readFileSync("master.html", "utf8");
 assert.match(indexHtml, /student-bootstrap-v17\.js/);
 assert.match(indexHtml, /5 s|5-second|5 seconds/);
 assert.match(indexHtml, /semi-auto hitscan/i);
+assert.match(indexHtml, /question-ui-v19\.js/);
 assert.match(masterHtml, /REPORTING V18/);
 assert.match(masterHtml, /network-v12\.js/);
 assert.match(masterHtml, /1 charge every 5 seconds/);
 
 const serverPackage = JSON.parse(fs.readFileSync("server/package.json", "utf8"));
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v13.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v14.js secure-gateway.js");
 
 const fakeServer = { on(){}, listen(){}, close(callback){ if (callback) callback(); } };
 const fakeApp = { disable(){}, use(){}, get(){} };
@@ -118,4 +120,4 @@ assert.equal(player.ws, currentSocket);
 room.sendFullStateTo(currentSocket, Date.now());
 assert.ok(sent.some((message) => message.type === "state" && message.resync === true && Array.isArray(message.territory)));
 
-console.log("Gameplay v12 compatibility test passed under runtime v13: five-second ammo recovery, full-state resync and stale-socket reconnect protection remain active beneath hitscan combat.");
+console.log("Gameplay v12 compatibility test passed under runtime v14: five-second ammo recovery, full-state resync and stale-socket reconnect protection remain active beneath hitscan combat and the focused geometry question bank.");

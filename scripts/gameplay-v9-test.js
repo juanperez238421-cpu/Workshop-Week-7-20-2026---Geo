@@ -12,7 +12,8 @@ for (const file of [
   "server/runtime-v10.js",
   "server/runtime-v11.js",
   "server/runtime-v12.js",
-  "server/runtime-v13.js"
+  "server/runtime-v13.js",
+  "server/runtime-v14.js"
 ]) {
   new vm.Script(fs.readFileSync(file, "utf8"), { filename: file });
 }
@@ -65,6 +66,6 @@ assert.match(patchedGateway, /perMessageDeflate: false/);
 
 assert.match(musicMode, /gameplay-v9\.js/);
 assert.match(musicMode, /master-live-v9\.js/);
-assert.equal(serverPackage.scripts.start, "node --require ./runtime-v13.js secure-gateway.js");
+assert.equal(serverPackage.scripts.start, "node --require ./runtime-v14.js secure-gateway.js");
 
-console.log("Gameplay v9 compatibility test passed under runtime v13: equal visual sizes, ammo regeneration, delta snapshots, interpolation and light master rendering remain configured.");
+console.log("Gameplay v9 compatibility test passed under runtime v14: equal visual sizes, ammo regeneration, delta snapshots, interpolation and light master rendering remain configured.");

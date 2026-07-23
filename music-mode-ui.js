@@ -1,12 +1,12 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260723-hitboxnet12";
+  const ASSET_VERSION = "20260723-studentfix13";
   const replacements = [
     ["Nine PC players, three teams and optional bots are available.", "One to nine PC players, three teams and optional bots are available."],
     ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC player. Select an available team name, then mark Ready."],
     ["Approved · setup incomplete", "Approved · choose team and mark ready"],
-    ["COMPLETE VOTING FIRST", "MARK THIS PLAYER READY"],
+    ["COMPLETE VOTING FIRST", "I AM READY"],
     ["VOTING COMPLETE", "FLEXIBLE ROOM · 1–9 PLAYERS"],
     ["team-name voting incomplete", "team selection pending"],
     ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
@@ -29,6 +29,18 @@
       const element = document.getElementById(id);
       if (element?.isConnected) element.remove();
     });
+  }
+
+  function unlockStudentReadyControl() {
+    const approvedPanel = document.getElementById("approvedPanel");
+    const readyButton = document.getElementById("readyButton");
+    const readyLabel = document.getElementById("playerReadyLabel");
+    if (!approvedPanel || !readyButton || approvedPanel.classList.contains("hidden")) return;
+
+    const isReady = String(readyLabel?.textContent || "").trim().toUpperCase() === "YES";
+    readyButton.disabled = false;
+    readyButton.textContent = isReady ? "READY — CLICK TO CANCEL" : "I AM READY";
+    readyButton.classList.toggle("secondary-button", isReady);
   }
 
   function loadStyle(path, id) {
@@ -61,28 +73,23 @@
       loadStyle("gameplay-v9.css", "gameplayV9Styles");
       loadStyle("team-selection-v8.css", "teamSelectionV8Styles");
       loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
-      loadStyle("minimap-v10.css", "minimapV10Styles");
-      loadScript("network-v12.js", "networkV12Script")
+      return loadScript("network-v12.js", "networkV12Script")
         .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
         .then(() => loadScript("gameplay-v9.js", "gameplayV9Script"))
         .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
-        .then(() => loadScript("minimap-v10.js", "minimapV10Script"))
         .then(() => loadScript("team-selection-v8.js", "teamSelectionV8Script"))
-        .then(() => loadScript("combat-feed.js", "combatFeedScript"))
-        .catch(() => {});
-      return;
+        .then(() => loadScript("combat-feed.js", "combatFeedScript"));
     }
 
     loadStyle("master-live-v9.css", "masterLiveV9Styles");
     loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
-    loadScript("network-v12.js", "networkV12Script")
+    return loadScript("network-v12.js", "networkV12Script")
       .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
       .then(() => loadScript("master-ready-control.js", "masterReadyControlScript"))
       .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"))
       .then(() => loadScript("master-live-v9.js", "masterLiveV9Script"))
       .then(() => loadScript("gameplay-v12-ui.js", "gameplayV12UiScript"))
-      .then(() => loadScript("combat-feed.js", "combatFeedScript"))
-      .catch(() => {});
+      .then(() => loadScript("combat-feed.js", "combatFeedScript"));
   }
 
   function refresh() {
@@ -98,13 +105,43 @@
     rewriteText(document.querySelector(".controls-hint"));
     rewriteText(document.querySelector("#questionOverlay .eyebrow"));
     removeStudentVotingControls();
+    unlockStudentReadyControl();
+  }
+
+  let refreshQueued = false;
+  function queueRefresh() {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    queueMicrotask(() => {
+      refreshQueued = false;
+      refresh();
+    });
+  }
+
+  function observeTarget(id, options) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    const observer = new MutationObserver(queueRefresh);
+    observer.observe(target, options);
+  }
+
+  function installTargetedObservers() {
+    const textOptions = { subtree: true, childList: true, characterData: true };
+    observeTarget("playerReadyLabel", textOptions);
+    observeTarget("lobbyStatus", textOptions);
+    observeTarget("playerStateLabel", textOptions);
+    observeTarget("ammoRegenTimer", textOptions);
+    observeTarget("approvedPanel", { attributes: true, attributeFilter: ["class"] });
   }
 
   function start() {
     refresh();
-    installGameplayAssets();
-    const observer = new MutationObserver(refresh);
-    observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    installGameplayAssets()
+      .catch(() => {})
+      .finally(() => {
+        refresh();
+        installTargetedObservers();
+      });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });

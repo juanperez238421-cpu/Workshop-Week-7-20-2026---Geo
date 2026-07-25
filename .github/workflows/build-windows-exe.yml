@@ -70,8 +70,20 @@ jobs:
           retention-days: 7
 
       - name: Build Windows installer and portable EXE
+        id: desktop-build
         shell: pwsh
-        run: npm run desktop:dist:win
+        run: |
+          npm run desktop:dist:win 2>&1 | Tee-Object -FilePath desktop-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload desktop build output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-build-output
+          path: desktop-build.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Create SHA-256 checksums
         shell: pwsh

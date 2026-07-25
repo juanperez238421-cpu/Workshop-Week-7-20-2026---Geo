@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const os = require("node:os");
 const vm = require("node:vm");
 const runtime = require("../server/runtime-v22.js");
 
@@ -69,7 +70,7 @@ const context = {
     throw new Error(`Unexpected runtime dependency: ${name}`);
   },
   console,
-  process: { env: { GLOBAL_SCORE_FILE: "/tmp/triad-v22-test-score.json" }, uptime: () => 1, on() {}, exit() {} },
+  process: { env: { GLOBAL_SCORE_FILE: path.join(os.tmpdir(), "triad-v22-test-score.json") }, uptime: () => 1, on() {}, exit() {} },
   setInterval(callback, milliseconds) {
     const handle = { callback, milliseconds, active: true, unref() {} };
     intervals.push(handle);

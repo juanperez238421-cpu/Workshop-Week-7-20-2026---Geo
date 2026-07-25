@@ -54,8 +54,20 @@ jobs:
         run: npm install --prefix server --omit=dev --no-audit --no-fund
 
       - name: Validate game and desktop runtime
+        id: desktop-validation
         shell: pwsh
-        run: npm test
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath desktop-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload desktop validation output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-validation-output
+          path: desktop-validation.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Build Windows installer and portable EXE
         shell: pwsh

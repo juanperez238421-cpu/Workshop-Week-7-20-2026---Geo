@@ -1,0 +1,245 @@
+body.desktop-local-mode-v27 .brand span::before {
+  content: "LOCAL WINDOWS · ";
+  font-weight: 900;
+  color: #174a94;
+}
+
+.desktop-delivery-badge-v27 {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #344054;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.desktop-delivery-badge-v27[data-mode="ready"],
+.desktop-delivery-badge-v27[data-mode="sent"] {
+  border-color: #86d6b5;
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.desktop-delivery-badge-v27[data-mode="queued"] {
+  border-color: #f7c77b;
+  background: #fffaeb;
+  color: #93370d;
+}
+
+.desktop-settings-button-v27 {
+  min-width: 128px;
+}
+
+.desktop-settings-overlay-v27 {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(9px);
+}
+
+.desktop-settings-overlay-v27[hidden] {
+  display: none !important;
+}
+
+.desktop-settings-card-v27 {
+  width: min(920px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  padding: 28px;
+  border: 1px solid #d9e2ef;
+  border-radius: 24px;
+  background: #ffffff;
+  color: #172033;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+}
+
+.desktop-settings-heading-v27 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.desktop-settings-heading-v27 span {
+  color: #1f5fbf;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.desktop-settings-heading-v27 h2 {
+  margin: 6px 0 8px;
+  font-size: clamp(24px, 3vw, 36px);
+}
+
+.desktop-settings-heading-v27 p {
+  max-width: 720px;
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.desktop-settings-heading-v27 > button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #344054;
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.desktop-settings-grid-v27 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.desktop-settings-grid-v27 label {
+  display: grid;
+  gap: 7px;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.desktop-settings-grid-v27 input,
+.desktop-settings-grid-v27 select {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #101828;
+  padding: 10px 12px;
+  font: 500 14px/1.3 system-ui, sans-serif;
+}
+
+.desktop-settings-grid-v27 input:focus,
+.desktop-settings-grid-v27 select:focus {
+  outline: none;
+  border-color: #1f5fbf;
+  box-shadow: 0 0 0 4px rgba(31, 95, 191, 0.14);
+}
+
+.desktop-clear-key-v27 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 16px 0;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desktop-settings-status-v27 {
+  margin: 16px 0;
+  padding: 13px 15px;
+  border-left: 4px solid #667085;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #344054;
+  line-height: 1.45;
+}
+
+.desktop-settings-status-v27[data-kind="success"] {
+  border-left-color: #067647;
+  background: #ecfdf3;
+  color: #05603a;
+}
+
+.desktop-settings-status-v27[data-kind="warning"] {
+  border-left-color: #dc6803;
+  background: #fffaeb;
+  color: #93370d;
+}
+
+.desktop-settings-status-v27[data-kind="error"] {
+  border-left-color: #d92d20;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.desktop-settings-actions-v27 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.desktop-settings-actions-v27 button {
+  min-height: 42px;
+}
+
+.desktop-settings-footer-v27 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e4e7ec;
+  color: #667085;
+  font-size: 11px;
+}
+
+.desktop-settings-footer-v27 button {
+  border: 0;
+  background: transparent;
+  color: #1f5fbf;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.desktop-final-delivery-v27 {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border: 1px solid #d0d5dd;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #344054;
+  font-weight: 750;
+  text-align: center;
+}
+
+.desktop-final-delivery-v27[data-mode="sent"] {
+  border-color: #86d6b5;
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.desktop-final-delivery-v27[data-mode="queued"] {
+  border-color: #f7c77b;
+  background: #fffaeb;
+  color: #93370d;
+}
+
+body.desktop-settings-open-v27 {
+  overflow: hidden !important;
+}
+
+@media (max-width: 760px) {
+  .desktop-settings-grid-v27 {
+    grid-template-columns: 1fr;
+  }
+  .desktop-settings-footer-v27 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .desktop-delivery-badge-v27 {
+    display: none;
+  }
+}

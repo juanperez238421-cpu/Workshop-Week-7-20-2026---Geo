@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const BUILD = "20260724-stable-autostart26";
+  const BUILD = "20260725-fair-question-rotation27";
   const OBSERVED_TYPES = new Set(["register_student", "reconnect_student", "input", "ping", "request_full_state"]);
   const observedSockets = new WeakSet();
   const nativeSend = WebSocket.prototype.send;
@@ -11,7 +11,8 @@
   let phase = "lobby";
   let lastStateAt = 0;
   let lastRecoveryAt = 0;
-  let remainingAtState = 10 * 60 * 1000;
+  let configuredDurationMs = 10 * 60 * 1000;
+  let remainingAtState = configuredDurationMs;
   let stateReceivedAt = 0;
 
   function parseJson(value) {
@@ -82,7 +83,7 @@
     const index = Number(message.assignedStudentIndex);
     const name = String(message.assignedStudentName || `Student ${Number.isFinite(index) ? index + 1 : 1}`);
     badge.hidden = false;
-    badge.innerHTML = `<span>ANSWERING STUDENT ${Number.isFinite(index) ? index + 1 : 1}</span><strong>${escapeHtml(name)}</strong><small>This death and every answer attempt are recorded under this student.</small>`;
+    badge.innerHTML = `<span>ANSWERING STUDENT ${Number.isFinite(index) ? index + 1 : 1}</span><strong>${escapeHtml(name)}</strong><small>This geometry attempt is recorded under this student. Assigned deaths are tracked separately.</small>`;
   }
 
   function updateClock() {
@@ -109,6 +110,8 @@
 
     if (message.type === "joined") {
       playerId = String(message.playerId || playerId);
+      if (Number.isFinite(Number(message.matchDurationMs))) configuredDurationMs = Number(message.matchDurationMs);
+      remainingAtState = configuredDurationMs;
       phase = "lobby";
       setTimeout(normalizeAutostartUi, 0);
       return;
@@ -123,7 +126,7 @@
     if (message.type === "countdown") {
       phase = "countdown";
       lastStateAt = performance.now();
-      remainingAtState = 10 * 60 * 1000;
+      remainingAtState = configuredDurationMs;
       stateReceivedAt = performance.now();
       setTimeout(requestRecovery, 750);
       return;
@@ -193,6 +196,7 @@
     stateWatchdog: true,
     continuousClientClock: true,
     individualStudentTelemetry: true,
+    fairQuestionRotation: true,
     opensAdditionalSocket: false
   });
 })();

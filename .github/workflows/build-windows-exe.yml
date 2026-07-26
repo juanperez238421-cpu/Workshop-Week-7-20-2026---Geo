@@ -1,4 +1,4 @@
-name: Build Pixel Tactical Windows EXE
+name: Build Consolidated Two-Room Windows EXE
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
     paths:
       - "school-game/**"
       - "scripts/prepare-school-game-assets.js"
+      - "scripts/prepare-consolidated-v49.js"
       - "scripts/school-game-static-test.js"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
@@ -17,6 +18,7 @@ on:
     paths:
       - "school-game/**"
       - "scripts/prepare-school-game-assets.js"
+      - "scripts/prepare-consolidated-v49.js"
       - "scripts/school-game-static-test.js"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
@@ -45,29 +47,29 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate pixel-art school game
+      - name: Validate consolidated two-room game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath pixel-game-validation.log
+          npm test 2>&1 | Tee-Object -FilePath consolidated-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath pixel-game-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath consolidated-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged pixel application smoke test
+      - name: Launch packaged consolidated application smoke test
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/school-windows/win-unpacked" -Filter "Neon Geometry Tactical Pixel Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged pixel application executable was not found." }
+          $exe = Get-ChildItem -Path "dist/school-windows/win-unpacked" -Filter "Geometry Tactical Consolidated Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged consolidated application executable was not found." }
 
-          $ready = Join-Path $env:APPDATA "Neon Geometry Tactical Pixel Local\ready.json"
+          $ready = Join-Path $env:APPDATA "Geometry Tactical Consolidated Local\ready.json"
           Remove-Item $ready -Force -ErrorAction SilentlyContinue
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id)" | Tee-Object -FilePath pixel-game-startup.log
+          "Started PID=$($process.Id)" | Tee-Object -FilePath consolidated-startup.log
 
           for ($attempt = 0; $attempt -lt 45; $attempt++) {
             Start-Sleep -Seconds 1
@@ -78,11 +80,14 @@ jobs:
 
           if (-not (Test-Path $ready)) {
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "The pixel game did not report renderer and asset readiness within 45 seconds."
+            throw "The consolidated game did not report renderer and asset readiness within 45 seconds."
           }
 
-          Get-Content $ready | Tee-Object -FilePath pixel-game-startup.log -Append
-          "Packaged pixel game reached the armor catalog registration screen with all PNG sheets loaded." | Tee-Object -FilePath pixel-game-startup.log -Append
+          $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
+          if ($readyJson.version -ne "49.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
+          if ($readyJson.edition -ne "consolidated-two-room-v49") { throw "Unexpected readiness edition: $($readyJson.edition)" }
+          Get-Content $ready | Tee-Object -FilePath consolidated-startup.log -Append
+          "Packaged consolidated game reached the three-role registration screen with the generated V49 runtime and pixel assets loaded." | Tee-Object -FilePath consolidated-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
@@ -97,18 +102,18 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pixel-game-diagnostics
+          name: consolidated-two-room-diagnostics
           path: |
-            pixel-game-validation.log
-            pixel-game-build.log
-            pixel-game-startup.log
+            consolidated-validation.log
+            consolidated-build.log
+            consolidated-startup.log
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: neon-geometry-tactical-pixel-local-windows
+          name: geometry-tactical-consolidated-two-room-windows
           path: |
             dist/school-windows/*.exe
             dist/school-windows/SHA256SUMS.txt

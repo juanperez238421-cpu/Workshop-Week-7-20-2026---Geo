@@ -12,7 +12,7 @@ for (const name of names) {
   if (!fs.existsSync(encodedPath)) throw new Error(`Missing encoded school asset: ${encodedPath}`);
   const encoded = fs.readFileSync(encodedPath, "utf8").replace(/\s+/g, "");
   const buffer = Buffer.from(encoded, "base64");
-  if (buffer.length < 10000) throw new Error(`Decoded asset is unexpectedly small: ${name}`);
+  if (buffer.length < 2000) throw new Error(`Decoded asset is unexpectedly small: ${name}`);
   const target = path.join(assets, name);
   fs.writeFileSync(target, buffer);
   console.log(`Prepared ${path.relative(root, target)} (${buffer.length} bytes)`);

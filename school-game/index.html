@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>Neon Geometry Tactical Local</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="app">
+    <canvas id="gameCanvas" width="1600" height="1000" aria-label="Neon Geometry Tactical local arena"></canvas>
+
+    <header id="hud" class="hidden">
+      <section class="hud-block brand-block">
+        <strong>NEON GEOMETRY TACTICAL</strong>
+        <span>School-safe local training arena</span>
+      </section>
+      <section class="hud-block stats-block">
+        <div><span>TIME</span><b id="timeValue">05:00</b></div>
+        <div><span>ROOM</span><b id="roomValue">1</b></div>
+        <div><span>TAGS</span><b id="tagValue">0</b></div>
+        <div><span>ACCURACY</span><b id="accuracyValue">—</b></div>
+      </section>
+      <section class="hud-block strike-block">
+        <span>THREE-STRIKE CYCLE</span>
+        <div id="strikePips"><i></i><i></i><i></i></div>
+      </section>
+    </header>
+
+    <aside id="studentPanel" class="student-panel hidden">
+      <span>QUESTION ROTATION</span>
+      <div id="studentRows"></div>
+    </aside>
+
+    <aside id="controlPanel" class="control-panel hidden">
+      <span>CONTROLS</span>
+      <small>WASD move · mouse aim · click/Space tri-volley · Shift dash · P pause</small>
+      <div class="energy"><b>ENERGY</b><progress id="energyBar" max="12" value="12"></progress><strong id="energyValue">12</strong></div>
+    </aside>
+
+    <div id="messageBanner" class="message-banner hidden"></div>
+
+    <section id="registrationOverlay" class="overlay visible">
+      <div class="modal registration-modal">
+        <p class="eyebrow">LOCAL WINDOWS GAME · ORIGINAL SCHOOL-SAFE NEON ASSETS</p>
+        <h1>Register the three-student team</h1>
+        <p class="lead">One computer controls one tactical operative. The game uses fixed room layouts, strong local AI, fluid animation, predictive trajectory lines and a three-strike trigonometry checkpoint.</p>
+        <div class="feature-grid">
+          <article><b>1 TAG</b><span>registers one strike</span></article>
+          <article><b>3 STRIKES</b><span>opens a trigonometry question</span></article>
+          <article><b>TRI-VOLLEY</b><span>three visible trajectory paths</span></article>
+          <article><b>LOCAL RESULTS</b><span>automatic JSON and CSV records</span></article>
+        </div>
+        <div class="student-inputs">
+          <label>Student 1 full name<input id="student1" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 2 full name<input id="student2" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 3 full name<input id="student3" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+        </div>
+        <label class="duration-field">Match duration
+          <select id="durationSelect">
+            <option value="300">5 minutes</option>
+            <option value="600">10 minutes</option>
+            <option value="900">15 minutes</option>
+          </select>
+        </label>
+        <button id="startButton" class="primary">START LOCAL MATCH</button>
+        <p id="registrationFeedback" class="feedback"></p>
+        <p class="storage-note">Results are saved automatically in <strong>Documents\Neon Geometry Tactical Results\results</strong>.</p>
+      </div>
+    </section>
+
+    <section id="questionOverlay" class="overlay">
+      <div class="modal question-modal">
+        <div class="question-head">
+          <div><p class="eyebrow">THREE STRIKES · TRIGONOMETRY CHECKPOINT</p><h2 id="questionStudent">Student 1 answers</h2></div>
+          <div id="questionTimer" class="question-timer">25</div>
+        </div>
+        <canvas id="questionCanvas" width="620" height="270"></canvas>
+        <p id="questionPrompt" class="question-prompt"></p>
+        <div id="questionOptions" class="question-options"></div>
+        <p id="questionFeedback" class="feedback"></p>
+      </div>
+    </section>
+
+    <section id="pauseOverlay" class="overlay">
+      <div class="modal compact"><p class="eyebrow">TACTICAL PAUSE</p><h2>Match paused</h2><p>Press <strong>P</strong> to continue.</p></div>
+    </section>
+
+    <section id="endOverlay" class="overlay">
+      <div class="modal end-modal">
+        <p class="eyebrow">LOCAL MATCH COMPLETE · RESULTS SAVED</p>
+        <h2>Final team record</h2>
+        <div id="finalSummary" class="final-summary"></div>
+        <div class="end-actions">
+          <button id="openResultsButton">OPEN SAVED RESULTS</button>
+          <button id="restartButton" class="primary">NEW LOCAL MATCH</button>
+        </div>
+        <p id="resultPath" class="result-path"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

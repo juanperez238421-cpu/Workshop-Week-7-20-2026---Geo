@@ -3,19 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f7f9fc" />
+  <meta name="theme-color" content="#050711" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Triad Territory Rush — Student Game</title>
-  <link rel="stylesheet" href="styles.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="online.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-v3.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-v16.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-arena-v22.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-fluid-v25.css?v=20260724-stable-autostart26" />
-  <link rel="stylesheet" href="student-stable-v26.css?v=20260724-stable-autostart26" />
+  <title>Triad Territory Rush — Neon Tactical Local Game</title>
+  <link rel="stylesheet" href="styles.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="online.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-v3.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-v16.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-arena-v22.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-score-resilience-v23.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-fluid-v25.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-stable-v26.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="desktop/local-ui.css?v=20260726-neon29" />
+  <link rel="stylesheet" href="student-neon-tactical-v29.css?v=20260726-neon29" />
 </head>
 <body class="lobby-active">
   <main id="app">
@@ -24,7 +26,7 @@
     <header class="topbar">
       <div class="brand">
         <strong>TRIAD TERRITORY RUSH</strong>
-        <span>Stable Autostart v26 · one real PC vs five server bots · native 30 Hz physics · 10 Hz snapshots · individual student reporting</span>
+        <span>Neon Tactical v29 · one hit removes one life · three strikes trigger geometry · predictive local AI</span>
       </div>
       <div class="match-status"><span id="phaseLabel">LOBBY</span><strong id="clockLabel">10:00</strong></div>
       <div class="topbar-actions"><span id="connectionBadge" class="connection-badge offline">OFFLINE</span><button id="soundButton" class="icon-button" type="button" aria-pressed="true">SOUND ON</button></div>
@@ -48,13 +50,13 @@
     </aside>
 
     <aside class="resource-hud-v15" aria-label="Player resources">
-      <div class="resource-card-v15"><span>Lives</span><strong id="lifeDisplay">♥ ♥ ♥</strong><small>Question after final life</small></div>
+      <div class="resource-card-v15"><span>Lives</span><strong id="lifeDisplay">♥ ♥ ♥</strong><small>Three hits trigger geometry</small></div>
       <div class="resource-card-v15"><span>Ammo</span><strong id="ammoDisplay">● ● ● ● ●</strong><small id="ammoRegenTimer">Full · +1 every 5 s</small></div>
       <div class="resource-card-v15"><span>Power</span><strong id="powerDisplay">NONE</strong><small>Collect a supply box</small></div>
-      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Watchdog + private stream</small></div>
+      <div class="resource-card-v15"><span>Network</span><strong id="networkDisplay">WAITING</strong><small>Local authoritative stream</small></div>
     </aside>
 
-    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Isolated channel minimap"></canvas><small>Only this PC channel · authoritative territory · lightweight map</small></aside>
+    <aside class="minimap-panel"><canvas id="minimapCanvas" width="260" height="170" aria-label="Isolated channel minimap"></canvas><small>Private local channel · authoritative territory · predictive AI</small></aside>
     <div id="eventBanner" class="event-banner" aria-live="polite"></div>
     <div class="controls-hint">WASD / arrows move · HOLD RIGHT CLICK to aim · release to lock · SPACE fires · SHIFT dashes</div>
 
@@ -62,15 +64,15 @@
       <div class="modal lobby-modal online-lobby registration-modal">
         <div class="lobby-title-row">
           <div>
-            <p class="eyebrow">STUDENT GAME · STABLE AUTOSTART V26 · FLUID CLIENT V25 · PRIVATE SCORE V23</p>
+            <p class="eyebrow">LOCAL NEON TACTICAL MODE · ONE HIT / THREE STRIKES · PRIVATE RESULTS</p>
             <h1>Register one isolated PC team</h1>
-            <p class="lead">All nine classroom PCs use the same six-character Master PIN. Each PC plays in its own isolated channel against five optimized server bots, producing six total combatants arranged as two players per team. This replaces the previous eight-bot channel and cuts the classroom server's bot population from 72 to 45 while preserving three teams, powers, ammunition, territory, mouse aim, movement, projectile combat, geometry respawns, the 10-minute match and the 2.50–5.00 score. The student Ready step has been removed: after teacher approval, the Master may start this channel immediately.</p>
+            <p class="lead">This Windows edition preserves the same private arena and team-room design while changing the combat rhythm: every confirmed hit removes one life, the local AI predicts movement and dodges incoming fire, and the player restarts rapidly. After the third death, a geometry checkpoint is presented before all three lives are restored.</p>
           </div>
         </div>
 
-        <div class="student-recovery-note"><strong>Movement and timer recovery.</strong> Each channel now keeps its native authoritative simulation timer instead of replacing it with a delayed interval. A student-side state watchdog requests an immediate full state when the stream stalls, and the visible timer continues locally between server snapshots. This PC still opens only one WebSocket.</div>
+        <div class="student-recovery-note"><strong>Fast tactical cycle.</strong> One hit removes one life. The first two deaths use a rapid automatic redeploy; the third death pauses combat and assigns the geometry question to the next student in the independent rotation.</div>
 
-        <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Classroom server standby</strong><small id="serverHealthText">The server connects only after Register is pressed.</small></div></div>
+        <div class="server-health-card"><span id="serverHealthDot" class="health-dot"></span><div><strong id="serverHealthTitle">Local authoritative engine ready</strong><small id="serverHealthText">Gameplay stays on this PC. Results are written to Documents before optional teacher delivery.</small></div></div>
         <details class="advanced-server"><summary>Classroom server connection</summary><label class="server-field">Multiplayer server URL<input id="serverUrlInput" autocomplete="url" spellcheck="false" readonly /></label></details>
 
         <section id="registrationForm">
@@ -78,7 +80,7 @@
             <label>Shared Master room PIN<input id="roomCodeInput" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ABC234" /></label>
             <label>Isolated PC channel<input id="pcLabelInput" maxlength="24" autocomplete="off" value="Assigned by server" readonly /></label>
           </div>
-          <p class="approval-note">One submitted computer represents exactly three students. The server assigns Channel 1–9 and creates five bots automatically. After teacher approval there is no Ready button; wait for the Master to start the channel.</p>
+          <p class="approval-note">One computer represents exactly three students. The local controller creates five strong bots and starts the authoritative match automatically. Every completed run produces a visible JSON report and an Excel-compatible CSV file.</p>
           <div class="student-registration-grid">
             <label>Student 1 full name<input id="student1Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
             <label>Student 2 full name<input id="student2Input" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
@@ -86,55 +88,57 @@
           </div>
           <button id="registerButton" class="primary-button" type="button">REGISTER THIS ISOLATED PC CHANNEL</button>
         </section>
-        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter the shared PIN and three full names.</div>
+        <div id="lobbyStatus" class="notice" aria-live="polite">Registration is ready. Enter three different student names.</div>
 
         <section id="waitingPanel" class="waiting-panel hidden" aria-live="polite">
-          <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Waiting for teacher approval…</strong></div></div>
-          <div class="waiting-meta"><div><span>Shared room</span><b id="waitingRoomCode">------</b></div><div><span>PC channel</span><b id="waitingPcLabel">—</b></div><div><span>Opponents</span><b>5 server bots after approval</b></div></div>
+          <div class="waiting-hero"><div class="waiting-pulse"></div><div><span id="waitingStageLabel">REGISTRATION SENT</span><strong id="waitingMessage">Local controller is preparing the tactical run…</strong></div></div>
+          <div class="waiting-meta"><div><span>Shared room</span><b id="waitingRoomCode">------</b></div><div><span>PC channel</span><b id="waitingPcLabel">—</b></div><div><span>Opponents</span><b>5 predictive local bots</b></div></div>
           <div class="registered-students"><span>THREE STUDENTS REPRESENTED BY THIS REAL PLAYER</span><strong id="waitingStudents">—</strong></div>
         </section>
 
         <section id="approvedPanel" class="room-panel hidden" aria-live="polite">
-          <div class="room-heading"><div><span>APPROVED · MASTER-CONTROLLED START</span><strong id="roomCodeLarge">------</strong></div></div>
+          <div class="room-heading"><div><span>APPROVED · AUTOMATIC LOCAL START</span><strong id="roomCodeLarge">------</strong></div></div>
           <section class="assigned-team-card"><span id="assignedTeamColor" class="large-color-dot"></span><div><small>YOUR CHANNEL TEAM</small><strong id="assignedTeamName">Waiting for channel assignment</strong></div></section>
           <div id="teamCapacity" class="team-capacity"></div>
           <div id="rosterList" class="roster-list"></div>
-          <p class="approval-note">This roster contains your real PC team and five bots. The Master may start immediately after approval. Geometry questions rotate through the three registered students; assigned deaths and each answer attempt are stored separately.</p>
+          <p class="approval-note">The roster contains your real PC team and five bots. Deaths and geometry attempts remain attributed separately to the three registered students.</p>
         </section>
 
-        <div class="rule-grid"><div><b>1 + 5</b><span>real PC vs bots</span></div><div><b>10 min</b><span>independent match</span></div><div><b>3 records</b><span>individual answers</span></div><div><b>AUTO</b><span>Master-controlled start</span></div></div>
+        <div class="rule-grid"><div><b>1 HIT</b><span>removes one life</span></div><div><b>10 min</b><span>same private room</span></div><div><b>3 STRIKES</b><span>geometry checkpoint</span></div><div><b>FAST</b><span>automatic restart</span></div></div>
       </div>
     </section>
 
     <section id="questionOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="questionTitle">
-      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">FOCUSED GEOMETRY RESPAWN CHALLENGE</p><h2 id="questionTitle">Solve to restore three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Geometry problem diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
+      <div class="modal question-modal"><div class="question-header"><div><p class="eyebrow">THREE STRIKES · GEOMETRY CHECKPOINT</p><h2 id="questionTitle">Solve to restore all three lives</h2></div><div id="questionTimer" class="question-timer">20</div></div><canvas id="questionCanvas" width="560" height="250" aria-label="Geometry problem diagram"></canvas><p id="questionPrompt" class="question-prompt"></p><div id="questionOptions" class="question-options"></div><p id="questionFeedback" class="question-feedback" aria-live="polite"></p></div>
     </section>
 
     <section id="endOverlay" class="overlay" aria-modal="true" role="dialog" aria-labelledby="endTitle">
       <div class="modal end-modal">
-        <p class="eyebrow">FINAL ISOLATED CHANNEL RESULT · PRIVATE PLAYER DATA</p>
+        <p class="eyebrow">LOCAL RUN COMPLETE · RESULTS SAVED BEFORE DELIVERY</p>
         <h2 id="endTitle">Channel complete</h2>
         <p id="winnerSummary" class="lead"></p>
         <div id="finalRanking" class="final-ranking"></div>
-        <p class="student-private-report-note-v23"><strong>Your screen contains only this channel's team ranking and score.</strong> The authenticated Master receives a separate record for each registered student, including assigned deaths, correct answers, wrong answers, timeouts, response times and complete answer history.</p>
+        <p class="student-private-report-note-v23"><strong>The complete result is written to the visible Documents results folder.</strong> It includes the group score, combat statistics, three-strike death attribution and each student's geometry-answer history.</p>
         <div class="student-private-report-disabled-v23" hidden aria-hidden="true">
           <button id="downloadCsvButton" type="button" disabled></button>
           <button id="downloadJsonButton" type="button" disabled></button>
           <table><tbody id="reportTableBody"></tbody></table>
         </div>
-        <button id="returnLobbyButton" class="primary-button" type="button">RETURN TO CHANNEL REGISTRATION</button>
+        <button id="returnLobbyButton" class="primary-button" type="button">NEW LOCAL RUN · QUICK RESTART</button>
       </div>
     </section>
   </main>
 
-  <script src="student-bootstrap-v25.js?v=20260724-stable-autostart26"></script>
-  <script src="student-fluid-v25.js?v=20260724-stable-autostart26"></script>
-  <script src="student-input-v18.js?v=20260724-stable-autostart26"></script>
-  <script src="student-arena-v22.js?v=20260724-stable-autostart26"></script>
-  <script src="student-score-resilience-v23.js?v=20260724-stable-autostart26"></script>
-  <script src="config.js?v=20260724-stable-autostart26"></script>
-  <script src="question-ui-v19.js?v=20260724-stable-autostart26"></script>
-  <script src="student-stable-v26.js?v=20260724-stable-autostart26"></script>
-  <script src="student-app-v16.js?v=20260724-stable-autostart26"></script>
+  <script src="student-bootstrap-v25.js?v=20260726-neon29"></script>
+  <script src="student-fluid-v25.js?v=20260726-neon29"></script>
+  <script src="student-input-v18.js?v=20260726-neon29"></script>
+  <script src="student-arena-v22.js?v=20260726-neon29"></script>
+  <script src="student-score-resilience-v23.js?v=20260726-neon29"></script>
+  <script src="config.js?v=20260726-neon29"></script>
+  <script src="question-ui-v19.js?v=20260726-neon29"></script>
+  <script src="student-stable-v26.js?v=20260726-neon29"></script>
+  <script src="student-neon-tactical-v29.js?v=20260726-neon29"></script>
+  <script src="student-app-v16.js?v=20260726-neon29"></script>
+  <script src="desktop/local-ui.js?v=20260726-neon29"></script>
 </body>
 </html>

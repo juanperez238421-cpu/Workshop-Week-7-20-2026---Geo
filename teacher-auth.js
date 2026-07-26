@@ -20,7 +20,10 @@
     "reset_room",
     "start_channel",
     "end_channel",
-    "reset_channel"
+    "reset_channel",
+    "list_local_results",
+    "get_local_result",
+    "delete_local_result"
   ]);
 
   const $ = (id) => document.getElementById(id);
@@ -115,11 +118,37 @@
     });
   }
 
+  function loadLocalResultsExtension() {
+    if (!document.getElementById("masterLocalResultsV27Styles")) {
+      const link = document.createElement("link");
+      link.id = "masterLocalResultsV27Styles";
+      link.rel = "stylesheet";
+      link.href = "master-local-results.css?v=20260725-local-results27";
+      document.head.appendChild(link);
+    }
+    if (!document.getElementById("masterLocalResultsV27Script")) {
+      const extension = document.createElement("script");
+      extension.id = "masterLocalResultsV27Script";
+      extension.src = "master-local-results.js?v=20260725-local-results27";
+      extension.async = false;
+      document.body.appendChild(extension);
+    }
+    if (!document.getElementById("masterV27CorrectionsScript")) {
+      const corrections = document.createElement("script");
+      corrections.id = "masterV27CorrectionsScript";
+      corrections.src = "master-v27-corrections.js?v=20260725-local-results27";
+      corrections.async = false;
+      document.body.appendChild(corrections);
+    }
+  }
+
   function loadTeacherControls() {
     if (controlScriptLoaded || document.querySelector('script[data-teacher-controls="true"]')) return;
     controlScriptLoaded = true;
+    loadLocalResultsExtension();
     const script = document.createElement("script");
-    script.src = "master-v3.js?v=20260723-solo-nine-channels24";
+    script.src = "master-v3.js?v=20260725-local-results27";
+    script.async = false;
     script.dataset.teacherControls = "true";
     script.addEventListener("error", () => {
       controlScriptLoaded = false;

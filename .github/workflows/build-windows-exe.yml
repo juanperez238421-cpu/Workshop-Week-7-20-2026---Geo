@@ -33,7 +33,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -75,6 +75,47 @@ jobs:
         run: |
           npm run desktop:dist:win 2>&1 | Tee-Object -FilePath desktop-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Launch packaged application smoke test
+        id: packaged-startup
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $exe = Get-ChildItem -Path "dist/windows/win-unpacked" -Filter "Triad Territory Rush Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged application executable was not found." }
+
+          $env:TRIAD_MATCH_MINUTES = "5"
+          $process = Start-Process -FilePath $exe.FullName -PassThru
+          "Started packaged process PID=$($process.Id) from $($exe.FullName)" | Tee-Object -FilePath packaged-startup.log
+          Start-Sleep -Seconds 25
+          $process.Refresh()
+
+          $desktopLogs = Get-ChildItem -Path $env:APPDATA -Filter "desktop.log" -File -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -like "*Triad Territory Rush Local*" } |
+            Sort-Object LastWriteTime -Descending
+          if ($desktopLogs) {
+            $latest = $desktopLogs | Select-Object -First 1
+            "Desktop log: $($latest.FullName)" | Tee-Object -FilePath packaged-startup.log -Append
+            Get-Content $latest.FullName | Tee-Object -FilePath packaged-startup.log -Append
+          }
+
+          if ($process.HasExited) {
+            "Packaged application exited during startup with code $($process.ExitCode)." | Tee-Object -FilePath packaged-startup.log -Append
+            exit 1
+          }
+
+          "Packaged application remained alive after 25 seconds." | Tee-Object -FilePath packaged-startup.log -Append
+          & taskkill.exe /PID $process.Id /T /F | Tee-Object -FilePath packaged-startup.log -Append
+          if ($LASTEXITCODE -notin @(0, 128)) { exit $LASTEXITCODE }
+
+      - name: Upload packaged startup output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-startup-output
+          path: packaged-startup.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload desktop build output
         if: always()

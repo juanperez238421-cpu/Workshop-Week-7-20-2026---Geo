@@ -30,6 +30,7 @@ const visibleRoot = safeDirectory(path.join(resolveDocumentsDirectory(), "Triad 
 const visibleResults = safeDirectory(path.join(visibleRoot, "results"));
 const executableRoot = path.dirname(process.execPath);
 const executableResults = safeDirectory(path.join(executableRoot, "Triad Territory Rush Results"));
+const readinessBridge = safeDirectory(path.join(String(process.env.APPDATA || os.tmpdir()), "Triad Territory Rush Local", "readiness"));
 
 if (visibleRoot) {
   app.setName("Triad Territory Rush Local");
@@ -95,9 +96,15 @@ function mirrorCompletedResult(target) {
   }
 }
 
+function mirrorReadinessMarker(target, data) {
+  if (!readinessBridge || path.basename(String(target || "")).toLowerCase() !== "desktop-ready.json") return;
+  try { originalWriteFileSync(path.join(readinessBridge, "desktop-ready.json"), data, "utf8"); } catch {}
+}
+
 fs.writeFileSync = function triadVisibleResultWrite(target, data, options) {
   const result = originalWriteFileSync(target, data, options);
   try { mirrorCompletedResult(String(target)); } catch {}
+  try { mirrorReadinessMarker(String(target), data); } catch {}
   return result;
 };
 

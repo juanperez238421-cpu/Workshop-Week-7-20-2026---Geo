@@ -33,6 +33,13 @@ assert.match(localRuntime, /server-v3\.js/);
 assert.match(localRuntime, /\["--require", __filename, \.\.\.args\]/);
 assert.match(localRuntime, /delete process\.env\.NODE_OPTIONS/);
 
+const stableClient = read("student-stable-v26.js");
+assert.match(stableClient, /function setTextIfChanged/);
+assert.match(stableClient, /function queueNormalization/);
+assert.match(stableClient, /new MutationObserver\(queueNormalization\)/);
+assert.match(stableClient, /idempotent-and-animation-frame-coalesced/);
+assert.doesNotMatch(stableClient, /new MutationObserver\(normalizeAutostartUi\)/);
+
 const main = read("desktop/main.js");
 assert.match(main, /contextIsolation: true/);
 assert.match(main, /nodeIntegration: false/);
@@ -62,4 +69,4 @@ assert.match(teacherAuth, /master-local-results\.js/);
 assert.match(teacherAuth, /master-v27-corrections\.js/);
 for (const type of ["list_local_results", "get_local_result", "delete_local_result"]) assert.match(teacherAuth, new RegExp(type));
 
-console.log("Desktop packaging smoke validation passed: packaged Express/WebSocket dependencies, explicit Windows preload chain, playable-window readiness marker, secure Electron bridge, local authoritative server, queued delivery and Master result inbox are wired.");
+console.log("Desktop packaging smoke validation passed: packaged Express/WebSocket dependencies, explicit Windows preload chain, idempotent renderer mutation normalization, playable-window readiness marker, secure Electron bridge, local authoritative server, queued delivery and Master result inbox are wired.");

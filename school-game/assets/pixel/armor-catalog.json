@@ -1,0 +1,73 @@
+{
+  "schema": "neon-geometry-armor-catalog-v31",
+  "cellSize": 24,
+  "framesPerArmor": 4,
+  "armors": [
+    {
+      "id": "cadet",
+      "name": "Cadet",
+      "row": 0,
+      "passive": "Balanced starter armor",
+      "speedMultiplier": 1,
+      "startingShield": 0,
+      "magazine": 4,
+      "reloadSeconds": 1.05,
+      "dashCooldownSeconds": 1.15
+    },
+    {
+      "id": "scout",
+      "name": "Scout",
+      "row": 1,
+      "passive": "+12% movement speed",
+      "speedMultiplier": 1.12,
+      "startingShield": 0,
+      "magazine": 4,
+      "reloadSeconds": 1.05,
+      "dashCooldownSeconds": 1.15
+    },
+    {
+      "id": "guardian",
+      "name": "Guardian",
+      "row": 2,
+      "passive": "Starts each room with one shield",
+      "speedMultiplier": 0.93,
+      "startingShield": 1,
+      "magazine": 4,
+      "reloadSeconds": 1.05,
+      "dashCooldownSeconds": 1.15
+    },
+    {
+      "id": "vector",
+      "name": "Vector",
+      "row": 3,
+      "passive": "Dash cooldown reduced",
+      "speedMultiplier": 1.02,
+      "startingShield": 0,
+      "magazine": 4,
+      "reloadSeconds": 1.05,
+      "dashCooldownSeconds": 0.8
+    },
+    {
+      "id": "solar",
+      "name": "Solar",
+      "row": 4,
+      "passive": "Magazine increased to 5",
+      "speedMultiplier": 0.98,
+      "startingShield": 0,
+      "magazine": 5,
+      "reloadSeconds": 1.05,
+      "dashCooldownSeconds": 1.15
+    },
+    {
+      "id": "graphite",
+      "name": "Graphite",
+      "row": 5,
+      "passive": "Shorter reload time",
+      "speedMultiplier": 1,
+      "startingShield": 0,
+      "magazine": 4,
+      "reloadSeconds": 0.82,
+      "dashCooldownSeconds": 1.15
+    }
+  ]
+}

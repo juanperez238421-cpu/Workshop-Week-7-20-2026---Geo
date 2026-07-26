@@ -1,10 +1,61 @@
 {
-  "name": "triad-territory-rush-online",
-  "version": "44.0.0",
+  "name": "geometry-tactical-professional-v2-local",
+  "version": "50.0.0",
   "private": true,
-  "description": "Stable Autostart v26 restores authoritative movement and timer ticks, reduces each isolated channel to five balanced bots, removes the student Ready step and records deaths and geometry answers for each registered student.",
+  "description": "Professional two-level local pixel-art tactical game using explicit V2 animation atlases, A* enemy navigation, three-person shared controls, three-strike trigonometry checkpoints and automatic local results.",
+  "main": "school-game/main.js",
   "scripts": {
-    "test": "node --check student-bootstrap-v25.js && node --check student-fluid-v25.js && node --check student-input-v18.js && node --check student-arena-v22.js && node --check student-score-resilience-v23.js && node --check student-stable-v26.js && node --check question-ui-v19.js && node --check student-app-v16.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-team-score-v23.js && node --check master-solo-channels-v24.js && node --check master-ready-control.js && node --check master-flex-start-v11.js && node --check master-scroll-guard.js && node --check master-report-v18.js && node --check master-individual-v26.js && node --check teacher-auth.js && node --check config.js && node --check music-mode-ui.js && node --check server/runtime-v18.js && node --check server/runtime-v19.js && node --check server/runtime-v20.js && node --check server/runtime-v21.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/stable-runtime-v21-test.js"
+    "prepare:icons": "node scripts/prepare-desktop-assets.js",
+    "prepare": "node scripts/prepare-professional-v50.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game.js && node scripts/school-game-static-test.js",
+    "start": "npm run prepare && electron .",
+    "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
+    "dir:win": "npm run prepare && electron-builder --win dir --x64"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "electron": "43.2.0",
+    "electron-builder": "26.9.1"
+  },
+  "build": {
+    "appId": "co.jpanalyst.geometrytactical.professionalv2.local",
+    "productName": "Geometry Tactical Professional V2 Local",
+    "copyright": "Copyright © 2026 Juan Diego Pérez",
+    "asar": true,
+    "directories": {
+      "output": "dist/professional-v2-windows",
+      "buildResources": "desktop/assets"
+    },
+    "files": [
+      "package.json",
+      "school-game/**/*"
+    ],
+    "win": {
+      "icon": "desktop/assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Geometry Tactical Professional V2 Local",
+      "uninstallDisplayName": "Geometry Tactical Professional V2 Local"
+    },
+    "portable": {
+      "artifactName": "Geometry-Tactical-Professional-V2-Local-${version}-Portable-${arch}.${ext}"
+    }
+  }
 }

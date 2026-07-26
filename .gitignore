@@ -2,5 +2,11 @@ node_modules/
 server/node_modules/
 server/global-score.json
 server/global-score.json.tmp
+server/local-results/
+dist/
+desktop/dist/
+triad-local-config.json
 *.log
 .DS_Store
+desktop/assets/icon.ico
+desktop/assets/icon.png

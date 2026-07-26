@@ -1,0 +1,6 @@
+{
+  "resultsEndpoint": "https://triad-territory-rush-server.onrender.com/api/local-results",
+  "reportKey": "REPLACE_WITH_THE_SAME_LONG_REPORT_INGEST_KEY_USED_ON_RENDER",
+  "matchMinutes": 10,
+  "deviceLabel": "Physics-Lab-PC-01"
+}

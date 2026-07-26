@@ -1,15 +1,13 @@
 {
-  "name": "geometry-tactical-consolidated-local",
-  "version": "49.0.0",
+  "name": "geometry-tactical-professional-v2-local",
+  "version": "50.0.0",
   "private": true,
-  "description": "Consolidated school-safe local pixel-art tactical game with two complete rooms, one shared player character, three-person cooperative controls, full-level defeat resets, dynamic enemy AI, trigonometry checkpoints and automatic local results.",
+  "description": "Professional two-level local pixel-art tactical game using explicit V2 animation atlases, A* enemy navigation, three-person shared controls, three-strike trigonometry checkpoints and automatic local results.",
   "main": "school-game/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare:school-assets": "node scripts/prepare-school-game-assets.js",
-    "prepare:consolidated": "node scripts/prepare-consolidated-v49.js",
-    "prepare": "npm run prepare:icons && npm run prepare:school-assets && npm run prepare:consolidated",
-    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game-v49.js && node scripts/school-game-static-test.js",
+    "prepare": "node scripts/prepare-professional-v50.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game.js && node scripts/school-game-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
@@ -22,19 +20,17 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.consolidated.local",
-    "productName": "Geometry Tactical Consolidated Local",
+    "appId": "co.jpanalyst.geometrytactical.professionalv2.local",
+    "productName": "Geometry Tactical Professional V2 Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "directories": {
-      "output": "dist/school-windows",
+      "output": "dist/professional-v2-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
       "package.json",
-      "school-game/**/*",
-      "!school-game/assets/**/*.base64",
-      "!school-game/game.js"
+      "school-game/**/*"
     ],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -55,11 +51,11 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Consolidated Local",
-      "uninstallDisplayName": "Geometry Tactical Consolidated Local"
+      "shortcutName": "Geometry Tactical Professional V2 Local",
+      "uninstallDisplayName": "Geometry Tactical Professional V2 Local"
     },
     "portable": {
-      "artifactName": "Geometry-Tactical-Consolidated-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Professional-V2-Local-${version}-Portable-${arch}.${ext}"
     }
   }
 }

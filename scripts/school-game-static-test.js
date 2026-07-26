@@ -1,64 +1,76 @@
 "use strict";
-
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-
 const root = path.resolve(__dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
-const game = read("school-game/game-v49.js");
+const game = read("school-game/game.js");
 const main = read("school-game/main.js");
 const html = read("school-game/index.html");
 const styles = read("school-game/styles.css");
 const packageJson = JSON.parse(read("package.json"));
+const manifest = JSON.parse(read("school-game/assets/v2/asset-manifest.json"));
 
-assert.equal(packageJson.version, "49.0.0");
-assert.equal(packageJson.main, "school-game/main.js");
-assert.equal(packageJson.build.productName, "Geometry Tactical Consolidated Local");
-assert.match(game, /GENERATED CONSOLIDATED RUNTIME · V49\.0\.0/);
-assert.match(game, /state\.strikes >= 3/);
-assert.match(game, /beginQuestionCheckpoint/);
-assert.match(game, /function createQuestion/);
-assert.match(game, /\["sin","cos","tan","ratio","angle"\]/);
-assert.doesNotMatch(game, /blood|gore|dismember/i);
-assert.match(game, /MAX_PLAYER_BULLETS = 2/);
-assert.match(game, /MAX_ENEMY_BULLETS = 4/);
-assert.match(game, /Pulse Pistol/);
-assert.match(game, /Level 1 · Robledo Learning Lab/);
-assert.match(game, /Level 2 · Library Research Grid/);
-assert.doesNotMatch(game, /Robotics Workshop/);
-assert.doesNotMatch(game, /Geometry Vault/);
-assert.match(game, /Shared Robledo Operative/);
-assert.match(game, /resetting the complete level/);
-assert.match(game, /spawnMap\(state\.mapIndex\)/);
-assert.match(game, /lastSeenX/);
-assert.match(game, /travelTime/);
-assert.match(game, /incomingThreat/);
-assert.match(game, /separation < 72/);
-assert.match(game, /defeatAge/);
-assert.match(game, /DASH\/RELOAD · SHIFT\/R/);
-assert.match(game, /neon-geometry-consolidated-two-room-v49/);
-assert.match(game, /version:"49\.0\.0"/);
-assert.match(game, /resultToCsv/);
-assert.match(main, /Geometry Tactical Consolidated Local/);
-assert.match(main, /consolidated-two-room-v49/);
-assert.match(main, /LATEST_RESULT\.json/);
-assert.match(main, /LATEST_RESULT\.csv/);
-assert.match(main, /OPEN_RESULTS_FOLDER\.cmd/);
-assert.match(html, /Register the three-person control team/);
-assert.match(html, /2 COMPLETE LEVELS/);
-assert.match(html, /ONE SHARED CHARACTER/);
-assert.match(html, /game-v49\.js/);
-assert.doesNotMatch(html, /ARMOR CATALOG/);
-assert.match(html, /TRIGONOMETRY CHECKPOINT/);
-assert.match(styles, /--canvas: #f4f7fb/);
-assert.match(styles, /image-rendering: pixelated/);
-assert.match(styles, /operative-card/);
-
-for (const asset of ["characters", "enemies", "powers", "weapons", "tiles", "effects", "decor"]) {
-  const target = path.join(root, "school-game", "assets", "pixel", `${asset}.png`);
-  assert.ok(fs.existsSync(target), `${asset}.png was not decoded`);
-  assert.ok(fs.statSync(target).size > 250, `${asset}.png is unexpectedly small`);
+function pngDimensions(relative) {
+  const buffer = fs.readFileSync(path.join(root, relative));
+  assert.equal(buffer.toString("ascii", 1, 4), "PNG", `${relative} is not a PNG`);
+  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20), bytes: buffer.length };
 }
 
-console.log("Consolidated v49 validation passed: two complete rooms, one shared operative, three-person controls, full-level defeat resets, limited projectiles, improved tactical AI, defeat animations, white visual system, trigonometry checkpoints and local JSON/CSV results are wired.");
+assert.equal(packageJson.version, "50.0.0");
+assert.equal(packageJson.main, "school-game/main.js");
+assert.equal(packageJson.build.productName, "Geometry Tactical Professional V2 Local");
+assert.equal(manifest.version, "2.0");
+assert.equal(manifest.rooms.length, 2);
+assert.equal(manifest.player.width, 512);
+assert.equal(manifest.player.height, 1024);
+assert.equal(manifest.player.cell, 64);
+assert.equal(manifest.enemies.width, 512);
+assert.equal(manifest.enemies.height, 1280);
+assert.deepEqual(Object.keys(manifest.enemies.archetypes), ["guard", "runner", "shooter", "heavy"]);
+assert.ok(Object.keys(manifest.player.animations).length >= 16);
+assert.equal(manifest.player.animations.death.frames.length, 8);
+assert.equal(manifest.enemies.animations.death.frames.length, 8);
+assert.match(game, /const FIXED_DT = 1 \/ 120/);
+assert.match(game, /function findPath/);
+assert.match(game, /function buildNavGrid/);
+assert.match(game, /function chooseCover/);
+assert.match(game, /function incomingThreat/);
+assert.match(game, /travelTime/);
+assert.match(game, /state\.strikes >= 3/);
+assert.match(game, /beginQuestionCheckpoint/);
+assert.match(game, /\["sin", "cos", "tan", "ratio", "angle"\]/);
+assert.match(game, /spawnLevel\(state\.levelIndex, false\)/);
+assert.match(game, /MAX_PLAYER_BULLETS = 2/);
+assert.match(game, /MAX_ENEMY_BULLETS = 4/);
+assert.match(game, /resultToCsv/);
+assert.doesNotMatch(game, /armorCatalog|selectedArmorId/);
+assert.doesNotMatch(game, /blood|gore|dismember/i);
+assert.match(main, /Geometry Tactical Professional V2 Results/);
+assert.match(main, /professional-v2-assets-v50/);
+assert.match(html, /Professional V2 two-level edition/);
+assert.match(html, /THREE-PERSON CONTROL/);
+assert.match(styles, /image-rendering:pixelated/);
+
+const expected = {
+  "school-game/assets/v2/protagonist_v2.png": [512,1024],
+  "school-game/assets/v2/enemies_v2.png": [512,1280],
+  "school-game/assets/v2/effects_v2.png": [384,192],
+  "school-game/assets/v2/support_v2.png": [384,144],
+  "school-game/assets/v2/room1_v2.png": [1600,1000],
+  "school-game/assets/v2/room2_v2.png": [1600,1000]
+};
+for (const [relative, [width,height]] of Object.entries(expected)) {
+  const dimensions = pngDimensions(relative);
+  assert.equal(dimensions.width, width, `${relative} width mismatch`);
+  assert.equal(dimensions.height, height, `${relative} height mismatch`);
+  assert.ok(dimensions.bytes > 1000, `${relative} is unexpectedly small`);
+}
+
+for (const room of manifest.rooms) {
+  assert.ok(room.obstacles.length >= 20, `${room.name} needs detailed collision geometry`);
+  assert.ok(room.enemySpawns.length >= 8, `${room.name} needs eight enemy placements`);
+  assert.equal(room.patrols.length, room.enemySpawns.length, `${room.name} patrol count mismatch`);
+}
+
+console.log("Professional V2 validation passed: dedicated protagonist/enemy atlases, explicit frame metadata, two detailed 1600×1000 rooms, 120 Hz simulation, A* navigation, cover/flank AI, full-level defeat reset, three-person controls, trigonometry checkpoints and JSON/CSV records are wired.");

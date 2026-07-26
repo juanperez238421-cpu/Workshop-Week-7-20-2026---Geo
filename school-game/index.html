@@ -4,38 +4,38 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <title>Neon Geometry Tactical Pixel Edition</title>
+  <title>Geometry Tactical Consolidated · Two Room Edition</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main id="app">
-    <canvas id="gameCanvas" width="1600" height="1000" aria-label="Neon Geometry Tactical pixel-art local arena"></canvas>
+    <canvas id="gameCanvas" width="1600" height="1000" aria-label="White-background pixel-art tactical geometry game"></canvas>
 
     <header id="hud" class="hidden">
       <section class="hud-block brand-block">
-        <strong>NEON GEOMETRY TACTICAL · PIXEL EDITION</strong>
-        <span id="armorHudLabel">Cadet armor · Pulse Pistol</span>
+        <strong>GEOMETRY TACTICAL · CONSOLIDATED V49</strong>
+        <span id="armorHudLabel">Shared Robledo Operative · Pulse Pistol</span>
       </section>
       <section class="hud-block stats-block">
         <div><span>TIME</span><b id="timeValue">05:00</b></div>
-        <div><span>MAP</span><b id="roomValue">1</b></div>
+        <div><span>LEVEL</span><b id="roomValue">1</b></div>
         <div><span>TAGS</span><b id="tagValue">0</b></div>
         <div><span>ACCURACY</span><b id="accuracyValue">—</b></div>
       </section>
       <section class="hud-block strike-block">
-        <span>THREE-STRIKE CYCLE</span>
+        <span>FULL-LEVEL RESET CYCLE</span>
         <div id="strikePips"><i></i><i></i><i></i></div>
       </section>
     </header>
 
     <aside id="studentPanel" class="student-panel hidden">
-      <span>QUESTION ROTATION</span>
+      <span>THREE-STUDENT CONTROL ROLES</span>
       <div id="studentRows"></div>
     </aside>
 
     <aside id="controlPanel" class="control-panel hidden">
-      <span>STARTER LOADOUT</span>
-      <small>WASD move · mouse aim · click/Space single shot · Shift dash · R reload · P pause</small>
+      <span>ONE SHARED CHARACTER</span>
+      <small><b>Student 1:</b> WASD movement · <b>Student 2:</b> mouse aim and click/Space fire · <b>Student 3:</b> Shift dash and R reload · P pause</small>
       <div class="resource-line"><b>AMMO</b><progress id="ammoBar" max="4" value="4"></progress><strong id="ammoValue">4/4</strong></div>
       <div class="resource-line"><b>RELOAD</b><progress id="reloadBar" max="1" value="1"></progress><strong id="reloadValue">READY</strong></div>
       <div class="resource-line"><b>POWER</b><progress id="powerBar" max="1" value="0"></progress><strong id="powerValue">NONE</strong></div>
@@ -45,28 +45,32 @@
 
     <section id="registrationOverlay" class="overlay visible">
       <div class="modal registration-modal">
-        <p class="eyebrow">LOCAL WINDOWS GAME · ORIGINAL PIXEL-ART ASSET SYSTEM</p>
-        <h1>Register the team and choose armor</h1>
-        <p class="lead">The redesigned edition uses compact pixel characters, fixed tactical maps, one simple starter weapon, strict projectile limits and a complete armor catalog. Three training strikes still activate the trigonometry checkpoint.</p>
+        <p class="eyebrow">LOCAL WINDOWS RELEASE · CONSOLIDATED TWO-ROOM BUILD</p>
+        <h1>Register the three-person control team</h1>
+        <p class="lead">This focused release contains two complete tactical levels, one identical player character for every match, fixed enemy placements with dynamic AI, limited projectiles, full-level resets after each player defeat and the existing trigonometry checkpoint after the third strike.</p>
+
         <div class="feature-grid">
-          <article><b>PIXEL ART</b><span>characters, enemies, powers and maps</span></article>
-          <article><b>1 PISTOL</b><span>single projectile and four-round magazine</span></article>
-          <article><b>6 BULLETS MAX</b><span>clean screen and readable movement</span></article>
-          <article><b>3 STRIKES</b><span>opens a trigonometry question</span></article>
+          <article><b>2 COMPLETE LEVELS</b><span>Learning Lab and Library Research Grid</span></article>
+          <article><b>1 SHARED PLAYER</b><span>no armor classes or character variants</span></article>
+          <article><b>3 CONTROL ROLES</b><span>movement, aim/fire, dash/reload</span></article>
+          <article><b>3 STRIKES</b><span>opens the rotating trigonometry checkpoint</span></article>
         </div>
 
         <div class="student-inputs">
-          <label>Student 1 full name<input id="student1" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
-          <label>Student 2 full name<input id="student2" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
-          <label>Student 3 full name<input id="student3" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 1 · Movement<input id="student1" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 2 · Aim and fire<input id="student2" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 3 · Dash and reload<input id="student3" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
         </div>
 
-        <section class="armor-section" aria-labelledby="armorCatalogTitle">
-          <div class="section-heading">
-            <div><span>ARMOR CATALOG</span><h2 id="armorCatalogTitle">Choose one classroom operative</h2></div>
-            <p>All armors use the same simple Pulse Pistol. Only one clear passive changes.</p>
+        <div id="armorCatalog" class="hidden" aria-hidden="true"></div>
+
+        <section class="operative-card" aria-label="Fixed character loadout">
+          <div class="operative-preview" aria-hidden="true"></div>
+          <div>
+            <span>FIXED LOADOUT</span>
+            <h2>Robledo Operative</h2>
+            <p>Four-round Pulse Pistol, two simultaneous player projectiles, tactical dash, manual reload and one consistent visual identity across both levels.</p>
           </div>
-          <div id="armorCatalog" class="armor-catalog" role="radiogroup" aria-label="Armor catalog"></div>
         </section>
 
         <div class="registration-options">
@@ -77,19 +81,17 @@
               <option value="900">15 minutes</option>
             </select>
           </label>
-          <label>Starting map
+          <label>Starting level
             <select id="mapSelect">
-              <option value="0">1 · Classroom Crossroads</option>
-              <option value="1">2 · Library Lanes</option>
-              <option value="2">3 · Robotics Workshop</option>
-              <option value="3">4 · Geometry Vault</option>
+              <option value="0">1 · Robledo Learning Lab</option>
+              <option value="1">2 · Library Research Grid</option>
             </select>
           </label>
         </div>
 
-        <button id="startButton" class="primary">START PIXEL-ART LOCAL MATCH</button>
+        <button id="startButton" class="primary">START CONSOLIDATED LOCAL MATCH</button>
         <p id="registrationFeedback" class="feedback"></p>
-        <p class="storage-note">Results are saved automatically in <strong>Documents\Neon Geometry Tactical Results\results</strong>.</p>
+        <p class="storage-note">Results save automatically in <strong>Documents\Neon Geometry Tactical Results\results</strong>.</p>
       </div>
     </section>
 
@@ -113,7 +115,7 @@
     <section id="endOverlay" class="overlay">
       <div class="modal end-modal">
         <p class="eyebrow">LOCAL MATCH COMPLETE · RESULTS SAVED</p>
-        <h2>Final team record</h2>
+        <h2>Final three-student team record</h2>
         <div id="finalSummary" class="final-summary"></div>
         <div class="end-actions">
           <button id="openResultsButton">OPEN SAVED RESULTS</button>
@@ -124,6 +126,6 @@
     </section>
   </main>
 
-  <script src="game.js"></script>
+  <script src="game-v49.js"></script>
 </body>
 </html>

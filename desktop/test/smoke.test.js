@@ -13,6 +13,7 @@ assert.ok(packageJson.scripts["desktop:start"]);
 assert.ok(packageJson.scripts["desktop:prepare"]);
 assert.ok(packageJson.scripts["desktop:dist:win"]);
 assert.ok(packageJson.build?.win?.target);
+assert.ok(packageJson.dependencies?.express);
 assert.ok(packageJson.dependencies?.ws);
 assert.ok(packageJson.devDependencies?.electron);
 assert.ok(packageJson.devDependencies?.["electron-builder"]);
@@ -21,6 +22,8 @@ const launcher = read("desktop/main-v28.js");
 assert.match(launcher, /runtime-local-v28\.js/);
 assert.match(launcher, /\["--require", LOCAL_RUNTIME, \.\.\.args\]/);
 assert.match(launcher, /delete env\.NODE_OPTIONS/);
+assert.match(launcher, /env\.NODE_PATH/);
+assert.match(launcher, /app\.getAppPath\(\), "node_modules"/);
 assert.match(launcher, /desktop-ready\.json/);
 assert.match(launcher, /require\("\.\/main\.js"\)/);
 
@@ -59,4 +62,4 @@ assert.match(teacherAuth, /master-local-results\.js/);
 assert.match(teacherAuth, /master-v27-corrections\.js/);
 for (const type of ["list_local_results", "get_local_result", "delete_local_result"]) assert.match(teacherAuth, new RegExp(type));
 
-console.log("Desktop packaging smoke validation passed: explicit Windows preload chain, playable-window readiness marker, secure Electron bridge, local authoritative server, queued delivery and Master result inbox are wired.");
+console.log("Desktop packaging smoke validation passed: packaged Express/WebSocket dependencies, explicit Windows preload chain, playable-window readiness marker, secure Electron bridge, local authoritative server, queued delivery and Master result inbox are wired.");

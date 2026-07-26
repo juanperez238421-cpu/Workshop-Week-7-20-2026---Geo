@@ -1,30 +1,26 @@
-name: Build Windows Local EXE
+name: Build School Tactical Windows EXE
 
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
-      - "desktop/**"
-      - "server/**"
-      - "index.html"
-      - "config.js"
+      - "school-game/**"
+      - "scripts/prepare-school-game-assets.js"
+      - "scripts/school-game-static-test.js"
+      - "scripts/prepare-desktop-assets.js"
+      - "desktop/assets/**"
       - "package.json"
-      - "master.html"
-      - "master-local-results.*"
-      - "teacher-auth.js"
       - ".github/workflows/build-windows-exe.yml"
   push:
     branches: [main]
     paths:
-      - "desktop/**"
-      - "server/**"
-      - "index.html"
-      - "config.js"
+      - "school-game/**"
+      - "scripts/prepare-school-game-assets.js"
+      - "scripts/school-game-static-test.js"
+      - "scripts/prepare-desktop-assets.js"
+      - "desktop/assets/**"
       - "package.json"
-      - "master.html"
-      - "master-local-results.*"
-      - "teacher-auth.js"
       - ".github/workflows/build-windows-exe.yml"
 
 permissions:
@@ -33,7 +29,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 35
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -45,124 +41,76 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install desktop dependencies
+      - name: Install dependencies
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Install embedded server dependencies
-        shell: pwsh
-        run: npm install --prefix server --omit=dev --no-audit --no-fund
-
-      - name: Validate game and desktop runtime
-        id: desktop-validation
+      - name: Validate school game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath desktop-validation.log
+          npm test 2>&1 | Tee-Object -FilePath school-game-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Upload desktop validation output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: desktop-validation-output
-          path: desktop-validation.log
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Build Windows installer and portable EXE
-        id: desktop-build
+      - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run desktop:dist:win 2>&1 | Tee-Object -FilePath desktop-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath school-game-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged application end-to-end test
-        id: packaged-startup
+      - name: Launch packaged application smoke test
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/windows/win-unpacked" -Filter "Triad Territory Rush Local.exe" -File | Select-Object -First 1
+          $exe = Get-ChildItem -Path "dist/school-windows/win-unpacked" -Filter "Neon Geometry Tactical Local.exe" -File | Select-Object -First 1
           if (-not $exe) { throw "Packaged application executable was not found." }
 
-          Get-ChildItem -Path $env:APPDATA -Filter "desktop-ready.json" -File -Recurse -ErrorAction SilentlyContinue |
-            Remove-Item -Force -ErrorAction SilentlyContinue
-
-          $startedAt = Get-Date
-          $env:TRIAD_MATCH_MINUTES = "5"
+          $ready = Join-Path $env:APPDATA "Neon Geometry Tactical Local\ready.json"
+          Remove-Item $ready -Force -ErrorAction SilentlyContinue
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started packaged process PID=$($process.Id) from $($exe.FullName)" | Tee-Object -FilePath packaged-startup.log
+          "Started PID=$($process.Id)" | Tee-Object -FilePath school-game-startup.log
 
-          $readyMarker = $null
-          for ($attempt = 0; $attempt -lt 60; $attempt++) {
+          for ($attempt = 0; $attempt -lt 45; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
-            if ($process.HasExited) {
-              "Packaged application exited during startup with code $($process.ExitCode)." | Tee-Object -FilePath packaged-startup.log -Append
-              break
-            }
-
-            $readyMarker = Get-ChildItem -Path $env:APPDATA -Filter "desktop-ready.json" -File -Recurse -ErrorAction SilentlyContinue |
-              Where-Object { $_.LastWriteTime -ge $startedAt } |
-              Sort-Object LastWriteTime -Descending |
-              Select-Object -First 1
-            if ($readyMarker) { break }
+            if ($process.HasExited) { throw "Application exited with code $($process.ExitCode)." }
+            if (Test-Path $ready) { break }
           }
 
-          $desktopLogs = Get-ChildItem -Path $env:APPDATA -Filter "desktop.log" -File -Recurse -ErrorAction SilentlyContinue |
-            Where-Object { $_.LastWriteTime -ge $startedAt } |
-            Sort-Object LastWriteTime -Descending
-          if ($desktopLogs) {
-            $latest = $desktopLogs | Select-Object -First 1
-            "Desktop log: $($latest.FullName)" | Tee-Object -FilePath packaged-startup.log -Append
-            Get-Content $latest.FullName | Tee-Object -FilePath packaged-startup.log -Append
-          }
-
-          $process.Refresh()
-          if ($process.HasExited) { exit 1 }
-          if (-not $readyMarker) {
-            "The packaged game never reached the playable index.html window within 60 seconds." | Tee-Object -FilePath packaged-startup.log -Append
+          if (-not (Test-Path $ready)) {
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            exit 1
+            throw "The game did not report asset and renderer readiness within 45 seconds."
           }
 
-          "Ready marker: $($readyMarker.FullName)" | Tee-Object -FilePath packaged-startup.log -Append
-          Get-Content $readyMarker.FullName | Tee-Object -FilePath packaged-startup.log -Append
-          "Packaged gateway, authoritative engine, teacher controller and game window started successfully." | Tee-Object -FilePath packaged-startup.log -Append
-          & taskkill.exe /PID $process.Id /T /F | Tee-Object -FilePath packaged-startup.log -Append
-          if ($LASTEXITCODE -notin @(0, 128)) { exit $LASTEXITCODE }
-
-      - name: Upload packaged startup output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: packaged-startup-output
-          path: packaged-startup.log
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Upload desktop build output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: desktop-build-output
-          path: desktop-build.log
-          if-no-files-found: warn
-          retention-days: 7
+          Get-Content $ready | Tee-Object -FilePath school-game-startup.log -Append
+          "Packaged school game reached the registration screen with assets loaded." | Tee-Object -FilePath school-game-startup.log -Append
+          & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist/windows -Filter *.exe | ForEach-Object {
+          Get-ChildItem -Path dist/school-windows -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)" | Out-File -FilePath dist/windows/SHA256SUMS.txt -Append -Encoding utf8
+            "$hash  $($_.Name)" | Out-File -FilePath dist/school-windows/SHA256SUMS.txt -Append -Encoding utf8
           }
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: school-game-diagnostics
+          path: |
+            school-game-validation.log
+            school-game-build.log
+            school-game-startup.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: triad-territory-rush-local-windows
+          name: neon-geometry-tactical-local-windows
           path: |
-            dist/windows/*.exe
-            dist/windows/SHA256SUMS.txt
+            dist/school-windows/*.exe
+            dist/school-windows/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30

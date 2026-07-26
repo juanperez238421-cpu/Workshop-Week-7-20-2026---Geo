@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const BUILD = "20260725-fair-question-rotation27";
+  const BUILD = "20260726-fair-question-rotation28";
   const OBSERVED_TYPES = new Set(["register_student", "reconnect_student", "input", "ping", "request_full_state"]);
   const observedSockets = new WeakSet();
   const nativeSend = WebSocket.prototype.send;
@@ -14,6 +14,8 @@
   let configuredDurationMs = 10 * 60 * 1000;
   let remainingAtState = configuredDurationMs;
   let stateReceivedAt = 0;
+  let normalizationQueued = false;
+  let normalizationRunning = false;
 
   function parseJson(value) {
     if (typeof value !== "string") return null;
@@ -46,16 +48,47 @@
     return badge;
   }
 
+  function setTextIfChanged(node, nextText) {
+    if (!node) return false;
+    const value = String(nextText ?? "");
+    if (node.textContent === value) return false;
+    node.textContent = value;
+    return true;
+  }
+
   function normalizeAutostartUi() {
-    document.getElementById("readyButton")?.remove();
-    const readyLabel = document.getElementById("playerReadyLabel");
-    if (readyLabel) readyLabel.textContent = "MASTER";
-    const stateLabel = document.getElementById("playerStateLabel");
-    if (stateLabel && /approved/i.test(stateLabel.textContent || "")) stateLabel.textContent = "Approved · Master starts";
-    const status = document.getElementById("lobbyStatus");
-    if (status && /mark ready|ready when|not ready/i.test(status.textContent || "")) status.textContent = "Approved. This channel is startable immediately from the Master page.";
-    document.querySelectorAll(".roster-card small").forEach((node) => {
-      node.textContent = String(node.textContent || "").replace(/NOT READY|READY/g, "STARTABLE");
+    if (normalizationRunning) return;
+    normalizationRunning = true;
+    try {
+      document.getElementById("readyButton")?.remove();
+
+      const readyLabel = document.getElementById("playerReadyLabel");
+      setTextIfChanged(readyLabel, "MASTER");
+
+      const stateLabel = document.getElementById("playerStateLabel");
+      if (stateLabel && /approved/i.test(stateLabel.textContent || "")) setTextIfChanged(stateLabel, "Approved · Master starts");
+
+      const status = document.getElementById("lobbyStatus");
+      if (status && /mark ready|ready when|not ready/i.test(status.textContent || "")) {
+        setTextIfChanged(status, "Approved. This channel is startable immediately from the Master page.");
+      }
+
+      document.querySelectorAll(".roster-card small").forEach((node) => {
+        const current = String(node.textContent || "");
+        const replacement = current.replace(/NOT READY|READY/g, "STARTABLE");
+        if (replacement !== current) setTextIfChanged(node, replacement);
+      });
+    } finally {
+      normalizationRunning = false;
+    }
+  }
+
+  function queueNormalization() {
+    if (normalizationQueued) return;
+    normalizationQueued = true;
+    requestAnimationFrame(() => {
+      normalizationQueued = false;
+      normalizeAutostartUi();
     });
   }
 
@@ -92,7 +125,7 @@
     const remaining = Math.max(0, remainingAtState - elapsed);
     const totalSeconds = Math.ceil(remaining / 1000);
     const clock = document.getElementById("clockLabel");
-    if (clock) clock.textContent = `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`;
+    if (clock) setTextIfChanged(clock, `${String(Math.floor(totalSeconds / 60)).padStart(2, "0")}:${String(totalSeconds % 60).padStart(2, "0")}`);
   }
 
   function requestRecovery() {
@@ -113,13 +146,13 @@
       if (Number.isFinite(Number(message.matchDurationMs))) configuredDurationMs = Number(message.matchDurationMs);
       remainingAtState = configuredDurationMs;
       phase = "lobby";
-      setTimeout(normalizeAutostartUi, 0);
+      queueNormalization();
       return;
     }
 
     if (message.type === "lobby") {
       phase = String(message.phase || phase);
-      setTimeout(normalizeAutostartUi, 0);
+      queueNormalization();
       return;
     }
 
@@ -139,7 +172,7 @@
       stateReceivedAt = performance.now();
       const me = Array.isArray(message.players) ? message.players.find((player) => String(player.id) === playerId) : null;
       if (me) renderIndividualStudents(me.individualStudents, me.assignedStudentIndex);
-      normalizeAutostartUi();
+      queueNormalization();
       return;
     }
 
@@ -174,7 +207,7 @@
     return nativeSend.call(this, payload);
   };
 
-  const mutationObserver = new MutationObserver(normalizeAutostartUi);
+  const mutationObserver = new MutationObserver(queueNormalization);
   mutationObserver.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
   setInterval(() => {
@@ -183,7 +216,7 @@
     const age = lastStateAt ? performance.now() - lastStateAt : Number.POSITIVE_INFINITY;
     if (age > 1200) requestRecovery();
     const network = document.getElementById("networkDisplay");
-    if (network && age > 1200) network.textContent = "RECOVERING";
+    if (network && age > 1200) setTextIfChanged(network, "RECOVERING");
   }, 250);
 
   ensureStudentPanel();
@@ -197,6 +230,7 @@
     continuousClientClock: true,
     individualStudentTelemetry: true,
     fairQuestionRotation: true,
+    mutationNormalization: "idempotent-and-animation-frame-coalesced",
     opensAdditionalSocket: false
   });
 })();

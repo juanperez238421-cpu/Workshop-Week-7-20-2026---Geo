@@ -4,9 +4,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
 
-app.setName("Neon Geometry Tactical Pixel Local");
+app.setName("Geometry Tactical Consolidated Local");
 
-const APP_VERSION = "48.0.0";
+const APP_VERSION = "49.0.0";
 let mainWindow = null;
 
 function safeDirectory(target) {
@@ -66,7 +66,7 @@ function createWindow() {
     minWidth: 1180,
     minHeight: 720,
     show: false,
-    backgroundColor: "#050711",
+    backgroundColor: "#f4f7fb",
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -102,8 +102,8 @@ ipcMain.handle("school-game:restart", () => {
 ipcMain.on("school-game:ready", () => {
   try {
     const ready = path.join(app.getPath("userData"), "ready.json");
-    fs.writeFileSync(ready, JSON.stringify({ ready: true, version: APP_VERSION, edition: "pixel-art-armor-maps-v31", at: new Date().toISOString() }, null, 2), "utf8");
-    log("pixel-art game ready");
+    fs.writeFileSync(ready, JSON.stringify({ ready: true, version: APP_VERSION, edition: "consolidated-two-room-v49", at: new Date().toISOString() }, null, 2), "utf8");
+    log("consolidated two-room game ready");
   } catch (error) {
     log(`ready marker failed: ${error?.stack || error}`);
   }

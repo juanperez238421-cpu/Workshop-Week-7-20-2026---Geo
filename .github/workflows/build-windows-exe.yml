@@ -1,4 +1,4 @@
-name: Build School Tactical Windows EXE
+name: Build Pixel Tactical Windows EXE
 
 on:
   workflow_dispatch:
@@ -45,29 +45,29 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate school game
+      - name: Validate pixel-art school game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath school-game-validation.log
+          npm test 2>&1 | Tee-Object -FilePath pixel-game-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath school-game-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath pixel-game-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged application smoke test
+      - name: Launch packaged pixel application smoke test
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/school-windows/win-unpacked" -Filter "Neon Geometry Tactical Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged application executable was not found." }
+          $exe = Get-ChildItem -Path "dist/school-windows/win-unpacked" -Filter "Neon Geometry Tactical Pixel Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged pixel application executable was not found." }
 
-          $ready = Join-Path $env:APPDATA "Neon Geometry Tactical Local\ready.json"
+          $ready = Join-Path $env:APPDATA "Neon Geometry Tactical Pixel Local\ready.json"
           Remove-Item $ready -Force -ErrorAction SilentlyContinue
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id)" | Tee-Object -FilePath school-game-startup.log
+          "Started PID=$($process.Id)" | Tee-Object -FilePath pixel-game-startup.log
 
           for ($attempt = 0; $attempt -lt 45; $attempt++) {
             Start-Sleep -Seconds 1
@@ -78,11 +78,11 @@ jobs:
 
           if (-not (Test-Path $ready)) {
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "The game did not report asset and renderer readiness within 45 seconds."
+            throw "The pixel game did not report renderer and asset readiness within 45 seconds."
           }
 
-          Get-Content $ready | Tee-Object -FilePath school-game-startup.log -Append
-          "Packaged school game reached the registration screen with assets loaded." | Tee-Object -FilePath school-game-startup.log -Append
+          Get-Content $ready | Tee-Object -FilePath pixel-game-startup.log -Append
+          "Packaged pixel game reached the armor catalog registration screen with all PNG sheets loaded." | Tee-Object -FilePath pixel-game-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
@@ -97,18 +97,18 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: school-game-diagnostics
+          name: pixel-game-diagnostics
           path: |
-            school-game-validation.log
-            school-game-build.log
-            school-game-startup.log
+            pixel-game-validation.log
+            pixel-game-build.log
+            pixel-game-startup.log
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: neon-geometry-tactical-local-windows
+          name: neon-geometry-tactical-pixel-local-windows
           path: |
             dist/school-windows/*.exe
             dist/school-windows/SHA256SUMS.txt

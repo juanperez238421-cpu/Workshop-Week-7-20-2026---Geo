@@ -3,6 +3,7 @@
 
   if (!window.triadDesktop?.isDesktop) return;
 
+  const BUILD = "20260726-neon-tactical29";
   const state = {
     info: null,
     settings: null,
@@ -22,13 +23,27 @@
   }
 
   function setDeliveryBadge(mode, text) {
-    if (!state.badge) return;
-    state.badge.dataset.mode = mode;
-    state.badge.textContent = text;
+    if (state.badge) {
+      state.badge.dataset.mode = mode;
+      state.badge.textContent = text;
+    }
     const finalStatus = document.getElementById("desktopFinalDeliveryStatusV27");
     if (finalStatus) {
       finalStatus.dataset.mode = mode;
       finalStatus.textContent = text;
+    }
+  }
+
+  function resultPath() {
+    return String(state.info?.resultsFolder || "Documents\\Triad Territory Rush Results\\results");
+  }
+
+  async function openResults() {
+    try {
+      const message = await window.triadDesktop.openResultsFolder();
+      if (message) throw new Error(message);
+    } catch (error) {
+      setStatus(error.message || "Windows could not open the local results folder.", "error");
     }
   }
 
@@ -41,11 +56,16 @@
       <form id="desktopSettingsFormV27" class="desktop-settings-card-v27">
         <div class="desktop-settings-heading-v27">
           <div>
-            <span>LOCAL WINDOWS EDITION · V27</span>
-            <h2>Teacher result delivery</h2>
-            <p>The game and authoritative server run on this computer. Final score and questionnaire data are always saved locally; when internet is available, the app sends the report to the configured teacher inbox immediately.</p>
+            <span>LOCAL WINDOWS EDITION · NEON TACTICAL V29</span>
+            <h2>Results and teacher delivery</h2>
+            <p>Every completed run is written first to a visible folder in Documents. JSON and Excel-compatible CSV copies are kept locally even when teacher delivery is unavailable.</p>
           </div>
           <button id="desktopSettingsCloseV27" type="button" aria-label="Close settings">×</button>
+        </div>
+        <div class="desktop-results-location-v29">
+          <span>PRIMARY LOCAL RESULTS FOLDER</span>
+          <code id="desktopResultsPathV29">Loading…</code>
+          <button id="desktopOpenResultsTopV29" class="secondary-button" type="button">OPEN SAVED RESULTS</button>
         </div>
         <div class="desktop-settings-grid-v27">
           <label>Teacher results endpoint
@@ -88,7 +108,8 @@
     section.querySelector("#desktopSettingsFormV27")?.addEventListener("submit", saveSettings);
     section.querySelector("#desktopTestDeliveryV27")?.addEventListener("click", testDelivery);
     section.querySelector("#desktopRetryOutboxV27")?.addEventListener("click", retryOutbox);
-    section.querySelector("#desktopOpenResultsV27")?.addEventListener("click", () => window.triadDesktop.openResultsFolder());
+    section.querySelector("#desktopOpenResultsV27")?.addEventListener("click", openResults);
+    section.querySelector("#desktopOpenResultsTopV29")?.addEventListener("click", openResults);
     section.querySelector("#desktopRestartV27")?.addEventListener("click", () => window.triadDesktop.restartApp());
     return section;
   }
@@ -103,12 +124,14 @@
     keyInput.value = "";
     keyInput.placeholder = settings.hasReportKey ? "Saved securely · leave blank to keep" : "Enter the shared report key";
     state.modal.querySelector("#desktopClearKeyV27").checked = false;
+    const pathNode = state.modal.querySelector("#desktopResultsPathV29");
+    if (pathNode) pathNode.textContent = resultPath();
     const info = state.info;
     const detail = state.modal.querySelector("#desktopRuntimeDetailV27");
     if (detail) detail.textContent = `Room ${info?.roomCode || "—"} · local server ${info?.serverUrl || "starting"} · ${settings.matchMinutes || 10} min · ${info?.outboxCount || 0} queued`;
     setStatus(settings.hasReportKey
-      ? "Local saving and instant teacher delivery are configured."
-      : "Local saving is active. Add the shared delivery key to enable instant teacher delivery.", settings.hasReportKey ? "success" : "warning");
+      ? "Visible local saving and instant teacher delivery are configured."
+      : "Visible local saving is active. Teacher delivery is optional and currently has no access key.", settings.hasReportKey ? "success" : "warning");
   }
 
   async function openModal() {
@@ -143,8 +166,8 @@
       });
       applySettings();
       setStatus(state.settings.restartRequiredForMatchDuration
-        ? "Settings saved. Restart the app before the next match to apply the new duration."
-        : "Settings saved. Future reports will use this teacher delivery configuration.", "success");
+        ? "Settings saved. Restart the app before the next run to apply the new duration."
+        : "Settings saved. Local files remain independent of teacher delivery.", "success");
     } catch (error) {
       setStatus(error.message || "Settings could not be saved.", "error");
     } finally {
@@ -158,10 +181,10 @@
     setStatus("Testing the encrypted result-delivery channel…");
     try {
       await window.triadDesktop.testDelivery();
-      setStatus("Teacher delivery verified. The server accepted the authenticated test without storing a student result.", "success");
+      setStatus("Teacher delivery verified. The test did not create a student result.", "success");
       setDeliveryBadge("sent", "DELIVERY READY");
     } catch (error) {
-      setStatus(error.message || "Teacher delivery test failed.", "error");
+      setStatus(error.message || "Teacher delivery test failed. Local saving remains active.", "error");
       setDeliveryBadge("queued", "LOCAL SAVE ONLY");
     } finally {
       button.disabled = false;
@@ -191,13 +214,13 @@
       badge.id = "desktopDeliveryBadgeV27";
       badge.className = "desktop-delivery-badge-v27";
       badge.dataset.mode = "local";
-      badge.textContent = "LOCAL SAVE";
+      badge.textContent = "VISIBLE LOCAL SAVE";
       state.badge = badge;
       const button = document.createElement("button");
       button.id = "desktopSettingsButtonV27";
       button.className = "icon-button desktop-settings-button-v27";
       button.type = "button";
-      button.textContent = "LOCAL SETTINGS";
+      button.textContent = "RESULTS / SETTINGS";
       button.addEventListener("click", openModal);
       actions.prepend(button);
       actions.prepend(badge);
@@ -212,25 +235,39 @@
     if (advanced) advanced.hidden = true;
     const healthTitle = document.getElementById("serverHealthTitle");
     const healthText = document.getElementById("serverHealthText");
-    if (healthTitle) healthTitle.textContent = "Local authoritative engine ready";
-    if (healthText) healthText.textContent = "Gameplay stays on this PC. Internet is used only for final-result delivery.";
-    const lead = document.querySelector("#lobbyOverlay .lead");
-    if (lead) lead.textContent = "This Windows edition runs one private local arena with one real PC team and five optimized bots. Enter exactly three student names and press Register. The embedded teacher controller approves and starts the match automatically; no internet connection is required for gameplay.";
-    const approval = document.querySelector("#registrationForm .approval-note");
-    if (approval) approval.textContent = "One computer represents exactly three students. After registration, the embedded local controller creates five bots and starts the authoritative match automatically.";
-    const waitingMessage = document.getElementById("waitingMessage");
-    if (waitingMessage) waitingMessage.textContent = "Local controller is preparing the match…";
+    if (healthTitle) healthTitle.textContent = "Local one-hit engine ready";
+    if (healthText) healthText.textContent = "Gameplay stays on this PC. Results are written to Documents before optional delivery.";
     const privateNote = document.querySelector(".student-private-report-note-v23");
-    if (privateNote) privateNote.innerHTML = "<strong>Your result is saved on this computer immediately.</strong> When teacher delivery is configured and internet is available, the complete score and individual questionnaire record are sent automatically. Failed sends remain in the encrypted local workflow queue for retry.";
+    if (privateNote) privateNote.innerHTML = "<strong>Your result is written to the visible Documents folder immediately.</strong> The JSON contains the complete run and the CSV opens directly in Excel. Failed online sends remain queued without deleting either local file.";
+
     const endModal = document.querySelector("#endOverlay .end-modal");
     if (endModal && !document.getElementById("desktopFinalDeliveryStatusV27")) {
+      const location = document.createElement("section");
+      location.id = "desktopFinalResultsLocationV29";
+      location.className = "desktop-final-results-location-v29";
+      location.innerHTML = `<span>SAVED LOCAL COPY</span><code id="desktopFinalResultsPathV29">${escapeHtml(resultPath())}</code><button id="desktopOpenFinalResultsV29" class="secondary-button" type="button">OPEN SAVED RESULTS</button>`;
       const status = document.createElement("p");
       status.id = "desktopFinalDeliveryStatusV27";
       status.className = "desktop-final-delivery-v27";
       status.dataset.mode = "local";
-      status.textContent = "Final result will be saved locally and delivered to the configured teacher inbox.";
+      status.textContent = "The completed run will be saved locally before any delivery attempt.";
       const returnButton = document.getElementById("returnLobbyButton");
+      endModal.insertBefore(location, returnButton || null);
       endModal.insertBefore(status, returnButton || null);
+      location.querySelector("#desktopOpenFinalResultsV29")?.addEventListener("click", openResults);
+    }
+
+    const returnButton = document.getElementById("returnLobbyButton");
+    if (returnButton && returnButton.dataset.desktopRestartV29 !== "true") {
+      returnButton.dataset.desktopRestartV29 = "true";
+      returnButton.textContent = "NEW LOCAL RUN · QUICK RESTART";
+      returnButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        returnButton.disabled = true;
+        returnButton.textContent = "STARTING A CLEAN LOCAL RUN…";
+        window.triadDesktop.restartApp();
+      }, true);
     }
   }
 
@@ -242,27 +279,32 @@
       if (clock) clock.textContent = `${String(state.settings.matchMinutes || 10).padStart(2, "0")}:00`;
       const durationRule = document.querySelector("#lobbyOverlay .rule-grid > div:nth-child(2) b");
       if (durationRule) durationRule.textContent = `${state.settings.matchMinutes || 10} min`;
+      const pathNodes = [document.getElementById("desktopFinalResultsPathV29"), document.getElementById("desktopResultsPathV29")];
+      pathNodes.forEach((node) => { if (node) node.textContent = resultPath(); });
       if (state.info.outboxCount > 0) setDeliveryBadge("queued", `${state.info.outboxCount} QUEUED`);
-      else if (state.settings.hasReportKey) setDeliveryBadge("ready", "DELIVERY READY");
-      else setDeliveryBadge("local", "LOCAL SAVE ONLY");
+      else if (state.settings.hasReportKey) setDeliveryBadge("ready", "LOCAL + DELIVERY");
+      else setDeliveryBadge("local", "VISIBLE LOCAL SAVE");
     } catch {
-      setDeliveryBadge("local", "LOCAL SAVE ONLY");
+      setDeliveryBadge("local", "VISIBLE LOCAL SAVE");
     }
+
     window.triadDesktop.onDeliveryStatus((payload) => {
       const mode = String(payload?.state || "local");
-      const labels = { saved: "SAVED LOCALLY", sent: "SENT TO TEACHER", queued: "QUEUED FOR DELIVERY" };
+      const labels = { saved: "SAVED IN DOCUMENTS", sent: "SAVED + SENT", queued: "SAVED + QUEUED" };
       setDeliveryBadge(mode, labels[mode] || "LOCAL RESULT");
       const banner = document.getElementById("eventBanner");
       if (banner && payload?.message) {
-        banner.textContent = payload.message;
+        banner.textContent = `${payload.message} Folder: ${resultPath()}`;
         banner.classList.add("visible");
-        setTimeout(() => banner.classList.remove("visible"), 4200);
+        setTimeout(() => banner.classList.remove("visible"), 6200);
       }
+      const pathNode = document.getElementById("desktopFinalResultsPathV29");
+      if (pathNode) pathNode.textContent = resultPath();
     });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize, { once: true });
   else initialize();
 
-  window.__triadDesktopLocalUiV27 = Object.freeze({ build: "20260725-desktop-local27", openSettings: openModal, escapeHtml });
+  window.__triadDesktopLocalUiV29 = Object.freeze({ build: BUILD, openSettings: openModal, openResults, escapeHtml });
 })();

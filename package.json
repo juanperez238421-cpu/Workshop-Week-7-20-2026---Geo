@@ -1,14 +1,15 @@
 {
-  "name": "neon-geometry-tactical-local",
-  "version": "48.0.0",
+  "name": "geometry-tactical-consolidated-local",
+  "version": "49.0.0",
   "private": true,
-  "description": "School-safe local pixel-art tactical game with a selectable armor catalog, simple Pulse Pistol, strict projectile limits, improved fixed maps, three-strike trigonometry checkpoints and automatic local results.",
+  "description": "Consolidated school-safe local pixel-art tactical game with two complete rooms, one shared player character, three-person cooperative controls, full-level defeat resets, dynamic enemy AI, trigonometry checkpoints and automatic local results.",
   "main": "school-game/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
     "prepare:school-assets": "node scripts/prepare-school-game-assets.js",
-    "prepare": "npm run prepare:icons && npm run prepare:school-assets",
-    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game.js && node scripts/school-game-static-test.js",
+    "prepare:consolidated": "node scripts/prepare-consolidated-v49.js",
+    "prepare": "npm run prepare:icons && npm run prepare:school-assets && npm run prepare:consolidated",
+    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game-v49.js && node scripts/school-game-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
@@ -21,8 +22,8 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.neongeometrytactical.pixel.local",
-    "productName": "Neon Geometry Tactical Pixel Local",
+    "appId": "co.jpanalyst.geometrytactical.consolidated.local",
+    "productName": "Geometry Tactical Consolidated Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "directories": {
@@ -32,7 +33,8 @@
     "files": [
       "package.json",
       "school-game/**/*",
-      "!school-game/assets/**/*.base64"
+      "!school-game/assets/**/*.base64",
+      "!school-game/game.js"
     ],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -53,11 +55,11 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Neon Geometry Tactical Pixel Local",
-      "uninstallDisplayName": "Neon Geometry Tactical Pixel Local"
+      "shortcutName": "Geometry Tactical Consolidated Local",
+      "uninstallDisplayName": "Geometry Tactical Consolidated Local"
     },
     "portable": {
-      "artifactName": "Neon-Geometry-Tactical-Pixel-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Consolidated-Local-${version}-Portable-${arch}.${ext}"
     }
   }
 }

@@ -1,8 +1,8 @@
 {
   "name": "neon-geometry-tactical-local",
-  "version": "47.1.0",
+  "version": "48.0.0",
   "private": true,
-  "description": "School-safe local top-down neon tactical game with generated sprite assets, predictive AI, tri-volley trajectories, three-strike trigonometry checkpoints and automatic local results.",
+  "description": "School-safe local pixel-art tactical game with a selectable armor catalog, simple Pulse Pistol, strict projectile limits, improved fixed maps, three-strike trigonometry checkpoints and automatic local results.",
   "main": "school-game/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
@@ -21,8 +21,8 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.neongeometrytactical.local",
-    "productName": "Neon Geometry Tactical Local",
+    "appId": "co.jpanalyst.neongeometrytactical.pixel.local",
+    "productName": "Neon Geometry Tactical Pixel Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "directories": {
@@ -32,7 +32,7 @@
     "files": [
       "package.json",
       "school-game/**/*",
-      "!school-game/assets/*.base64"
+      "!school-game/assets/**/*.base64"
     ],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -53,11 +53,11 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Neon Geometry Tactical Local",
-      "uninstallDisplayName": "Neon Geometry Tactical Local"
+      "shortcutName": "Neon Geometry Tactical Pixel Local",
+      "uninstallDisplayName": "Neon Geometry Tactical Pixel Local"
     },
     "portable": {
-      "artifactName": "Neon-Geometry-Tactical-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Neon-Geometry-Tactical-Pixel-Local-${version}-Portable-${arch}.${ext}"
     }
   }
 }

@@ -1,8 +1,8 @@
 {
   "name": "triad-territory-rush-online",
-  "version": "45.0.3",
+  "version": "45.0.4",
   "private": true,
-  "description": "Triad Territory Rush v27.3 fixes installed Windows startup by using explicit preload arguments and exposing packaged production dependencies to the embedded gateway and authoritative engine.",
+  "description": "Triad Territory Rush v27.4 fixes installed Windows startup by packaging every embedded runtime dependency and using explicit preload arguments for the local gateway and authoritative engine.",
   "main": "desktop/main-v28.js",
   "scripts": {
     "test": "node --check student-bootstrap-v25.js && node --check student-fluid-v25.js && node --check student-input-v18.js && node --check student-arena-v22.js && node --check student-score-resilience-v23.js && node --check student-stable-v26.js && node --check question-ui-v19.js && node --check student-app-v16.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-team-score-v23.js && node --check master-solo-channels-v24.js && node --check master-ready-control.js && node --check master-flex-start-v11.js && node --check master-scroll-guard.js && node --check master-report-v18.js && node --check master-individual-v26.js && node --check master-local-results.js && node --check master-v27-corrections.js && node --check teacher-auth.js && node --check config.js && node --check music-mode-ui.js && node --check desktop/main.js && node --check desktop/main-v28.js && node --check desktop/preload.js && node --check desktop/local-ui.js && node --check desktop/runtime-local.js && node --check desktop/runtime-local-v28.js && node --check server/local-result-store.js && node --check server/runtime-v18.js && node --check server/runtime-v19.js && node --check server/runtime-v20.js && node --check server/runtime-v21.js && node --check server/runtime-v22.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/stable-runtime-v22-test.js && node scripts/runtime-v22-question-rotation-test.js && node scripts/local-desktop-runtime-test.js && node desktop/test/smoke.test.js",
@@ -19,6 +19,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "express": "^4.21.2",
     "ws": "^8.18.0"
   },
   "devDependencies": {

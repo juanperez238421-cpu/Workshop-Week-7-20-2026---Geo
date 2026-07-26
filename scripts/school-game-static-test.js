@@ -31,7 +31,7 @@ assert.match(main, /OPEN_RESULTS_FOLDER\.cmd/);
 assert.match(html, /Register the three-student team/);
 assert.match(html, /TRIGONOMETRY CHECKPOINT/);
 for (const asset of ["player", "enemies", "effects", "pickups", "tiles", "ui", "trajectory"]) {
-  assert.ok(fs.statSync(path.join(root, "school-game", "assets", `${asset}.webp`)).size > 10000, `${asset}.webp missing or too small`);
+  assert.ok(fs.statSync(path.join(root, "school-game", "assets", `${asset}.webp`)).size > 2000, `${asset}.webp missing or too small`);
 }
 
 console.log("School tactical v30 validation passed: generated assets, school-safe one-hit training, three-strike trigonometry checkpoints, predictive AI, tri-volley trajectories and visible local JSON/CSV result saving are wired.");

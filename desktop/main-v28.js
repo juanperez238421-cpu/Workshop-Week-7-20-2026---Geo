@@ -24,6 +24,13 @@ childProcess.spawn = function triadSpawn(command, args = [], options = {}) {
   delete env.NODE_OPTIONS;
   env.TRIAD_LOCAL_RUNTIME_PATH = LOCAL_RUNTIME;
 
+  // The copied gateway lives in resources/server, while Electron packages the
+  // production dependency tree in resources/app/node_modules. Expose that
+  // directory explicitly so `require("ws")` works in installed and portable
+  // builds without depending on a duplicated server/node_modules directory.
+  const packagedNodeModules = path.join(app.getAppPath(), "node_modules");
+  env.NODE_PATH = [packagedNodeModules, env.NODE_PATH].filter(Boolean).join(path.delimiter);
+
   return originalSpawn.call(
     this,
     command,

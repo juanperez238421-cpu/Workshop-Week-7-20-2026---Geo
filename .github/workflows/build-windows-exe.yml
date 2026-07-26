@@ -76,7 +76,7 @@ jobs:
           npm run desktop:dist:win 2>&1 | Tee-Object -FilePath desktop-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged application smoke test
+      - name: Launch packaged application end-to-end test
         id: packaged-startup
         shell: pwsh
         run: |
@@ -84,14 +84,32 @@ jobs:
           $exe = Get-ChildItem -Path "dist/windows/win-unpacked" -Filter "Triad Territory Rush Local.exe" -File | Select-Object -First 1
           if (-not $exe) { throw "Packaged application executable was not found." }
 
+          Get-ChildItem -Path $env:APPDATA -Filter "desktop-ready.json" -File -Recurse -ErrorAction SilentlyContinue |
+            Remove-Item -Force -ErrorAction SilentlyContinue
+
+          $startedAt = Get-Date
           $env:TRIAD_MATCH_MINUTES = "5"
           $process = Start-Process -FilePath $exe.FullName -PassThru
           "Started packaged process PID=$($process.Id) from $($exe.FullName)" | Tee-Object -FilePath packaged-startup.log
-          Start-Sleep -Seconds 25
-          $process.Refresh()
+
+          $readyMarker = $null
+          for ($attempt = 0; $attempt -lt 60; $attempt++) {
+            Start-Sleep -Seconds 1
+            $process.Refresh()
+            if ($process.HasExited) {
+              "Packaged application exited during startup with code $($process.ExitCode)." | Tee-Object -FilePath packaged-startup.log -Append
+              break
+            }
+
+            $readyMarker = Get-ChildItem -Path $env:APPDATA -Filter "desktop-ready.json" -File -Recurse -ErrorAction SilentlyContinue |
+              Where-Object { $_.LastWriteTime -ge $startedAt } |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -First 1
+            if ($readyMarker) { break }
+          }
 
           $desktopLogs = Get-ChildItem -Path $env:APPDATA -Filter "desktop.log" -File -Recurse -ErrorAction SilentlyContinue |
-            Where-Object { $_.FullName -like "*Triad Territory Rush Local*" } |
+            Where-Object { $_.LastWriteTime -ge $startedAt } |
             Sort-Object LastWriteTime -Descending
           if ($desktopLogs) {
             $latest = $desktopLogs | Select-Object -First 1
@@ -99,12 +117,17 @@ jobs:
             Get-Content $latest.FullName | Tee-Object -FilePath packaged-startup.log -Append
           }
 
-          if ($process.HasExited) {
-            "Packaged application exited during startup with code $($process.ExitCode)." | Tee-Object -FilePath packaged-startup.log -Append
+          $process.Refresh()
+          if ($process.HasExited) { exit 1 }
+          if (-not $readyMarker) {
+            "The packaged game never reached the playable index.html window within 60 seconds." | Tee-Object -FilePath packaged-startup.log -Append
+            & taskkill.exe /PID $process.Id /T /F | Out-Null
             exit 1
           }
 
-          "Packaged application remained alive after 25 seconds." | Tee-Object -FilePath packaged-startup.log -Append
+          "Ready marker: $($readyMarker.FullName)" | Tee-Object -FilePath packaged-startup.log -Append
+          Get-Content $readyMarker.FullName | Tee-Object -FilePath packaged-startup.log -Append
+          "Packaged gateway, authoritative engine, teacher controller and game window started successfully." | Tee-Object -FilePath packaged-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Tee-Object -FilePath packaged-startup.log -Append
           if ($LASTEXITCODE -notin @(0, 128)) { exit $LASTEXITCODE }
 

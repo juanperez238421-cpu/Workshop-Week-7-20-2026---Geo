@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 240">
+<rect width="960" height="240" rx="36" fill="#fff" stroke="#d9e2ef" stroke-width="4"/>
+<g transform="translate(48 28)">
+<rect width="184" height="184" rx="40" fill="#f4f7fb" stroke="#1f5fbf" stroke-width="8"/>
+<path d="M92 28 142 116 42 116Z" fill="#22b8d6" stroke="#fff" stroke-width="6"/>
+<path d="m142 72 30 54-60 0Z" fill="#ed4f86" stroke="#fff" stroke-width="6"/>
+<path d="m92 112 40 70-80 0Z" fill="#f2b23b" stroke="#fff" stroke-width="6"/>
+</g>
+<text x="270" y="105" font-family="Segoe UI,Arial,sans-serif" font-size="56" font-weight="800" fill="#172033">TRIAD TERRITORY RUSH</text>
+<text x="272" y="158" font-family="Segoe UI,Arial,sans-serif" font-size="28" font-weight="700" fill="#1f5fbf" letter-spacing="4">LOCAL WINDOWS EDITION</text>
+<text x="272" y="198" font-family="Segoe UI,Arial,sans-serif" font-size="20" fill="#667085">Authoritative local gameplay · teacher result delivery</text>
+</svg>

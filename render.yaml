@@ -15,3 +15,9 @@ services:
         sync: false
       - key: TEACHER_PASSWORD
         sync: false
+      - key: REPORT_INGEST_KEY
+        sync: false
+      - key: LOCAL_RESULTS_DIR
+        sync: false
+      - key: GLOBAL_SCORE_FILE
+        sync: false

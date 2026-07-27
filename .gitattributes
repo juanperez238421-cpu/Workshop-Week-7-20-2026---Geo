@@ -1,0 +1,16 @@
+* text=auto
+
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.svg text eol=lf
+*.base64 text eol=lf
+
+*.ico binary
+*.png binary
+*.zip binary
+*.exe binary

@@ -20,7 +20,7 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.cleanvision.local",
+    "appId": "co.jpanyst.geometrytactical.cleanvision.local",
     "productName": "Geometry Tactical Final School Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
@@ -39,21 +39,18 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         },
         {
           "target": "portable",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
       ]
     },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
+      "runAfterFinish": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,

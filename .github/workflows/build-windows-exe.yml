@@ -1,4 +1,4 @@
-name: Build Clean Cones Squad Secure Results V54 Windows EXE
+name: Build Final School USB V55 Windows EXE
 
 on:
   workflow_dispatch:
@@ -6,7 +6,9 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/clean-cones-squad-secure-results-v54-static-test.js"
+      - "scripts/final-school-usb-v55-static-test.js"
+      - "scripts/prepare-final-school-usb-v55.js"
+      - "scripts/v55-delta/**"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -26,7 +28,9 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/clean-cones-squad-secure-results-v54-static-test.js"
+      - "scripts/final-school-usb-v55-static-test.js"
+      - "scripts/prepare-final-school-usb-v55.js"
+      - "scripts/v55-delta/**"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -49,7 +53,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -65,116 +69,261 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate Clean Cones Squad Secure Results V54 game
+      - name: Validate Final School USB V55 source
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath clean-cones-squad-secure-results-v54-validation.log
+          npm test 2>&1 | Tee-Object -FilePath final-school-v55-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build installer and portable EXE
+      - name: Build NSIS installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath clean-cones-squad-secure-results-v54-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath final-school-v55-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged V54 application and test protected vault
+      - name: Install silently and validate packaged question layout and encrypted vault
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/clean-cones-squad-secure-results-v54-windows/win-unpacked" -Filter "Geometry Tactical Clean Vision Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged V54 executable was not found." }
+          $dist = Resolve-Path "dist/final-school-usb-v55-windows"
+          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-Setup-55.0.0-x64.exe" -File | Select-Object -First 1
+          if (-not $setup) { throw "V55 NSIS installer was not found." }
 
-          $ready = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-ready.json"
-          $runtimeLog = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-runtime.log"
-          $vaultTest = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-vault-test.json"
+          $installDir = Join-Path $env:RUNNER_TEMP "V55SchoolInstall"
+          Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
+          $installer = Start-Process -FilePath $setup.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
+          if ($installer.ExitCode -ne 0) { throw "Silent installer exited with code $($installer.ExitCode)." }
+
+          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School Local.exe" -File -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Installed V55 application was not found." }
+
+          $ready = Join-Path $env:RUNNER_TEMP "final-school-v55-ready.json"
+          $runtimeLog = Join-Path $env:RUNNER_TEMP "final-school-v55-runtime.log"
+          $vaultTest = Join-Path $env:RUNNER_TEMP "final-school-v55-vault-self-test.json"
           Remove-Item $ready,$runtimeLog,$vaultTest -Force -ErrorAction SilentlyContinue
-          $env:V54_READY_FILE = $ready
-          $env:V54_STARTUP_LOG = $runtimeLog
-          $env:V54_SELF_TEST_FILE = $vaultTest
-          $env:V54_TEST_PIN = "9109"
+          $env:V55_READY_FILE = $ready
+          $env:V55_STARTUP_LOG = $runtimeLog
+          $env:V55_SELF_TEST_FILE = $vaultTest
+          $env:V55_TEST_PIN = "9109"
+          $env:V55_QUESTION_PREVIEW = "thales"
 
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready VAULT=$vaultTest" | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log
+          "Installed EXE PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object -FilePath final-school-v55-startup.log
 
-          for ($attempt = 0; $attempt -lt 65; $attempt++) {
+          $readyJson = $null
+          for ($attempt = 0; $attempt -lt 75; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
             if ($process.HasExited) {
-              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append }
-              throw "Application exited with code $($process.ExitCode)."
+              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath final-school-v55-startup.log -Append }
+              throw "Installed application exited with code $($process.ExitCode)."
             }
-            if ((Test-Path $ready) -and (Test-Path $vaultTest)) { break }
+            if (Test-Path $ready) {
+              try {
+                $candidate = Get-Content $ready -Raw | ConvertFrom-Json
+                if ($candidate.renderer.phase -eq "question-layout-preview") { $readyJson = $candidate; break }
+              } catch {}
+            }
+          }
+          if (-not $readyJson) {
+            if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath final-school-v55-startup.log -Append }
+            & taskkill.exe /PID $process.Id /T /F | Out-Null
+            throw "Installed V55 did not reach the deterministic question-layout preview."
           }
 
-          if (-not (Test-Path $ready)) { throw "V54 did not report readiness within 65 seconds." }
-          if (-not (Test-Path $vaultTest)) { throw "V54 did not complete the protected-vault self-test." }
-
-          $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
-          if ($readyJson.version -ne "54.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
-          if ($readyJson.edition -ne "clean-cones-squad-secure-results-v54") { throw "Unexpected readiness edition: $($readyJson.edition)" }
-          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "120 Hz simulation was not reported." }
-          if ($readyJson.renderer.levels -ne 2) { throw "Both levels were not reported." }
-          if ($readyJson.renderer.weapons -lt 6) { throw "Complete weapon catalog was not reported." }
-          if ($readyJson.renderer.controlRoles -ne 3) { throw "Three control roles were not reported." }
-          if ($readyJson.renderer.fixedMatchSeconds -ne 1200) { throw "Mission is not fixed at twenty minutes." }
-          if ($readyJson.renderer.pauseAllowed -ne $false) { throw "Manual pause is enabled." }
-          if ($readyJson.renderer.cleanDefinedVisionCones -ne $true) { throw "Clean cones were not reported." }
-          if ($readyJson.renderer.conesHideOnSquadAlert -ne $true) { throw "Cone hiding on detection was not reported." }
-          if ($readyJson.renderer.squadAlertDecisions -ne $true) { throw "Squad alert decisions were not reported." }
-          if ($readyJson.renderer.visionConeMode -ne "clean-sector-hidden-on-alert") { throw "Unexpected cone mode." }
-          if ($readyJson.renderer.reducedAmmoProfile -ne $true) { throw "Reduced ammunition was not reported." }
-          if ($readyJson.renderer.ammoProfile.pistol[0] -ne 6 -or $readyJson.renderer.ammoProfile.pistol[1] -ne 12) { throw "Pistol ammunition profile is incorrect." }
-          if ($readyJson.renderer.ammoProfile.carbine[0] -ne 9 -or $readyJson.renderer.ammoProfile.carbine[1] -ne 18) { throw "Carbine ammunition profile is incorrect." }
-          if ($readyJson.renderer.ammoProfile.smg[0] -ne 12 -or $readyJson.renderer.ammoProfile.smg[1] -ne 24) { throw "SMG ammunition profile is incorrect." }
+          if ($readyJson.version -ne "55.0.0") { throw "Unexpected version: $($readyJson.version)" }
+          if ($readyJson.edition -ne "final-school-four-rooms-v55") { throw "Unexpected edition: $($readyJson.edition)" }
+          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "120 Hz simulation not reported." }
+          if ($readyJson.renderer.levels -ne 4) { throw "Four levels were not reported." }
+          if ($readyJson.renderer.newDifficultRooms -ne 2) { throw "Two new difficult rooms were not reported." }
+          if ($readyJson.renderer.professionalV2LevelImages -lt 4) { throw "Four room images were not loaded." }
+          if ($readyJson.renderer.questionSeconds -ne 60) { throw "Questions are not 60 seconds." }
+          if ($readyJson.renderer.questionCanvasWidth -ne 1200 -or $readyJson.renderer.questionCanvasHeight -ne 620) { throw "Question canvas dimensions are incorrect." }
+          if ($readyJson.renderer.questionLayoutFitsViewport -ne $true) { throw "Question layout does not fit the packaged viewport." }
+          if ($readyJson.renderer.responsiveQuestionLayout -ne $true) { throw "Responsive question layout was not reported." }
+          if ($readyJson.renderer.questionCanvasSafeMargins -ne $true) { throw "Question safe margins were not reported." }
+          if ($readyJson.renderer.offlineOnly -ne $true) { throw "Offline-only mode was not reported." }
+          if ($readyJson.renderer.schoolPcHardening -ne $true) { throw "School-PC hardening was not reported." }
           if ($readyJson.renderer.protectedResultsVault -ne $true) { throw "Protected results vault was not reported." }
-          if ($readyJson.renderer.passwordGate -ne $true) { throw "Password gate was not reported." }
-          if ($readyJson.renderer.consolidatedStudentData -ne $true) { throw "Consolidated student data was not reported." }
-          if ($readyJson.renderer.plaintextStudentFiles -ne $false) { throw "Runtime reports plaintext student files." }
-          if (-not $readyJson.renderer.hasCanvas) { throw "Game canvas was not found." }
-          if (-not $readyJson.renderer.hasSchoolAPI) { throw "Preload bridge was not found." }
-          if (-not $readyJson.renderer.hasProtectedResultsOverlay) { throw "Protected results interface was not found." }
+          if ($readyJson.renderer.passwordGate -ne $true) { throw "PIN gate was not reported." }
 
-          $vaultJson = Get-Content $vaultTest -Raw | ConvertFrom-Json
-          if ($vaultJson.ok -ne $true) { throw "Protected-vault self-test failed." }
-          if ($vaultJson.encryptedSave -ne $true) { throw "Encrypted save was not verified." }
-          if ($vaultJson.wrongPinRejected -ne $true) { throw "Wrong PIN rejection was not verified." }
-          if ($vaultJson.correctPinUnlocked -ne $true) { throw "Teacher PIN unlock was not verified." }
-          if ($vaultJson.questionRecorded -ne $true) { throw "Question record was not verified." }
-          if ($vaultJson.scoreRecorded -ne $true) { throw "Score record was not verified." }
-          if ($vaultJson.consolidatedStudentRows -lt 3) { throw "Consolidated student rows were not verified." }
+          for ($attempt = 0; $attempt -lt 30 -and -not (Test-Path $vaultTest); $attempt++) { Start-Sleep -Seconds 1 }
+          if (-not (Test-Path $vaultTest)) { throw "Encrypted vault self-test file was not created." }
+          $vault = Get-Content $vaultTest -Raw | ConvertFrom-Json
+          if ($vault.ok -ne $true) { throw "Encrypted vault self-test failed: $(Get-Content $vaultTest -Raw)" }
+          if ($vault.encryptedSave -ne $true -or $vault.wrongPinRejected -ne $true -or $vault.correctPinUnlocked -ne $true) { throw "Vault security checks failed." }
+          if ($vault.questionRecorded -ne $true -or $vault.scoreRecorded -ne $true -or $vault.consolidatedStudentRows -lt 3) { throw "Student result consolidation checks failed." }
 
-          Get-Content $ready | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
-          Get-Content $vaultTest | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
-          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append }
-          "Packaged V54 reached registration and verified clean cones, squad alert sharing, reduced ammunition and encrypted PIN-protected consolidated student results." | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
+          Get-Content $ready | Tee-Object -FilePath final-school-v55-startup.log -Append
+          Get-Content $vaultTest | Tee-Object -FilePath final-school-v55-startup.log -Append
+          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath final-school-v55-startup.log -Append }
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
-      - name: Create SHA-256 checksums
+      - name: Validate portable executable startup
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist/clean-cones-squad-secure-results-v54-windows -Filter *.exe | ForEach-Object {
-            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)" | Out-File -FilePath dist/clean-cones-squad-secure-results-v54-windows/SHA256SUMS.txt -Append -Encoding utf8
+          $ErrorActionPreference = "Stop"
+          $portable = Get-ChildItem "dist/final-school-usb-v55-windows" -Filter "Geometry-Tactical-Final-School-55.0.0-Portable-x64.exe" -File | Select-Object -First 1
+          if (-not $portable) { throw "Portable V55 executable was not found." }
+          $ready = Join-Path $env:RUNNER_TEMP "final-school-v55-portable-ready.json"
+          $runtimeLog = Join-Path $env:RUNNER_TEMP "final-school-v55-portable-runtime.log"
+          Remove-Item $ready,$runtimeLog -Force -ErrorAction SilentlyContinue
+          $env:V55_READY_FILE = $ready
+          $env:V55_STARTUP_LOG = $runtimeLog
+          Remove-Item Env:V55_SELF_TEST_FILE -ErrorAction SilentlyContinue
+          Remove-Item Env:V55_QUESTION_PREVIEW -ErrorAction SilentlyContinue
+          $process = Start-Process -FilePath $portable.FullName -PassThru
+          $readyJson = $null
+          for ($attempt = 0; $attempt -lt 70; $attempt++) {
+            Start-Sleep -Seconds 1
+            $process.Refresh()
+            if ($process.HasExited) { throw "Portable application exited with code $($process.ExitCode)." }
+            if (Test-Path $ready) {
+              try {
+                $candidate = Get-Content $ready -Raw | ConvertFrom-Json
+                if ($candidate.renderer.phase -eq "renderer-bootstrap") { $readyJson = $candidate; break }
+              } catch {}
+            }
           }
+          if (-not $readyJson) {
+            & taskkill.exe /PID $process.Id /T /F | Out-Null
+            throw "Portable V55 did not reach registration readiness."
+          }
+          if ($readyJson.renderer.levels -ne 4 -or $readyJson.renderer.questionSeconds -ne 60) { throw "Portable readiness contract is incomplete." }
+          & taskkill.exe /PID $process.Id /T /F | Out-Null
+          "Portable executable reached registration successfully." | Tee-Object -FilePath final-school-v55-portable.log
+
+      - name: Create SHA-256 checksums and school USB kit
+        shell: pwsh
+        run: |
+          $dist = Resolve-Path "dist/final-school-usb-v55-windows"
+          Remove-Item "$dist/SHA256SUMS.txt" -Force -ErrorAction SilentlyContinue
+          Get-ChildItem $dist -Filter *.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File -FilePath "$dist/SHA256SUMS.txt" -Append -Encoding ascii
+          }
+
+          @'
+          param(
+            [string]$FileName = "Geometry-Tactical-Final-School-Setup-55.0.0-x64.exe",
+            [switch]$Run
+          )
+          $ErrorActionPreference = "Stop"
+          $root = Split-Path -Parent $MyInvocation.MyCommand.Path
+          $target = Join-Path $root $FileName
+          $sumFile = Join-Path $root "SHA256SUMS.txt"
+          if (-not (Test-Path $target)) { throw "File not found: $FileName" }
+          $line = Get-Content $sumFile | Where-Object { $_ -match [regex]::Escape($FileName) } | Select-Object -First 1
+          if (-not $line) { throw "Expected checksum not found for $FileName" }
+          $expected = ($line -split "\s+")[0].ToLowerInvariant()
+          $actual = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) {
+            Write-Host "CHECKSUM FAILED. Do not install or run this file." -ForegroundColor Red
+            Write-Host "Expected: $expected"
+            Write-Host "Actual:   $actual"
+            exit 2
+          }
+          Write-Host "SHA-256 verified: $FileName" -ForegroundColor Green
+          if ($Run) { Start-Process -FilePath $target }
+          '@ | Set-Content "$dist/VERIFY_FILE.ps1" -Encoding UTF8
+
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-Setup-55.0.0-x64.exe" -Run
+          if errorlevel 1 (
+            echo.
+            echo Verification failed. The installer was not started.
+            pause
+            exit /b 1
+          )
+          echo.
+          echo Installer verified and started.
+          endlocal
+          '@ | Set-Content "$dist/INSTALL_VERIFIED_FROM_USB.cmd" -Encoding ASCII
+
+          @'
+          @echo off
+          setlocal
+          cd /d "%~dp0"
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-55.0.0-Portable-x64.exe" -Run
+          if errorlevel 1 (
+            echo.
+            echo Verification failed. The portable game was not started.
+            pause
+            exit /b 1
+          )
+          echo.
+          echo Portable game verified and started.
+          endlocal
+          '@ | Set-Content "$dist/RUN_PORTABLE_VERIFIED.cmd" -Encoding ASCII
+
+          @'
+          GEOMETRY TACTICAL FINAL SCHOOL V55 · OFFLINE USB KIT
+          ====================================================
+
+          RECOMMENDED INSTALLATION
+          1. Copy this entire folder from the USB drive to the school PC.
+          2. Double-click INSTALL_VERIFIED_FROM_USB.cmd.
+          3. The script verifies the installer SHA-256 before opening it.
+          4. Install for the current Windows user. Administrator rights are not required.
+
+          PORTABLE USE
+          Double-click RUN_PORTABLE_VERIFIED.cmd to verify and run without installation.
+
+          CLASSROOM SETTINGS
+          - Exactly three registered students.
+          - Student 1: WASD movement.
+          - Student 2: mouse aim.
+          - Student 3: Space/F fire, R reload, E pickup/throw, Shift dash.
+          - Four complete room levels.
+          - Fixed 20-minute mission; pause disabled.
+          - Every geometry problem allows 60 seconds.
+          - Teacher results PIN: 9109.
+
+          LOCAL RESULTS
+          Student names, answers and scores are encrypted locally using AES-256-GCM.
+          Open TEACHER RESULTS inside the game and enter PIN 9109.
+          The encryption key is protected by the signed-in Windows account.
+
+          OFFLINE AND SCHOOL-PC SAFETY
+          - No analytics, telemetry, cloud upload or external web connection.
+          - External navigation, popups, browser permissions and developer tools are disabled.
+          - Per-user installation; no machine-wide service or background updater.
+          - The game does not require internet access.
+
+          WINDOWS SMARTSCREEN
+          This build is not signed with a commercial code-signing certificate. Windows may show
+          "Unknown publisher." School IT should verify SHA256SUMS.txt before approving it.
+          The verification scripts in this folder prevent launch if the file hash is altered.
+
+          DO NOT rename the EXE files unless the verification scripts are also updated.
+          '@ | Set-Content "$dist/README_SCHOOL_USB.txt" -Encoding UTF8
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: clean-cones-squad-secure-results-v54-diagnostics
+          name: final-school-v55-diagnostics
           path: |
-            clean-cones-squad-secure-results-v54-validation.log
-            clean-cones-squad-secure-results-v54-build.log
-            clean-cones-squad-secure-results-v54-startup.log
+            final-school-v55-validation.log
+            final-school-v55-build.log
+            final-school-v55-startup.log
+            final-school-v55-portable.log
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 14
 
-      - name: Upload Windows package
+      - name: Upload final school USB package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-clean-cones-squad-secure-results-v54-windows
+          name: geometry-tactical-final-school-v55-usb-kit
           path: |
-            dist/clean-cones-squad-secure-results-v54-windows/*.exe
-            dist/clean-cones-squad-secure-results-v54-windows/SHA256SUMS.txt
+            dist/final-school-usb-v55-windows/*.exe
+            dist/final-school-usb-v55-windows/SHA256SUMS.txt
+            dist/final-school-usb-v55-windows/VERIFY_FILE.ps1
+            dist/final-school-usb-v55-windows/INSTALL_VERIFIED_FROM_USB.cmd
+            dist/final-school-usb-v55-windows/RUN_PORTABLE_VERIFIED.cmd
+            dist/final-school-usb-v55-windows/README_SCHOOL_USB.txt
           if-no-files-found: error
           retention-days: 30

@@ -1,4 +1,4 @@
-name: Build Ratio Thales V52 Windows EXE
+name: Build Right Thales Vision Hounds V53 Windows EXE
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/ratio-thales-v52-static-test.js"
+      - "scripts/right-thales-vision-hounds-v53-static-test.js"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -14,6 +14,8 @@ on:
       - "scripts/v51-payload/**"
       - "scripts/prepare-ratio-thales-v52.js"
       - "scripts/v52-payload/**"
+      - "scripts/prepare-right-thales-vision-hounds-v53.js"
+      - "scripts/v53-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -22,7 +24,7 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/ratio-thales-v52-static-test.js"
+      - "scripts/right-thales-vision-hounds-v53-static-test.js"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -30,6 +32,8 @@ on:
       - "scripts/v51-payload/**"
       - "scripts/prepare-ratio-thales-v52.js"
       - "scripts/v52-payload/**"
+      - "scripts/prepare-right-thales-vision-hounds-v53.js"
+      - "scripts/v53-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -41,7 +45,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 42
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -57,67 +61,54 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate Ratio and Thales V52 game
+      - name: Validate Right Thales Vision Hounds V53 game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath ratio-thales-v52-validation.log
+          npm test 2>&1 | Tee-Object -FilePath right-thales-vision-hounds-v53-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-      - name: Package generated V52 source for V53 development
-        shell: pwsh
-        run: |
-          Compress-Archive -Path school-game/v52/* -DestinationPath ratio-thales-v52-generated-source.zip -Force
-
-      - name: Upload generated V52 source
-        uses: actions/upload-artifact@v4
-        with:
-          name: ratio-thales-v52-generated-source
-          path: ratio-thales-v52-generated-source.zip
-          if-no-files-found: error
-          retention-days: 7
 
       - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath ratio-thales-v52-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath right-thales-vision-hounds-v53-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged Ratio and Thales V52 application
+      - name: Launch packaged Right Thales Vision Hounds V53 application
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/ratio-thales-v52-windows/win-unpacked" -Filter "Geometry Tactical Ratio Thales Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged Ratio and Thales V52 executable was not found." }
+          $exe = Get-ChildItem -Path "dist/right-thales-vision-hounds-v53-windows/win-unpacked" -Filter "Geometry Tactical Ratio Thales Vision Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged Right Thales Vision Hounds V53 executable was not found." }
 
-          $ready = Join-Path $env:RUNNER_TEMP "ratio-thales-v52-ready.json"
-          $runtimeLog = Join-Path $env:RUNNER_TEMP "ratio-thales-v52-runtime.log"
+          $ready = Join-Path $env:RUNNER_TEMP "right-thales-vision-hounds-v53-ready.json"
+          $runtimeLog = Join-Path $env:RUNNER_TEMP "right-thales-vision-hounds-v53-runtime.log"
           Remove-Item $ready -Force -ErrorAction SilentlyContinue
           Remove-Item $runtimeLog -Force -ErrorAction SilentlyContinue
-          $env:V52_READY_FILE = $ready
-          $env:V52_STARTUP_LOG = $runtimeLog
+          $env:V53_READY_FILE = $ready
+          $env:V53_STARTUP_LOG = $runtimeLog
 
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready" | Tee-Object -FilePath ratio-thales-v52-startup.log
+          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready" | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log
 
-          for ($attempt = 0; $attempt -lt 55; $attempt++) {
+          for ($attempt = 0; $attempt -lt 60; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
             if ($process.HasExited) {
-              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath ratio-thales-v52-startup.log -Append }
+              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
               throw "Application exited with code $($process.ExitCode)."
             }
             if (Test-Path $ready) { break }
           }
 
           if (-not (Test-Path $ready)) {
-            if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath ratio-thales-v52-startup.log -Append }
+            if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "Ratio and Thales V52 did not report deterministic readiness within 55 seconds."
+            throw "Right Thales Vision Hounds V53 did not report deterministic readiness within 60 seconds."
           }
 
           $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
-          if ($readyJson.version -ne "52.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
-          if ($readyJson.edition -ne "ratio-thales-score-v52") { throw "Unexpected readiness edition: $($readyJson.edition)" }
+          if ($readyJson.version -ne "53.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
+          if ($readyJson.edition -ne "right-thales-vision-hounds-v53") { throw "Unexpected readiness edition: $($readyJson.edition)" }
           if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "The packaged runtime did not report the 120 Hz simulation." }
           if ($readyJson.renderer.levels -ne 2) { throw "The packaged runtime did not report both levels." }
           if ($readyJson.renderer.weapons -lt 6) { throw "The packaged runtime did not report the complete weapon catalog." }
@@ -125,44 +116,51 @@ jobs:
           if ($readyJson.renderer.scoreStart -ne 5) { throw "The packaged runtime did not report the 5.00 starting score." }
           if ($readyJson.renderer.wrongAnswerPenalty -ne 0.2) { throw "The wrong-answer penalty is not 0.20." }
           if ($readyJson.renderer.threeDeathPenalty -ne 0.1) { throw "The three-death penalty is not 0.10." }
-          if ($readyJson.renderer.questionTopics.Count -ne 3) { throw "Unexpected question-topic count." }
+          if ($readyJson.renderer.fixedMatchSeconds -ne 1200) { throw "The mission is not fixed at 20 minutes." }
+          if ($readyJson.renderer.pauseAllowed -ne $false) { throw "Manual pause is still enabled." }
+          if ($readyJson.renderer.missionCompletion -ne "time-or-both-levels") { throw "The mission completion rule is incorrect." }
+          if ($readyJson.renderer.enemyVisionCones -ne $true) { throw "Enemy vision cones were not reported." }
+          if ($readyJson.renderer.weaponThrowAlongAim -ne $true) { throw "Weapon throwing was not reported." }
+          if ($readyJson.renderer.houndEnemies -lt 4) { throw "The complete hound deployment was not reported." }
+          if ($readyJson.renderer.houndMeleeOnly -ne $true) { throw "Hounds are not reported as melee-only." }
+          if ($readyJson.renderer.thalesRightTrianglesOnly -ne $true) { throw "Thales is not restricted to right triangles." }
           if ($readyJson.renderer.questionTopics -notcontains "sin-ratio") { throw "Sine-ratio questions were not reported." }
           if ($readyJson.renderer.questionTopics -notcontains "cos-ratio") { throw "Cosine-ratio questions were not reported." }
-          if ($readyJson.renderer.questionTopics -notcontains "thales") { throw "Thales questions were not reported." }
+          if ($readyJson.renderer.questionTopics -notcontains "thales-right-triangle") { throw "Right-triangle Thales questions were not reported." }
           if (-not $readyJson.renderer.hasCanvas) { throw "The packaged document did not expose the game canvas." }
           if (-not $readyJson.renderer.hasSchoolAPI) { throw "The packaged preload bridge was not available." }
 
-          Get-Content $ready | Tee-Object -FilePath ratio-thales-v52-startup.log -Append
-          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath ratio-thales-v52-startup.log -Append }
-          "Packaged Ratio and Thales V52 reached registration with fixed settings, safe Level 1 deployment, live score, large sine/cosine ratio and Thales checkpoints, two levels, six weapons and three cooperative roles." | Tee-Object -FilePath ratio-thales-v52-startup.log -Append
+          Get-Content $ready | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append
+          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
+          "Packaged V53 reached registration with right-triangle-only Thales, visible geometry-clipped detection cones, contextual weapon throws, four fast melee hounds, no pause and the fixed twenty-minute-or-two-level completion rule." | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist/ratio-thales-v52-windows -Filter *.exe | ForEach-Object {
+          Get-ChildItem -Path dist/right-thales-vision-hounds-v53-windows -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)" | Out-File -FilePath dist/ratio-thales-v52-windows/SHA256SUMS.txt -Append -Encoding utf8
+            "$hash  $($_.Name)" | Out-File -FilePath dist/right-thales-vision-hounds-v53-windows/SHA256SUMS.txt -Append -Encoding utf8
           }
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ratio-thales-v52-diagnostics
+          name: right-thales-vision-hounds-v53-diagnostics
           path: |
-            ratio-thales-v52-validation.log
-            ratio-thales-v52-build.log
-            ratio-thales-v52-startup.log
+            right-thales-vision-hounds-v53-validation.log
+            right-thales-vision-hounds-v53-build.log
+            right-thales-vision-hounds-v53-startup.log
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-ratio-thales-v52-windows
+          name: geometry-tactical-right-thales-vision-hounds-v53-windows
           path: |
-            dist/ratio-thales-v52-windows/*.exe
-            dist/ratio-thales-v52-windows/SHA256SUMS.txt
+            dist/right-thales-vision-hounds-v53-windows/*.exe
+            dist/right-thales-vision-hounds-v53-windows/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30

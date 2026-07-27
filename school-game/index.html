@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>Geometry Tactical Consolidated · Two Room Edition</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="app">
+    <canvas id="gameCanvas" width="1600" height="1000" aria-label="White-background pixel-art tactical geometry game"></canvas>
+
+    <header id="hud" class="hidden">
+      <section class="hud-block brand-block">
+        <strong>GEOMETRY TACTICAL · CONSOLIDATED V49</strong>
+        <span id="armorHudLabel">Shared Robledo Operative · Pulse Pistol</span>
+      </section>
+      <section class="hud-block stats-block">
+        <div><span>TIME</span><b id="timeValue">05:00</b></div>
+        <div><span>LEVEL</span><b id="roomValue">1</b></div>
+        <div><span>TAGS</span><b id="tagValue">0</b></div>
+        <div><span>ACCURACY</span><b id="accuracyValue">—</b></div>
+      </section>
+      <section class="hud-block strike-block">
+        <span>FULL-LEVEL RESET CYCLE</span>
+        <div id="strikePips"><i></i><i></i><i></i></div>
+      </section>
+    </header>
+
+    <aside id="studentPanel" class="student-panel hidden">
+      <span>THREE-STUDENT CONTROL ROLES</span>
+      <div id="studentRows"></div>
+    </aside>
+
+    <aside id="controlPanel" class="control-panel hidden">
+      <span>ONE SHARED CHARACTER</span>
+      <small><b>Student 1:</b> WASD movement · <b>Student 2:</b> mouse aim and click/Space fire · <b>Student 3:</b> Shift dash and R reload · P pause</small>
+      <div class="resource-line"><b>AMMO</b><progress id="ammoBar" max="4" value="4"></progress><strong id="ammoValue">4/4</strong></div>
+      <div class="resource-line"><b>RELOAD</b><progress id="reloadBar" max="1" value="1"></progress><strong id="reloadValue">READY</strong></div>
+      <div class="resource-line"><b>POWER</b><progress id="powerBar" max="1" value="0"></progress><strong id="powerValue">NONE</strong></div>
+    </aside>
+
+    <div id="messageBanner" class="message-banner hidden"></div>
+
+    <section id="registrationOverlay" class="overlay visible">
+      <div class="modal registration-modal">
+        <p class="eyebrow">LOCAL WINDOWS RELEASE · CONSOLIDATED TWO-ROOM BUILD</p>
+        <h1>Register the three-person control team</h1>
+        <p class="lead">This focused release contains two complete tactical levels, one identical player character for every match, fixed enemy placements with dynamic AI, limited projectiles, full-level resets after each player defeat and the existing trigonometry checkpoint after the third strike.</p>
+
+        <div class="feature-grid">
+          <article><b>2 COMPLETE LEVELS</b><span>Learning Lab and Library Research Grid</span></article>
+          <article><b>1 SHARED PLAYER</b><span>no armor classes or character variants</span></article>
+          <article><b>3 CONTROL ROLES</b><span>movement, aim/fire, dash/reload</span></article>
+          <article><b>3 STRIKES</b><span>opens the rotating trigonometry checkpoint</span></article>
+        </div>
+
+        <div class="student-inputs">
+          <label>Student 1 · Movement<input id="student1" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 2 · Aim and fire<input id="student2" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+          <label>Student 3 · Dash and reload<input id="student3" maxlength="60" autocomplete="name" placeholder="Name and surname" /></label>
+        </div>
+
+        <div id="armorCatalog" class="hidden" aria-hidden="true"></div>
+
+        <section class="operative-card" aria-label="Fixed character loadout">
+          <div class="operative-preview" aria-hidden="true"></div>
+          <div>
+            <span>FIXED LOADOUT</span>
+            <h2>Robledo Operative</h2>
+            <p>Four-round Pulse Pistol, two simultaneous player projectiles, tactical dash, manual reload and one consistent visual identity across both levels.</p>
+          </div>
+        </section>
+
+        <div class="registration-options">
+          <label>Match duration
+            <select id="durationSelect">
+              <option value="300">5 minutes</option>
+              <option value="600">10 minutes</option>
+              <option value="900">15 minutes</option>
+            </select>
+          </label>
+          <label>Starting level
+            <select id="mapSelect">
+              <option value="0">1 · Robledo Learning Lab</option>
+              <option value="1">2 · Library Research Grid</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="startButton" class="primary">START CONSOLIDATED LOCAL MATCH</button>
+        <p id="registrationFeedback" class="feedback"></p>
+        <p class="storage-note">Results save automatically in <strong>Documents\Neon Geometry Tactical Results\results</strong>.</p>
+      </div>
+    </section>
+
+    <section id="questionOverlay" class="overlay">
+      <div class="modal question-modal">
+        <div class="question-head">
+          <div><p class="eyebrow">THREE STRIKES · TRIGONOMETRY CHECKPOINT</p><h2 id="questionStudent">Student 1 answers</h2></div>
+          <div id="questionTimer" class="question-timer">25</div>
+        </div>
+        <canvas id="questionCanvas" width="620" height="270"></canvas>
+        <p id="questionPrompt" class="question-prompt"></p>
+        <div id="questionOptions" class="question-options"></div>
+        <p id="questionFeedback" class="feedback"></p>
+      </div>
+    </section>
+
+    <section id="pauseOverlay" class="overlay">
+      <div class="modal compact"><p class="eyebrow">TACTICAL PAUSE</p><h2>Match paused</h2><p>Press <strong>P</strong> to continue.</p></div>
+    </section>
+
+    <section id="endOverlay" class="overlay">
+      <div class="modal end-modal">
+        <p class="eyebrow">LOCAL MATCH COMPLETE · RESULTS SAVED</p>
+        <h2>Final three-student team record</h2>
+        <div id="finalSummary" class="final-summary"></div>
+        <div class="end-actions">
+          <button id="openResultsButton">OPEN SAVED RESULTS</button>
+          <button id="restartButton" class="primary">NEW LOCAL MATCH</button>
+        </div>
+        <p id="resultPath" class="result-path"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="game-v49.js"></script>
+</body>
+</html>

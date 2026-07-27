@@ -1,0 +1,407 @@
+body.neon-tactical-v29 {
+  --neon-ink: #eefcff;
+  --neon-muted: #9eb4c8;
+  --neon-bg: #050711;
+  --neon-panel: rgba(8, 13, 28, 0.92);
+  --neon-line: rgba(72, 231, 255, 0.42);
+  --neon-cyan: #48e7ff;
+  --neon-pink: #ff3d9f;
+  --neon-yellow: #ffe45b;
+  --neon-green: #5cff9d;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 61, 159, 0.2), transparent 34%),
+    radial-gradient(circle at 82% 74%, rgba(72, 231, 255, 0.18), transparent 38%),
+    #050711;
+  color: var(--neon-ink);
+}
+
+body.neon-tactical-v29 #app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.2;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0,
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+}
+
+body.neon-tactical-v29 #app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 89;
+  pointer-events: none;
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.88), inset 0 0 34px rgba(255, 61, 159, 0.12);
+}
+
+body.neon-tactical-v29 .topbar,
+body.neon-tactical-v29 .player-panel,
+body.neon-tactical-v29 .resource-hud-v15,
+body.neon-tactical-v29 .minimap-panel,
+body.neon-tactical-v29 .scoreboard {
+  background: linear-gradient(145deg, rgba(8, 13, 28, 0.96), rgba(14, 19, 42, 0.88));
+  border-color: var(--neon-line);
+  color: var(--neon-ink);
+  box-shadow: 0 0 0 1px rgba(255, 61, 159, 0.12), 0 15px 42px rgba(0, 0, 0, 0.48), 0 0 26px rgba(72, 231, 255, 0.08);
+  backdrop-filter: blur(13px);
+}
+
+body.neon-tactical-v29 .brand strong,
+body.neon-tactical-v29 .match-status strong,
+body.neon-tactical-v29 .resource-card-v15 strong,
+body.neon-tactical-v29 .player-panel strong {
+  color: var(--neon-ink);
+  text-shadow: 0 0 12px rgba(72, 231, 255, 0.38);
+}
+
+body.neon-tactical-v29 .brand span,
+body.neon-tactical-v29 .resource-card-v15 small,
+body.neon-tactical-v29 .player-panel small,
+body.neon-tactical-v29 .minimap-panel small,
+body.neon-tactical-v29 .controls-hint {
+  color: var(--neon-muted);
+}
+
+body.neon-tactical-v29 .connection-badge.online,
+body.neon-tactical-v29 .desktop-delivery-badge-v27[data-mode="sent"],
+body.neon-tactical-v29 .desktop-delivery-badge-v27[data-mode="ready"] {
+  color: #04150d;
+  background: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 18px rgba(92, 255, 157, 0.54);
+}
+
+body.neon-tactical-v29 .connection-badge.offline,
+body.neon-tactical-v29 .desktop-delivery-badge-v27[data-mode="queued"] {
+  color: #19050d;
+  background: var(--neon-pink);
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 18px rgba(255, 61, 159, 0.5);
+}
+
+body.neon-tactical-v29 .icon-button,
+body.neon-tactical-v29 .primary-button,
+body.neon-tactical-v29 .secondary-button {
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-ink);
+  background: linear-gradient(135deg, rgba(72, 231, 255, 0.16), rgba(255, 61, 159, 0.13));
+  box-shadow: 0 0 18px rgba(72, 231, 255, 0.13);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+body.neon-tactical-v29 .primary-button:hover,
+body.neon-tactical-v29 .secondary-button:hover,
+body.neon-tactical-v29 .icon-button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(72, 231, 255, 0.28), rgba(255, 61, 159, 0.22));
+  box-shadow: 0 0 25px rgba(72, 231, 255, 0.26);
+}
+
+body.neon-tactical-v29 .team-card {
+  background: rgba(8, 13, 28, 0.88);
+  border-color: color-mix(in srgb, var(--team-color, var(--neon-cyan)) 72%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--team-color, var(--neon-cyan)) 12%, transparent);
+}
+
+body.neon-tactical-v29 .team-card strong,
+body.neon-tactical-v29 .team-card b {
+  color: var(--neon-ink);
+}
+
+body.neon-tactical-v29 #studentRecoveredArenaCanvasV22 {
+  background: #050711;
+  filter: saturate(1.36) contrast(1.14) brightness(0.78);
+}
+
+body.neon-tactical-v29 .overlay {
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255, 61, 159, 0.17), transparent 38%),
+    radial-gradient(circle at 82% 80%, rgba(72, 231, 255, 0.16), transparent 44%),
+    rgba(3, 5, 13, 0.82);
+  backdrop-filter: blur(9px);
+}
+
+body.neon-tactical-v29 .modal,
+body.neon-tactical-v29 .desktop-settings-card-v27 {
+  color: var(--neon-ink);
+  background: linear-gradient(145deg, rgba(9, 14, 31, 0.98), rgba(15, 18, 42, 0.96));
+  border: 1px solid rgba(72, 231, 255, 0.48);
+  box-shadow: 0 0 0 1px rgba(255, 61, 159, 0.12), 0 30px 90px rgba(0, 0, 0, 0.64), 0 0 46px rgba(72, 231, 255, 0.11);
+}
+
+body.neon-tactical-v29 .modal h1,
+body.neon-tactical-v29 .modal h2,
+body.neon-tactical-v29 .modal strong,
+body.neon-tactical-v29 .desktop-settings-card-v27 h2 {
+  color: var(--neon-ink);
+}
+
+body.neon-tactical-v29 .modal p,
+body.neon-tactical-v29 .modal small,
+body.neon-tactical-v29 .desktop-settings-card-v27 p,
+body.neon-tactical-v29 .desktop-settings-card-v27 label {
+  color: var(--neon-muted);
+}
+
+body.neon-tactical-v29 input,
+body.neon-tactical-v29 select,
+body.neon-tactical-v29 .notice,
+body.neon-tactical-v29 .student-recovery-note,
+body.neon-tactical-v29 .server-health-card,
+body.neon-tactical-v29 .rule-grid > div,
+body.neon-tactical-v29 .waiting-panel,
+body.neon-tactical-v29 .room-panel {
+  color: var(--neon-ink);
+  background: rgba(3, 7, 18, 0.78);
+  border-color: rgba(72, 231, 255, 0.28);
+}
+
+body.neon-tactical-v29 input:focus,
+body.neon-tactical-v29 select:focus {
+  border-color: var(--neon-cyan);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(72, 231, 255, 0.16), 0 0 18px rgba(72, 231, 255, 0.16);
+}
+
+body.neon-tactical-v29 .eyebrow {
+  color: var(--neon-pink);
+  text-shadow: 0 0 11px rgba(255, 61, 159, 0.42);
+}
+
+body.neon-tactical-v29 .question-timer {
+  color: #13080d;
+  background: var(--neon-yellow);
+  box-shadow: 0 0 22px rgba(255, 228, 91, 0.44);
+}
+
+body.neon-tactical-v29 .question-options button {
+  color: var(--neon-ink);
+  background: rgba(6, 10, 24, 0.92);
+  border-color: rgba(72, 231, 255, 0.32);
+}
+
+body.neon-tactical-v29 .question-options button:hover {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 20px rgba(255, 61, 159, 0.23);
+}
+
+.neon-tactical-hud-v29 {
+  position: fixed;
+  left: 50%;
+  top: 91px;
+  z-index: 52;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 17px;
+  transform: translateX(-50%);
+  padding: 9px 15px;
+  color: var(--neon-ink);
+  background: rgba(4, 8, 21, 0.9);
+  border: 1px solid rgba(72, 231, 255, 0.48);
+  border-radius: 7px;
+  box-shadow: 0 0 23px rgba(72, 231, 255, 0.13), inset 0 0 14px rgba(255, 61, 159, 0.08);
+  font-family: Consolas, "Segoe UI", monospace;
+  pointer-events: none;
+}
+
+.neon-mode-v29,
+.neon-combo-v29 {
+  display: grid;
+  gap: 1px;
+}
+
+.neon-mode-v29 span,
+.neon-combo-v29 span {
+  color: var(--neon-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.neon-mode-v29 strong {
+  color: var(--neon-cyan);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 12px rgba(72, 231, 255, 0.42);
+}
+
+.neon-combo-v29 strong {
+  color: var(--neon-yellow);
+  font-size: 18px;
+  text-shadow: 0 0 13px rgba(255, 228, 91, 0.46);
+}
+
+.neon-strikes-v29 {
+  display: flex;
+  gap: 7px;
+  padding: 0 14px;
+  border-inline: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.neon-strikes-v29 span {
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg);
+  border: 2px solid var(--neon-pink);
+  background: var(--neon-pink);
+  box-shadow: 0 0 14px rgba(255, 61, 159, 0.72);
+  transition: opacity 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.neon-strikes-v29 span.is-lost {
+  opacity: 0.26;
+  background: transparent;
+  transform: rotate(45deg) scale(0.78);
+  box-shadow: none;
+}
+
+.neon-tactical-hud-v29.combo-pulse {
+  animation: neonHudPulseV29 0.22s ease-out;
+}
+
+.neon-feedback-v29 {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 94;
+  display: grid;
+  min-width: min(560px, 78vw);
+  gap: 7px;
+  padding: 20px 30px;
+  transform: translate(-50%, -50%) scale(0.92);
+  opacity: 0;
+  pointer-events: none;
+  text-align: center;
+  color: var(--neon-ink);
+  background: rgba(3, 5, 14, 0.92);
+  border: 2px solid var(--neon-pink);
+  box-shadow: 0 0 42px rgba(255, 61, 159, 0.34), inset 0 0 28px rgba(255, 61, 159, 0.08);
+  transition: opacity 0.12s linear, transform 0.12s ease-out;
+}
+
+.neon-feedback-v29.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.neon-feedback-v29 strong {
+  color: var(--neon-pink);
+  font-family: Consolas, "Segoe UI", monospace;
+  font-size: clamp(26px, 4vw, 56px);
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 22px rgba(255, 61, 159, 0.6);
+}
+
+.neon-feedback-v29 span {
+  color: var(--neon-ink);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.neon-feedback-v29[data-mode="success"] {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 42px rgba(92, 255, 157, 0.3);
+}
+
+.neon-feedback-v29[data-mode="success"] strong {
+  color: var(--neon-green);
+  text-shadow: 0 0 22px rgba(92, 255, 157, 0.56);
+}
+
+.neon-feedback-v29[data-mode="question"] {
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 42px rgba(255, 228, 91, 0.32);
+}
+
+.neon-feedback-v29[data-mode="question"] strong {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 22px rgba(255, 228, 91, 0.58);
+}
+
+.neon-kill-feed-v29 {
+  position: fixed;
+  right: 24px;
+  top: 184px;
+  z-index: 54;
+  display: grid;
+  width: min(370px, 33vw);
+  gap: 7px;
+  pointer-events: none;
+}
+
+.neon-kill-feed-v29 > div {
+  padding: 9px 12px;
+  color: var(--neon-ink);
+  background: rgba(5, 9, 22, 0.86);
+  border-left: 3px solid var(--neon-cyan);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+  font-family: Consolas, "Segoe UI", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  animation: neonFeedInV29 0.17s ease-out;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.neon-kill-feed-v29 > div[data-kind="kill"],
+.neon-kill-feed-v29 > div[data-kind="elimination"] {
+  border-left-color: var(--neon-pink);
+}
+
+.neon-kill-feed-v29 > div.leaving {
+  opacity: 0;
+  transform: translateX(24px);
+}
+
+body.neon-final-strike-v29 #app {
+  animation: neonFinalStrikeV29 0.28s linear;
+}
+
+body.neon-question-active-v29 .question-modal {
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 55px rgba(255, 228, 91, 0.18), 0 30px 90px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes neonHudPulseV29 {
+  0% { transform: translateX(-50%) scale(1); }
+  45% { transform: translateX(-50%) scale(1.08); box-shadow: 0 0 38px rgba(255, 228, 91, 0.36); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+@keyframes neonFeedInV29 {
+  from { opacity: 0; transform: translateX(22px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes neonFinalStrikeV29 {
+  0%, 100% { filter: none; }
+  30% { filter: contrast(1.8) saturate(1.8) hue-rotate(-18deg); }
+  55% { filter: invert(0.12) brightness(1.4); }
+}
+
+@media (max-width: 1180px) {
+  .neon-tactical-hud-v29 { top: 84px; transform: translateX(-50%) scale(0.88); transform-origin: top center; }
+  .neon-kill-feed-v29 { right: 12px; width: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.neon-tactical-v29 *,
+  body.neon-tactical-v29 *::before,
+  body.neon-tactical-v29 *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

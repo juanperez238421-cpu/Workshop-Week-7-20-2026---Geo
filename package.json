@@ -1,10 +1,69 @@
 {
-  "name": "triad-territory-rush-online",
-  "version": "44.0.0",
+  "name": "geometry-tactical-persistent-timer-pythagoras-local",
+  "version": "56.0.0",
   "private": true,
-  "description": "Stable Autostart v26 restores authoritative movement and timer ticks, reduces each isolated channel to five balanced bots, removes the student Ready step and records deaths and geometry answers for each registered student.",
+  "description": "Final offline school edition with a mission timer visible and continuously running during 60-second questions, non-revealing sine/cosine diagrams, right-triangle Pythagoras questions, a Room 1 score cap and encrypted PIN-protected local student results.",
+  "main": "school-game/v56/main.js",
   "scripts": {
-    "test": "node --check student-bootstrap-v25.js && node --check student-fluid-v25.js && node --check student-input-v18.js && node --check student-arena-v22.js && node --check student-score-resilience-v23.js && node --check student-stable-v26.js && node --check question-ui-v19.js && node --check student-app-v16.js && node --check master-v3.js && node --check master-registration-sync.js && node --check master-enhancements.js && node --check master-live-game.js && node --check master-team-score-v23.js && node --check master-solo-channels-v24.js && node --check master-ready-control.js && node --check master-flex-start-v11.js && node --check master-scroll-guard.js && node --check master-report-v18.js && node --check master-individual-v26.js && node --check teacher-auth.js && node --check config.js && node --check music-mode-ui.js && node --check server/runtime-v18.js && node --check server/runtime-v19.js && node --check server/runtime-v20.js && node --check server/runtime-v21.js && node --check server/server-v3.js && node --check server/secure-gateway.js && node scripts/stable-runtime-v21-test.js"
+    "prepare:icons": "node scripts/prepare-desktop-assets.js",
+    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && node scripts/prepare-final-school-usb-v55.js && node scripts/patch-v55-preview-readiness.js && node scripts/prepare-persistent-timer-pythagoras-v56.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v56/main.js && node --check school-game/v56/preload.js && node --check school-game/v56/game.js && node scripts/final-timer-pythagoras-v56-static-test.js",
+    "start": "npm run prepare && electron .",
+    "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
+    "dir:win": "npm run prepare && electron-builder --win dir --x64"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "electron": "43.2.0",
+    "electron-builder": "26.9.1"
+  },
+  "build": {
+    "appId": "co.jpanalyst.geometrytactical.cleanvision.local",
+    "productName": "Geometry Tactical Final School V56",
+    "copyright": "Copyright © 2026 Juan Diego Pérez",
+    "asar": true,
+    "compression": "normal",
+    "directories": {
+      "output": "dist/final-timer-pythagoras-v56-windows",
+      "buildResources": "desktop/assets"
+    },
+    "files": [
+      "package.json",
+      "school-game/**/*"
+    ],
+    "win": {
+      "icon": "desktop/assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "runAfterFinish": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Geometry Tactical Final School V56",
+      "uninstallDisplayName": "Geometry Tactical Final School V56",
+      "artifactName": "Geometry-Tactical-Final-School-V56-Setup-${version}-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Geometry-Tactical-Final-School-V56-${version}-Portable-${arch}.${ext}"
+    }
+  }
 }

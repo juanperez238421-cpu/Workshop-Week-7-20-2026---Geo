@@ -1,4 +1,4 @@
-name: Build Right Thales Vision Hounds V53 Windows EXE
+name: Build Clean Cones Squad Secure Results V54 Windows EXE
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/right-thales-vision-hounds-v53-static-test.js"
+      - "scripts/clean-cones-squad-secure-results-v54-static-test.js"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -16,6 +16,8 @@ on:
       - "scripts/v52-payload/**"
       - "scripts/prepare-right-thales-vision-hounds-v53.js"
       - "scripts/v53-payload/**"
+      - "scripts/prepare-clean-cones-squad-secure-results-v54.js"
+      - "scripts/v54-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -24,7 +26,7 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/right-thales-vision-hounds-v53-static-test.js"
+      - "scripts/clean-cones-squad-secure-results-v54-static-test.js"
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
@@ -34,6 +36,8 @@ on:
       - "scripts/v52-payload/**"
       - "scripts/prepare-right-thales-vision-hounds-v53.js"
       - "scripts/v53-payload/**"
+      - "scripts/prepare-clean-cones-squad-secure-results-v54.js"
+      - "scripts/v54-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -45,7 +49,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 42
+    timeout-minutes: 45
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -61,106 +65,116 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate Right Thales Vision Hounds V53 game
+      - name: Validate Clean Cones Squad Secure Results V54 game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath right-thales-vision-hounds-v53-validation.log
+          npm test 2>&1 | Tee-Object -FilePath clean-cones-squad-secure-results-v54-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath right-thales-vision-hounds-v53-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath clean-cones-squad-secure-results-v54-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged Right Thales Vision Hounds V53 application
+      - name: Launch packaged V54 application and test protected vault
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/right-thales-vision-hounds-v53-windows/win-unpacked" -Filter "Geometry Tactical Ratio Thales Vision Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged Right Thales Vision Hounds V53 executable was not found." }
+          $exe = Get-ChildItem -Path "dist/clean-cones-squad-secure-results-v54-windows/win-unpacked" -Filter "Geometry Tactical Clean Vision Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged V54 executable was not found." }
 
-          $ready = Join-Path $env:RUNNER_TEMP "right-thales-vision-hounds-v53-ready.json"
-          $runtimeLog = Join-Path $env:RUNNER_TEMP "right-thales-vision-hounds-v53-runtime.log"
-          Remove-Item $ready -Force -ErrorAction SilentlyContinue
-          Remove-Item $runtimeLog -Force -ErrorAction SilentlyContinue
-          $env:V53_READY_FILE = $ready
-          $env:V53_STARTUP_LOG = $runtimeLog
+          $ready = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-ready.json"
+          $runtimeLog = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-runtime.log"
+          $vaultTest = Join-Path $env:RUNNER_TEMP "clean-cones-squad-secure-results-v54-vault-test.json"
+          Remove-Item $ready,$runtimeLog,$vaultTest -Force -ErrorAction SilentlyContinue
+          $env:V54_READY_FILE = $ready
+          $env:V54_STARTUP_LOG = $runtimeLog
+          $env:V54_SELF_TEST_FILE = $vaultTest
+          $env:V54_TEST_PIN = "9109"
 
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready" | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log
+          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready VAULT=$vaultTest" | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log
 
-          for ($attempt = 0; $attempt -lt 60; $attempt++) {
+          for ($attempt = 0; $attempt -lt 65; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
             if ($process.HasExited) {
-              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
+              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append }
               throw "Application exited with code $($process.ExitCode)."
             }
-            if (Test-Path $ready) { break }
+            if ((Test-Path $ready) -and (Test-Path $vaultTest)) { break }
           }
 
-          if (-not (Test-Path $ready)) {
-            if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
-            & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "Right Thales Vision Hounds V53 did not report deterministic readiness within 60 seconds."
-          }
+          if (-not (Test-Path $ready)) { throw "V54 did not report readiness within 65 seconds." }
+          if (-not (Test-Path $vaultTest)) { throw "V54 did not complete the protected-vault self-test." }
 
           $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
-          if ($readyJson.version -ne "53.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
-          if ($readyJson.edition -ne "right-thales-vision-hounds-v53") { throw "Unexpected readiness edition: $($readyJson.edition)" }
-          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "The packaged runtime did not report the 120 Hz simulation." }
-          if ($readyJson.renderer.levels -ne 2) { throw "The packaged runtime did not report both levels." }
-          if ($readyJson.renderer.weapons -lt 6) { throw "The packaged runtime did not report the complete weapon catalog." }
-          if ($readyJson.renderer.controlRoles -ne 3) { throw "The packaged runtime did not report three control roles." }
-          if ($readyJson.renderer.scoreStart -ne 5) { throw "The packaged runtime did not report the 5.00 starting score." }
-          if ($readyJson.renderer.wrongAnswerPenalty -ne 0.2) { throw "The wrong-answer penalty is not 0.20." }
-          if ($readyJson.renderer.threeDeathPenalty -ne 0.1) { throw "The three-death penalty is not 0.10." }
-          if ($readyJson.renderer.fixedMatchSeconds -ne 1200) { throw "The mission is not fixed at 20 minutes." }
-          if ($readyJson.renderer.pauseAllowed -ne $false) { throw "Manual pause is still enabled." }
-          if ($readyJson.renderer.missionCompletion -ne "time-or-both-levels") { throw "The mission completion rule is incorrect." }
-          if ($readyJson.renderer.enemyVisionCones -ne $true) { throw "Enemy vision cones were not reported." }
-          if ($readyJson.renderer.weaponThrowAlongAim -ne $true) { throw "Weapon throwing was not reported." }
-          if ($readyJson.renderer.houndEnemies -lt 4) { throw "The complete hound deployment was not reported." }
-          if ($readyJson.renderer.houndMeleeOnly -ne $true) { throw "Hounds are not reported as melee-only." }
-          if ($readyJson.renderer.thalesRightTrianglesOnly -ne $true) { throw "Thales is not restricted to right triangles." }
-          if ($readyJson.renderer.questionTopics -notcontains "sin-ratio") { throw "Sine-ratio questions were not reported." }
-          if ($readyJson.renderer.questionTopics -notcontains "cos-ratio") { throw "Cosine-ratio questions were not reported." }
-          if ($readyJson.renderer.questionTopics -notcontains "thales-right-triangle") { throw "Right-triangle Thales questions were not reported." }
-          if (-not $readyJson.renderer.hasCanvas) { throw "The packaged document did not expose the game canvas." }
-          if (-not $readyJson.renderer.hasSchoolAPI) { throw "The packaged preload bridge was not available." }
+          if ($readyJson.version -ne "54.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
+          if ($readyJson.edition -ne "clean-cones-squad-secure-results-v54") { throw "Unexpected readiness edition: $($readyJson.edition)" }
+          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "120 Hz simulation was not reported." }
+          if ($readyJson.renderer.levels -ne 2) { throw "Both levels were not reported." }
+          if ($readyJson.renderer.weapons -lt 6) { throw "Complete weapon catalog was not reported." }
+          if ($readyJson.renderer.controlRoles -ne 3) { throw "Three control roles were not reported." }
+          if ($readyJson.renderer.fixedMatchSeconds -ne 1200) { throw "Mission is not fixed at twenty minutes." }
+          if ($readyJson.renderer.pauseAllowed -ne $false) { throw "Manual pause is enabled." }
+          if ($readyJson.renderer.cleanDefinedVisionCones -ne $true) { throw "Clean cones were not reported." }
+          if ($readyJson.renderer.conesHideOnSquadAlert -ne $true) { throw "Cone hiding on detection was not reported." }
+          if ($readyJson.renderer.squadAlertDecisions -ne $true) { throw "Squad alert decisions were not reported." }
+          if ($readyJson.renderer.visionConeMode -ne "clean-sector-hidden-on-alert") { throw "Unexpected cone mode." }
+          if ($readyJson.renderer.reducedAmmoProfile -ne $true) { throw "Reduced ammunition was not reported." }
+          if ($readyJson.renderer.ammoProfile.pistol[0] -ne 6 -or $readyJson.renderer.ammoProfile.pistol[1] -ne 12) { throw "Pistol ammunition profile is incorrect." }
+          if ($readyJson.renderer.ammoProfile.carbine[0] -ne 9 -or $readyJson.renderer.ammoProfile.carbine[1] -ne 18) { throw "Carbine ammunition profile is incorrect." }
+          if ($readyJson.renderer.ammoProfile.smg[0] -ne 12 -or $readyJson.renderer.ammoProfile.smg[1] -ne 24) { throw "SMG ammunition profile is incorrect." }
+          if ($readyJson.renderer.protectedResultsVault -ne $true) { throw "Protected results vault was not reported." }
+          if ($readyJson.renderer.passwordGate -ne $true) { throw "Password gate was not reported." }
+          if ($readyJson.renderer.consolidatedStudentData -ne $true) { throw "Consolidated student data was not reported." }
+          if ($readyJson.renderer.plaintextStudentFiles -ne $false) { throw "Runtime reports plaintext student files." }
+          if (-not $readyJson.renderer.hasCanvas) { throw "Game canvas was not found." }
+          if (-not $readyJson.renderer.hasSchoolAPI) { throw "Preload bridge was not found." }
+          if (-not $readyJson.renderer.hasProtectedResultsOverlay) { throw "Protected results interface was not found." }
 
-          Get-Content $ready | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append
-          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append }
-          "Packaged V53 reached registration with right-triangle-only Thales, visible geometry-clipped detection cones, contextual weapon throws, four fast melee hounds, no pause and the fixed twenty-minute-or-two-level completion rule." | Tee-Object -FilePath right-thales-vision-hounds-v53-startup.log -Append
+          $vaultJson = Get-Content $vaultTest -Raw | ConvertFrom-Json
+          if ($vaultJson.ok -ne $true) { throw "Protected-vault self-test failed." }
+          if ($vaultJson.encryptedSave -ne $true) { throw "Encrypted save was not verified." }
+          if ($vaultJson.wrongPinRejected -ne $true) { throw "Wrong PIN rejection was not verified." }
+          if ($vaultJson.correctPinUnlocked -ne $true) { throw "Teacher PIN unlock was not verified." }
+          if ($vaultJson.questionRecorded -ne $true) { throw "Question record was not verified." }
+          if ($vaultJson.scoreRecorded -ne $true) { throw "Score record was not verified." }
+          if ($vaultJson.consolidatedStudentRows -lt 3) { throw "Consolidated student rows were not verified." }
+
+          Get-Content $ready | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
+          Get-Content $vaultTest | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
+          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append }
+          "Packaged V54 reached registration and verified clean cones, squad alert sharing, reduced ammunition and encrypted PIN-protected consolidated student results." | Tee-Object -FilePath clean-cones-squad-secure-results-v54-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist/right-thales-vision-hounds-v53-windows -Filter *.exe | ForEach-Object {
+          Get-ChildItem -Path dist/clean-cones-squad-secure-results-v54-windows -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)" | Out-File -FilePath dist/right-thales-vision-hounds-v53-windows/SHA256SUMS.txt -Append -Encoding utf8
+            "$hash  $($_.Name)" | Out-File -FilePath dist/clean-cones-squad-secure-results-v54-windows/SHA256SUMS.txt -Append -Encoding utf8
           }
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: right-thales-vision-hounds-v53-diagnostics
+          name: clean-cones-squad-secure-results-v54-diagnostics
           path: |
-            right-thales-vision-hounds-v53-validation.log
-            right-thales-vision-hounds-v53-build.log
-            right-thales-vision-hounds-v53-startup.log
+            clean-cones-squad-secure-results-v54-validation.log
+            clean-cones-squad-secure-results-v54-build.log
+            clean-cones-squad-secure-results-v54-startup.log
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-right-thales-vision-hounds-v53-windows
+          name: geometry-tactical-clean-cones-squad-secure-results-v54-windows
           path: |
-            dist/right-thales-vision-hounds-v53-windows/*.exe
-            dist/right-thales-vision-hounds-v53-windows/SHA256SUMS.txt
+            dist/clean-cones-squad-secure-results-v54-windows/*.exe
+            dist/clean-cones-squad-secure-results-v54-windows/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30

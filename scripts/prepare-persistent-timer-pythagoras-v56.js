@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const zlib = require("node:zlib");
 
-const partsDir = path.join(__dirname, "v56-patch");
+const partsDir = path.join(__dirname, "v56-patch-fixed");
 const encoded = fs.readdirSync(partsDir)
   .filter((name) => /^part-\d+\.txt$/.test(name))
   .sort()

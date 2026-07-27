@@ -1,26 +1,26 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260724-stable-autostart26";
+  const ASSET_VERSION = "20260727-clean-player27";
   const replacements = [
-    ["Nine PC players, three teams and optional bots are available.", "Up to nine PC channels are available; each real PC receives five automatic bots."],
-    ["One to nine PC players, three teams and optional bots are available.", "Up to nine isolated PC-versus-bots channels are available under one Master PIN."],
-    ["Teacher approved this PC group. Complete suggestions and voting.", "Teacher approved this PC channel. The Master can start it immediately."],
-    ["Teacher approved this PC channel. Mark Ready when the group is prepared.", "Teacher approved this PC channel. The Master can start it immediately."],
-    ["Approved · setup incomplete", "Approved · Master-controlled start"],
-    ["Approved · mark ready", "Approved · Master-controlled start"],
+    ["Nine PC players, three teams and optional bots are available.", "Up to nine computer channels are available; each real computer receives five automatic bots."],
+    ["One to nine PC players, three teams and optional bots are available.", "Up to nine isolated computer-versus-bots channels are available under one Master PIN."],
+    ["Teacher approved this PC group. Complete suggestions and voting.", "Approved — wait for the teacher to start."],
+    ["Teacher approved this PC channel. Mark Ready when the group is prepared.", "Approved — wait for the teacher to start."],
+    ["Approved · setup incomplete", "Approved · teacher start"],
+    ["Approved · mark ready", "Approved · teacher start"],
     ["Approved · not ready", "Approved · startable"],
-    ["READY — CLICK TO CANCEL", "MASTER START"],
-    ["I AM READY", "MASTER START"],
+    ["READY — CLICK TO CANCEL", "TEACHER START"],
+    ["I AM READY", "TEACHER START"],
     ["START ALL READY CHANNELS", "START ALL APPROVED CHANNELS"],
     ["WAITING FOR A READY CHANNEL", "WAITING FOR AN APPROVED CHANNEL"],
-    ["channel not ready", "channel awaiting Master start"],
+    ["channel not ready", "channel awaiting teacher start"],
     ["8 automatic bots", "5 automatic bots"],
     ["eight automatic bots", "five automatic bots"],
     ["eight optimized bots", "five optimized bots"],
     ["1 human + 8 bots", "1 human + 5 bots"],
-    ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD / arrows move · hold RIGHT CLICK to aim · SPACE fires · SHIFT dashes"],
-    ["Eliminated · solve trigonometry", "Eliminated · solve the assigned geometry respawn challenge"],
+    ["WASD / arrows move · mouse aims · SPACE fires · SHIFT dashes", "WASD move · right click aim · SPACE fire · SHIFT dash · M map · H help"],
+    ["Eliminated · solve trigonometry", "Solve the assigned geometry challenge to respawn"],
     ["automatic +1 every 10 s", "automatic +1 every 5 s"],
     ["FINAL-LIFE SERVER RESPawn", "FINAL-LIFE SERVER RESPAWN"],
     ["05:00", "10:00"],
@@ -80,19 +80,20 @@
       loadStyle("gameplay-v9.css", "gameplayV9Styles");
       loadStyle("team-selection-v8.css", "teamSelectionV8Styles");
       loadStyle("pickup-assets-v10.css", "pickupAssetsV10Styles");
+      loadStyle("student-clean-v27.css", "studentCleanV27Styles");
       return loadScript("network-v12.js", "networkV12Script")
         .then(() => loadScript("pickup-assets-v10.js", "pickupAssetsV10Script"))
         .then(() => loadScript("gameplay-v9.js", "gameplayV9Script"))
         .then(() => loadScript("team-selection-v8.js", "teamSelectionV8Script"))
-        .then(() => loadScript("combat-feed.js", "combatFeedScript"));
+        .then(() => loadScript("combat-feed.js", "combatFeedScript"))
+        .then(() => loadScript("student-clean-v27.js", "studentCleanV27Script"));
     }
 
     loadStyle("master-team-score-v23.css", "masterTeamScoreV23Styles");
     loadStyle("master-solo-channels-v24.css", "masterSoloChannelsV24Styles");
-    return loadScript("master-solo-channels-v24.js", "masterSoloChannelsV24Script")
+    return loadScript("master-solo-channels-v27.js", "masterSoloChannelsV27Script")
       .then(() => loadScript("master-team-score-v23.js", "masterTeamScoreV23Script"))
-      .then(() => loadScript("network-v12.js", "networkV12Script"))
-      .then(() => loadScript("master-flex-start-v11.js", "masterFlexStartV11Script"));
+      .then(() => loadScript("network-v12.js", "networkV12Script"));
   }
 
   function refresh() {

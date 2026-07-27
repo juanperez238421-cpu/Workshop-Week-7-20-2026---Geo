@@ -82,6 +82,8 @@ jobs:
           $env:V57_SELF_TEST_FILE = $vaultFile
           $env:V57_TEST_PIN = "9109"
           $env:V57_ROOM3_PROBE = "true"
+          $env:V57_ALLOW_SECOND_INSTANCE = "true"
+          $env:ELECTRON_ENABLE_LOGGING = "1"
 
           $process = Start-Process $exe.FullName -PassThru
           "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object room3-transparent-glass-v57-startup.log
@@ -100,7 +102,11 @@ jobs:
               } catch {}
             }
           }
-          if (-not $report) { throw "Installed V57 did not reach the Room 3 glass probe." }
+          if (-not $report) {
+            if (Test-Path $ready) { Copy-Item $ready "room3-transparent-glass-v57-ready-last.json" -Force }
+            if (Test-Path $runtime) { Copy-Item $runtime "room3-transparent-glass-v57-runtime.log" -Force }
+            throw "Installed V57 did not reach the Room 3 glass probe."
+          }
           if ($report.version -ne "57.0.0" -or $report.edition -ne "room3-transparent-glass-v57") { throw "Installed V57 identity is incorrect." }
           if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 4) { throw "Installed engine contract failed." }
           if ($report.renderer.room3SpawnClear -ne $true) { throw "Room 3 spawn still overlaps collision geometry." }
@@ -211,6 +217,8 @@ jobs:
             room3-transparent-glass-v57-build.log
             room3-transparent-glass-v57-startup.log
             room3-transparent-glass-v57-portable.log
+            room3-transparent-glass-v57-runtime.log
+            room3-transparent-glass-v57-ready-last.json
           if-no-files-found: warn
           retention-days: 14
 

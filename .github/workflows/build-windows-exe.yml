@@ -1,11 +1,12 @@
-name: Build Final School USB V55 Windows EXE
+name: Build Persistent Timer Pythagoras V56 Windows EXE
 
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
-      - "school-game/**"
+      - "school-game/v56/**"
+      - "scripts/final-timer-pythagoras-v56-static-test.js"
       - "scripts/**"
       - "desktop/assets/**"
       - "package.json"
@@ -13,7 +14,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "school-game/**"
+      - "school-game/v56/**"
+      - "scripts/final-timer-pythagoras-v56-static-test.js"
       - "scripts/**"
       - "desktop/assets/**"
       - "package.json"
@@ -41,52 +43,52 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate Final School USB V55 source
+      - name: Validate V56 source and classroom contract
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath final-school-v55-validation.log
+          npm test 2>&1 | Tee-Object -FilePath final-timer-pythagoras-v56-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build NSIS installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath final-school-v55-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath final-timer-pythagoras-v56-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Install and validate question layout and encrypted vault
+      - name: Install and validate timer, question layout and encrypted vault
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $dist = Resolve-Path "dist/final-school-usb-v55-windows"
-          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-Setup-55.0.0-x64.exe" -File | Select-Object -First 1
-          if (-not $setup) { throw "V55 installer was not found." }
+          $dist = Resolve-Path "dist/final-timer-pythagoras-v56-windows"
+          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-V56-Setup-56.0.0-x64.exe" -File | Select-Object -First 1
+          if (-not $setup) { throw "V56 installer was not found." }
 
-          $installDir = Join-Path $env:RUNNER_TEMP "V55SchoolInstall"
+          $installDir = Join-Path $env:RUNNER_TEMP "V56SchoolInstall"
           Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
           $installer = Start-Process $setup.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
           if ($installer.ExitCode -ne 0) { throw "Silent installation failed with code $($installer.ExitCode)." }
 
-          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School Local.exe" -File -Recurse | Select-Object -First 1
-          if (-not $exe) { throw "Installed V55 executable was not found." }
+          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School V56.exe" -File -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Installed V56 executable was not found." }
 
-          $ready = Join-Path $env:RUNNER_TEMP "v55-installed-ready.json"
-          $runtime = Join-Path $env:RUNNER_TEMP "v55-installed-runtime.log"
-          $vaultFile = Join-Path $env:RUNNER_TEMP "v55-installed-vault.json"
+          $ready = Join-Path $env:RUNNER_TEMP "v56-installed-ready.json"
+          $runtime = Join-Path $env:RUNNER_TEMP "v56-installed-runtime.log"
+          $vaultFile = Join-Path $env:RUNNER_TEMP "v56-installed-vault.json"
           Remove-Item $ready,$runtime,$vaultFile -Force -ErrorAction SilentlyContinue
-          $env:V55_READY_FILE = $ready
-          $env:V55_STARTUP_LOG = $runtime
-          $env:V55_SELF_TEST_FILE = $vaultFile
-          $env:V55_TEST_PIN = "9109"
-          $env:V55_QUESTION_PREVIEW = "thales"
+          $env:V56_READY_FILE = $ready
+          $env:V56_STARTUP_LOG = $runtime
+          $env:V56_SELF_TEST_FILE = $vaultFile
+          $env:V56_TEST_PIN = "9109"
+          $env:V56_QUESTION_PREVIEW = "ratio"
 
           $process = Start-Process $exe.FullName -PassThru
-          "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object final-school-v55-startup.log
+          "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object final-timer-pythagoras-v56-startup.log
           $report = $null
-          for ($i = 0; $i -lt 75; $i++) {
+          for ($i = 0; $i -lt 80; $i++) {
             Start-Sleep 1
             $process.Refresh()
             if ($process.HasExited) {
-              if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-school-v55-startup.log -Append }
+              if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-timer-pythagoras-v56-startup.log -Append }
               throw "Installed application exited with code $($process.ExitCode)."
             }
             if (Test-Path $ready) {
@@ -96,12 +98,18 @@ jobs:
               } catch {}
             }
           }
-          if (-not $report) { throw "Installed V55 did not reach the question-layout preview." }
-          if ($report.version -ne "55.0.0" -or $report.edition -ne "final-school-four-rooms-v55") { throw "Installed identity is incorrect." }
-          if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 4 -or $report.renderer.newDifficultRooms -ne 2) { throw "Installed four-room engine contract failed." }
-          if ($report.renderer.professionalV2LevelImages -lt 4) { throw "Four room images did not load." }
-          if ($report.renderer.questionSeconds -ne 60 -or $report.renderer.questionCanvasWidth -ne 1200 -or $report.renderer.questionCanvasHeight -ne 620) { throw "Question timing or canvas contract failed." }
-          if ($report.renderer.questionLayoutFitsViewport -ne $true -or $report.renderer.responsiveQuestionLayout -ne $true -or $report.renderer.questionCanvasSafeMargins -ne $true) { throw "Question layout exceeds the packaged viewport." }
+          if (-not $report) { throw "Installed V56 did not reach the question-layout preview." }
+          if ($report.version -ne "56.0.0" -or $report.edition -ne "persistent-timer-pythagoras-v56") { throw "Installed V56 identity is incorrect." }
+          if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 4) { throw "Installed engine contract failed." }
+          if ($report.renderer.questionSeconds -ne 60) { throw "Questions are not fixed at 60 seconds." }
+          if ($report.renderer.missionTimerVisibleInQuestions -ne $true) { throw "Mission timer is not visible in the question screen." }
+          if ($report.renderer.missionTimerRunsDuringQuestions -ne $true) { throw "Mission timer did not decrease during the question preview." }
+          if ($report.renderer.missionTimerDisplayedValue -notmatch '^19:5[0-9]$') { throw "Question mission timer display is invalid: $($report.renderer.missionTimerDisplayedValue)" }
+          if ($report.renderer.pythagorasQuestions -ne $true) { throw "Pythagoras questions were not reported." }
+          if ($report.renderer.answerRevealDisabled -ne $true) { throw "Answer reveal is enabled." }
+          if ($report.renderer.ratioSideRoleLabelsHidden -ne $true) { throw "Ratio side values still include role labels." }
+          if ($report.renderer.roomOneScoreCap -ne 2.5) { throw "Room 1 score cap is incorrect." }
+          if ($report.renderer.questionLayoutFitsViewport -ne $true -or $report.renderer.questionCanvasSafeMargins -ne $true) { throw "Question layout exceeds the packaged viewport." }
           if ($report.renderer.offlineOnly -ne $true -or $report.renderer.schoolPcHardening -ne $true) { throw "Offline school-PC hardening was not reported." }
           if ($report.renderer.protectedResultsVault -ne $true -or $report.renderer.passwordGate -ne $true) { throw "Protected results controls were not reported." }
 
@@ -111,32 +119,27 @@ jobs:
           if ($vault.ok -ne $true -or $vault.encryptedSave -ne $true -or $vault.wrongPinRejected -ne $true -or $vault.correctPinUnlocked -ne $true) { throw "Encrypted vault security checks failed." }
           if ($vault.questionRecorded -ne $true -or $vault.scoreRecorded -ne $true -or $vault.consolidatedStudentRows -lt 3) { throw "Student data consolidation checks failed." }
 
-          Get-Content $ready | Tee-Object final-school-v55-startup.log -Append
-          Get-Content $vaultFile | Tee-Object final-school-v55-startup.log -Append
-          if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-school-v55-startup.log -Append }
+          Get-Content $ready | Tee-Object final-timer-pythagoras-v56-startup.log -Append
+          Get-Content $vaultFile | Tee-Object final-timer-pythagoras-v56-startup.log -Append
+          if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-timer-pythagoras-v56-startup.log -Append }
           & taskkill.exe /PID $process.Id /T /F | Out-Null
+          Start-Sleep 3
 
       - name: Validate portable package structure
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $portable = Get-ChildItem "dist/final-school-usb-v55-windows" -Filter "Geometry-Tactical-Final-School-55.0.0-Portable-x64.exe" -File | Select-Object -First 1
-          if (-not $portable) { throw "Portable V55 executable was not found." }
-          if ($portable.Length -lt 90000000) { throw "Portable package is unexpectedly small: $($portable.Length) bytes." }
-          $stream = [System.IO.File]::OpenRead($portable.FullName)
-          try {
-            $first = $stream.ReadByte()
-            $second = $stream.ReadByte()
-          } finally {
-            $stream.Dispose()
-          }
-          if ($first -ne 0x4D -or $second -ne 0x5A) { throw "Portable package does not have a valid Windows PE header." }
-          "Portable PE package validated: $($portable.Name), $($portable.Length) bytes. It contains the same packaged app validated through the installed NSIS build." | Tee-Object final-school-v55-portable.log
+          $portable = Get-ChildItem "dist/final-timer-pythagoras-v56-windows" -Filter "Geometry-Tactical-Final-School-V56-56.0.0-Portable-x64.exe" -File | Select-Object -First 1
+          if (-not $portable) { throw "Portable V56 executable was not found." }
+          if ($portable.Length -lt 80000000) { throw "Portable executable is unexpectedly small." }
+          $bytes = [System.IO.File]::ReadAllBytes($portable.FullName)
+          if ($bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) { throw "Portable executable does not have a Windows PE header." }
+          "Portable file validated: $($portable.Name) · $($portable.Length) bytes" | Tee-Object final-timer-pythagoras-v56-portable.log
 
       - name: Create checksums and school USB verification kit
         shell: pwsh
         run: |
-          $dist = Resolve-Path "dist/final-school-usb-v55-windows"
+          $dist = Resolve-Path "dist/final-timer-pythagoras-v56-windows"
           Remove-Item "$dist/SHA256SUMS.txt" -Force -ErrorAction SilentlyContinue
           Get-ChildItem $dist -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
@@ -160,27 +163,29 @@ jobs:
           @'
           @echo off
           cd /d "%~dp0"
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-Setup-55.0.0-x64.exe" -Run
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V56-Setup-56.0.0-x64.exe" -Run
           if errorlevel 1 (pause & exit /b 1)
           '@ | Set-Content "$dist/INSTALL_VERIFIED_FROM_USB.cmd" -Encoding ASCII
 
           @'
           @echo off
           cd /d "%~dp0"
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-55.0.0-Portable-x64.exe" -Run
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V56-56.0.0-Portable-x64.exe" -Run
           if errorlevel 1 (pause & exit /b 1)
           '@ | Set-Content "$dist/RUN_PORTABLE_VERIFIED.cmd" -Encoding ASCII
 
           @'
-          GEOMETRY TACTICAL FINAL SCHOOL V55 · OFFLINE USB KIT
+          GEOMETRY TACTICAL FINAL SCHOOL V56 · OFFLINE USB KIT
 
           Copy this complete folder from the USB drive to each school PC.
           Run INSTALL_VERIFIED_FROM_USB.cmd for normal per-user installation.
           Run RUN_PORTABLE_VERIFIED.cmd to use the game without installation.
           Both scripts verify SHA-256 before launch.
 
-          Controls: Student 1 WASD; Student 2 mouse aim; Student 3 Space/F, R, E and Shift.
-          Four complete rooms; fixed 20-minute mission; pause disabled; 60 seconds per question.
+          Four complete rooms; fixed 20-minute mission; the mission timer remains visible and runs during every 60-second question.
+          Sine and cosine diagrams show side lengths without adjacent/opposite labels and never reveal the correct numerical answer after a mistake.
+          Pythagorean theorem questions ask students to find a missing right-triangle side.
+          If Room 1 is not cleared, the final score is min(earned score, 2.50).
           Teacher Results PIN: 9109.
 
           Student names, answers and scores are encrypted locally with AES-256-GCM and a Windows-protected key.
@@ -193,25 +198,25 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: final-school-v55-diagnostics
+          name: final-timer-pythagoras-v56-diagnostics
           path: |
-            final-school-v55-validation.log
-            final-school-v55-build.log
-            final-school-v55-startup.log
-            final-school-v55-portable.log
+            final-timer-pythagoras-v56-validation.log
+            final-timer-pythagoras-v56-build.log
+            final-timer-pythagoras-v56-startup.log
+            final-timer-pythagoras-v56-portable.log
           if-no-files-found: warn
           retention-days: 14
 
       - name: Upload final school USB package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-final-school-v55-usb-kit
+          name: geometry-tactical-final-timer-pythagoras-v56-usb-kit
           path: |
-            dist/final-school-usb-v55-windows/*.exe
-            dist/final-school-usb-v55-windows/SHA256SUMS.txt
-            dist/final-school-usb-v55-windows/VERIFY_FILE.ps1
-            dist/final-school-usb-v55-windows/INSTALL_VERIFIED_FROM_USB.cmd
-            dist/final-school-usb-v55-windows/RUN_PORTABLE_VERIFIED.cmd
-            dist/final-school-usb-v55-windows/README_SCHOOL_USB.txt
+            dist/final-timer-pythagoras-v56-windows/*.exe
+            dist/final-timer-pythagoras-v56-windows/SHA256SUMS.txt
+            dist/final-timer-pythagoras-v56-windows/VERIFY_FILE.ps1
+            dist/final-timer-pythagoras-v56-windows/INSTALL_VERIFIED_FROM_USB.cmd
+            dist/final-timer-pythagoras-v56-windows/RUN_PORTABLE_VERIFIED.cmd
+            dist/final-timer-pythagoras-v56-windows/README_SCHOOL_USB.txt
           if-no-files-found: error
           retention-days: 30

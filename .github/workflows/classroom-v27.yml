@@ -1,0 +1,30 @@
+name: Classroom V27 Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - agent/clean-player-hud-v27
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate client and classroom runtime
+        run: npm test
+
+      - name: Validate server syntax
+        run: npm --prefix server test

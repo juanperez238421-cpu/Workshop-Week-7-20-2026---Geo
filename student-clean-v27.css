@@ -1,0 +1,581 @@
+/* Clean Player HUD v27: preserve the arena and assets while keeping only essential live information visible. */
+
+html.triad-clean-hud-v27,
+html.triad-clean-hud-v27 body {
+  overflow: hidden;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .topbar,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-hud-v15,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .essential-player-hud-v27,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .hud-utility-v27,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .network-alert-v27,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .controls-toast-v27 {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* Match clock: the only permanent object at the top center. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .topbar {
+  inset: 10px auto auto 50% !important;
+  width: auto !important;
+  min-width: 136px;
+  height: 44px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0 12px !important;
+  transform: translateX(-50%);
+  border: 1px solid rgba(16, 24, 40, 0.13) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.93) !important;
+  box-shadow: 0 5px 16px rgba(16, 24, 40, 0.12) !important;
+  backdrop-filter: blur(9px);
+  z-index: 70;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .topbar .brand {
+  display: none !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .match-status {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px !important;
+  min-width: 108px;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .match-status span {
+  font-size: 0.58rem !important;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #475467;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .match-status strong {
+  min-width: 58px;
+  font-size: 1.25rem !important;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: #101828;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .topbar-actions {
+  position: fixed !important;
+  top: 10px;
+  right: 10px;
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .connection-badge {
+  display: none !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27.network-problem-v27 .connection-badge {
+  display: inline-flex !important;
+  min-height: 30px;
+  padding: 5px 9px !important;
+  font-size: 0.58rem !important;
+  border-radius: 9px !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .icon-button {
+  min-width: 34px !important;
+  min-height: 32px !important;
+  padding: 5px 8px !important;
+  overflow: hidden;
+  font-size: 0 !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .icon-button::after {
+  content: "♪";
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+/* Three compact team chips. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .scoreboard {
+  inset: 10px auto auto 10px !important;
+  width: auto !important;
+  max-width: min(430px, calc(100vw - 330px));
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(94px, 126px)) !important;
+  gap: 5px !important;
+  transform: none !important;
+  z-index: 68;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card {
+  min-height: 42px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0 6px !important;
+  padding: 5px 8px !important;
+  border-width: 1px !important;
+  border-radius: 11px !important;
+  background: rgba(255, 255, 255, 0.91) !important;
+  box-shadow: 0 4px 13px rgba(16, 24, 40, 0.09) !important;
+  backdrop-filter: blur(7px);
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card span {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.54rem !important;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card strong {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  font-size: 0.9rem !important;
+  font-variant-numeric: tabular-nums;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card small {
+  font-size: 0.5rem !important;
+  white-space: nowrap;
+}
+
+/* Remove the old large information blocks during play. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .player-panel,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .three-student-role-panel-v22,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .pickup-legend-v22,
+html.triad-clean-hud-v27 body.clean-player-view-v27 .controls-hint {
+  display: none !important;
+}
+
+/* Lives, ammunition and active power share one low-profile bottom bar. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-hud-v15 {
+  inset: auto auto 10px 50% !important;
+  width: auto !important;
+  max-width: calc(100vw - 430px);
+  display: flex !important;
+  align-items: stretch;
+  gap: 5px !important;
+  padding: 0 !important;
+  transform: translateX(-50%);
+  background: transparent !important;
+  box-shadow: none !important;
+  z-index: 72;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 {
+  min-width: 106px;
+  min-height: 48px !important;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 1px 8px;
+  padding: 6px 10px !important;
+  border: 1px solid rgba(16, 24, 40, 0.13) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 5px 15px rgba(16, 24, 40, 0.11) !important;
+  backdrop-filter: blur(8px);
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15:nth-child(4) {
+  display: none !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 > span {
+  grid-row: 1 / 3;
+  align-self: center;
+  font-size: 0.5rem !important;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #667085;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 strong {
+  margin: 0 !important;
+  font-size: 0.83rem !important;
+  line-height: 1.05;
+  white-space: nowrap;
+  color: #101828;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 small {
+  overflow: hidden;
+  max-width: 135px;
+  font-size: 0.46rem !important;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #667085;
+}
+
+/* Small personal strip: identity and the two useful personal outcomes. */
+.essential-player-hud-v27 {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  min-width: 188px;
+  max-width: 245px;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 12px minmax(88px, 1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  border: 1px solid rgba(16, 24, 40, 0.13);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 5px 15px rgba(16, 24, 40, 0.11);
+  backdrop-filter: blur(8px);
+  z-index: 72;
+}
+
+.essential-player-hud-v27 .essential-team-dot-v27 {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #98a2b3;
+  box-shadow: 0 0 0 3px rgba(152, 162, 179, 0.16);
+}
+
+.essential-player-hud-v27 .essential-player-name-v27 {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.65rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #101828;
+}
+
+.essential-player-hud-v27 .essential-metric-v27 {
+  min-width: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.essential-player-hud-v27 .essential-metric-v27 span {
+  font-size: 0.42rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #667085;
+}
+
+.essential-player-hud-v27 .essential-metric-v27 strong {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: #101828;
+}
+
+/* Map is available, but never blocks the arena unless the player requests it. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .minimap-panel {
+  display: none !important;
+  right: 10px !important;
+  bottom: 54px !important;
+  width: 216px !important;
+  padding: 5px !important;
+  border-radius: 11px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 7px 20px rgba(16, 24, 40, 0.15) !important;
+  z-index: 76;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27.show-minimap-v27 .minimap-panel {
+  display: block !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .minimap-panel small {
+  display: none !important;
+}
+
+.hud-utility-v27 {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 77;
+}
+
+.hud-utility-v27 button {
+  min-width: 48px;
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid rgba(16, 24, 40, 0.15);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.1);
+  font: inherit;
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #344054;
+  cursor: pointer;
+}
+
+.hud-utility-v27 button[aria-pressed="true"] {
+  border-color: #2e90fa;
+  background: #eff8ff;
+  color: #175cd3;
+}
+
+.controls-toast-v27 {
+  position: fixed;
+  left: 50%;
+  bottom: 70px;
+  max-width: min(680px, calc(100vw - 40px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 13px;
+  transform: translate(-50%, 10px);
+  border: 1px solid rgba(16, 24, 40, 0.13);
+  border-radius: 12px;
+  background: rgba(16, 24, 40, 0.9);
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  color: #fff;
+  z-index: 90;
+}
+
+.controls-toast-v27.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.controls-toast-v27 b {
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.controls-toast-v27 span {
+  font-size: 0.57rem;
+  color: #d0d5dd;
+  white-space: nowrap;
+}
+
+.network-alert-v27 {
+  position: fixed;
+  top: 62px;
+  left: 50%;
+  display: none;
+  max-width: min(420px, calc(100vw - 30px));
+  padding: 7px 12px;
+  transform: translateX(-50%);
+  border: 1px solid #f79009;
+  border-radius: 10px;
+  background: rgba(255, 250, 235, 0.97);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.12);
+  font-size: 0.62rem;
+  font-weight: 850;
+  text-align: center;
+  color: #7a2e0e;
+  z-index: 92;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27.network-problem-v27 .network-alert-v27 {
+  display: block;
+}
+
+/* Aim feedback remains available without a large instruction card. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .recovered-aim-hud-v22 {
+  inset: auto auto 70px 50% !important;
+  min-width: 0 !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center;
+  padding: 0 !important;
+  transform: translateX(-50%);
+  border: 1px solid rgba(16, 24, 40, 0.16) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.11) !important;
+  pointer-events: none;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .recovered-aim-icon-v22 {
+  width: auto !important;
+  height: auto !important;
+  flex: none !important;
+  font-size: 1.05rem !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .recovered-aim-hud-v22 > div {
+  display: none !important;
+}
+
+/* Short, readable event messages. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .event-banner {
+  top: 62px !important;
+  max-width: min(470px, calc(100vw - 30px)) !important;
+  padding: 7px 12px !important;
+  border-radius: 10px !important;
+  background: rgba(16, 24, 40, 0.88) !important;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.17) !important;
+  font-size: 0.65rem !important;
+  line-height: 1.2;
+  color: #fff !important;
+}
+
+/* Registration and question text are intentionally simpler and larger. */
+html.triad-clean-hud-v27 body.clean-player-view-v27 .registration-modal {
+  width: min(880px, calc(100vw - 28px));
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .registration-modal .lead {
+  max-width: 760px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .student-recovery-note {
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .question-modal {
+  width: min(760px, calc(100vw - 24px)) !important;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  padding: 18px !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .question-header h2 {
+  font-size: clamp(1.25rem, 2.4vw, 1.8rem) !important;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .question-prompt {
+  font-size: clamp(1rem, 1.8vw, 1.24rem) !important;
+  line-height: 1.45;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .question-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+html.triad-clean-hud-v27 body.clean-player-view-v27 .question-options button {
+  min-height: 50px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1120px) {
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .scoreboard {
+    grid-template-columns: repeat(3, minmax(84px, 108px)) !important;
+    max-width: calc(100vw - 270px);
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-hud-v15 {
+    max-width: calc(100vw - 370px);
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 {
+    min-width: 94px;
+    padding: 5px 8px !important;
+  }
+
+  .essential-player-hud-v27 {
+    min-width: 170px;
+    max-width: 205px;
+  }
+}
+
+@media (max-width: 860px), (max-height: 640px) {
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .scoreboard {
+    top: 60px !important;
+    left: 8px !important;
+    grid-template-columns: repeat(3, minmax(76px, 98px)) !important;
+    max-width: calc(100vw - 16px);
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card small {
+    display: none !important;
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-hud-v15 {
+    bottom: 8px !important;
+    max-width: calc(100vw - 250px);
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 {
+    min-width: 82px;
+    min-height: 42px !important;
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15 small {
+    display: none;
+  }
+
+  .essential-player-hud-v27 {
+    left: 8px;
+    bottom: 8px;
+    min-width: 150px;
+    max-width: 190px;
+  }
+
+  .hud-utility-v27 {
+    right: 8px;
+    bottom: 8px;
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .recovered-aim-hud-v22 {
+    bottom: 58px !important;
+  }
+
+  .controls-toast-v27 {
+    bottom: 58px;
+  }
+}
+
+@media (max-width: 680px) {
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .scoreboard {
+    grid-template-columns: repeat(3, minmax(68px, 1fr)) !important;
+    width: calc(100vw - 16px) !important;
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .team-card {
+    padding: 4px 6px !important;
+  }
+
+  html.triad-clean-hud-v27 body.clean-player-view-v27 .resource-card-v15:nth-child(3) {
+    display: none !important;
+  }
+
+  .essential-player-hud-v27 .essential-player-name-v27 {
+    display: none;
+  }
+
+  .essential-player-hud-v27 {
+    min-width: 105px;
+    grid-template-columns: 10px auto auto;
+  }
+
+  .hud-utility-v27 button {
+    min-width: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controls-toast-v27 {
+    transition: none;
+  }
+}

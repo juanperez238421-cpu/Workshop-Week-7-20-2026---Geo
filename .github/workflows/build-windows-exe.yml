@@ -10,6 +10,7 @@ on:
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
+      - "scripts/patch-advanced-v51-readiness.js"
       - "scripts/v51-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
@@ -23,6 +24,7 @@ on:
       - "scripts/prepare-professional-v50.js"
       - "scripts/v50-payload/**"
       - "scripts/prepare-advanced-v51.js"
+      - "scripts/patch-advanced-v51-readiness.js"
       - "scripts/v51-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
@@ -70,32 +72,45 @@ jobs:
           $exe = Get-ChildItem -Path "dist/advanced-coop-v51-windows/win-unpacked" -Filter "Geometry Tactical Advanced Coop Local.exe" -File | Select-Object -First 1
           if (-not $exe) { throw "Packaged Advanced Coop V51 executable was not found." }
 
-          $ready = Join-Path $env:APPDATA "Geometry Tactical Advanced Coop Local\ready.json"
+          $ready = Join-Path $env:RUNNER_TEMP "advanced-coop-v51-ready.json"
+          $runtimeLog = Join-Path $env:RUNNER_TEMP "advanced-coop-v51-runtime.log"
           Remove-Item $ready -Force -ErrorAction SilentlyContinue
+          Remove-Item $runtimeLog -Force -ErrorAction SilentlyContinue
+          $env:V51_READY_FILE = $ready
+          $env:V51_STARTUP_LOG = $runtimeLog
+
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id)" | Tee-Object -FilePath advanced-coop-v51-startup.log
+          "Started PID=$($process.Id) EXE=$($exe.FullName) READY=$ready" | Tee-Object -FilePath advanced-coop-v51-startup.log
 
           for ($attempt = 0; $attempt -lt 50; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
-            if ($process.HasExited) { throw "Application exited with code $($process.ExitCode)." }
+            if ($process.HasExited) {
+              if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath advanced-coop-v51-startup.log -Append }
+              throw "Application exited with code $($process.ExitCode)."
+            }
             if (Test-Path $ready) { break }
           }
 
           if (-not (Test-Path $ready)) {
+            if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath advanced-coop-v51-startup.log -Append }
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "Advanced Coop V51 did not report renderer readiness within 50 seconds."
+            throw "Advanced Coop V51 did not report deterministic readiness within 50 seconds."
           }
 
           $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
           if ($readyJson.version -ne "51.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
           if ($readyJson.edition -ne "advanced-coop-weapons-v51") { throw "Unexpected readiness edition: $($readyJson.edition)" }
-          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "The renderer did not report the 120 Hz simulation." }
-          if ($readyJson.renderer.levels -ne 2) { throw "The renderer did not report both levels." }
-          if ($readyJson.renderer.weapons -lt 6) { throw "The renderer did not report the complete weapon catalog." }
-          if ($readyJson.renderer.controlRoles -ne 3) { throw "The renderer did not report three control roles." }
+          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "The packaged runtime did not report the 120 Hz simulation." }
+          if ($readyJson.renderer.levels -ne 2) { throw "The packaged runtime did not report both levels." }
+          if ($readyJson.renderer.weapons -lt 6) { throw "The packaged runtime did not report the complete weapon catalog." }
+          if ($readyJson.renderer.controlRoles -ne 3) { throw "The packaged runtime did not report three control roles." }
+          if (-not $readyJson.renderer.hasCanvas) { throw "The packaged document did not expose the game canvas." }
+          if (-not $readyJson.renderer.hasSchoolAPI) { throw "The packaged preload bridge was not available." }
+
           Get-Content $ready | Tee-Object -FilePath advanced-coop-v51-startup.log -Append
-          "Packaged Advanced Coop V51 reached registration with Professional V2 assets, two levels, six weapons and three cooperative roles." | Tee-Object -FilePath advanced-coop-v51-startup.log -Append
+          if (Test-Path $runtimeLog) { Get-Content $runtimeLog | Tee-Object -FilePath advanced-coop-v51-startup.log -Append }
+          "Packaged Advanced Coop V51 reached the playable registration document with its preload bridge, Professional V2 assets, two levels, six weapons and three cooperative roles." | Tee-Object -FilePath advanced-coop-v51-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums

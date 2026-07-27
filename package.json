@@ -12,39 +12,22 @@
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
   },
-  "engines": {
-    "node": ">=20"
-  },
-  "devDependencies": {
-    "electron": "43.2.0",
-    "electron-builder": "26.9.1"
-  },
+  "engines": {"node": ">=20"},
+  "devDependencies": {"electron": "43.2.0", "electron-builder": "26.9.1"},
   "build": {
-    "appId": "co.jpanyst.geometrytactical.cleanvision.local",
+    "appId": "co.jpanalyst.geometrytactical.cleanvision.local",
     "productName": "Geometry Tactical Final School Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "normal",
-    "directories": {
-      "output": "dist/final-school-usb-v55-windows",
-      "buildResources": "desktop/assets"
-    },
-    "files": [
-      "package.json",
-      "school-game/**/*"
-    ],
+    "directories": {"output": "dist/final-school-usb-v55-windows", "buildResources": "desktop/assets"},
+    "files": ["package.json", "school-game/**/*"],
     "win": {
       "icon": "desktop/assets/icon.ico",
       "requestedExecutionLevel": "asInvoker",
       "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
+        {"target": "nsis", "arch": ["x64"]},
+        {"target": "portable", "arch": ["x64"]}
       ]
     },
     "nsis": {
@@ -58,8 +41,6 @@
       "uninstallDisplayName": "Geometry Tactical Final School",
       "artifactName": "Geometry-Tactical-Final-School-Setup-${version}-${arch}.${ext}"
     },
-    "portable": {
-      "artifactName": "Geometry-Tactical-Final-School-${version}-Portable-${arch}.${ext}"
-    }
+    "portable": {"artifactName": "Geometry-Tactical-Final-School-${version}-Portable-${arch}.${ext}"}
   }
 }

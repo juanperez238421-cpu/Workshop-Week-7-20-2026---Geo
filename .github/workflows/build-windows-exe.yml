@@ -63,6 +63,19 @@ jobs:
           npm test 2>&1 | Tee-Object -FilePath ratio-thales-v52-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Package generated V52 source for V53 development
+        shell: pwsh
+        run: |
+          Compress-Archive -Path school-game/v52/* -DestinationPath ratio-thales-v52-generated-source.zip -Force
+
+      - name: Upload generated V52 source
+        uses: actions/upload-artifact@v4
+        with:
+          name: ratio-thales-v52-generated-source
+          path: ratio-thales-v52-generated-source.zip
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Build installer and portable EXE
         shell: pwsh
         run: |

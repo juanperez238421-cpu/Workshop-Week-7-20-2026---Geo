@@ -59,6 +59,19 @@ jobs:
           npm test 2>&1 | Tee-Object -FilePath advanced-coop-v51-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+      - name: Package generated source for review
+        shell: pwsh
+        run: |
+          Compress-Archive -Path school-game/v51/* -DestinationPath advanced-coop-v51-generated-source.zip -Force
+
+      - name: Upload generated source
+        uses: actions/upload-artifact@v4
+        with:
+          name: advanced-coop-v51-generated-source
+          path: advanced-coop-v51-generated-source.zip
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Build installer and portable EXE
         shell: pwsh
         run: |

@@ -32,6 +32,7 @@ jobs:
           node scripts/prepare-right-thales-vision-hounds-v53.js
           node scripts/prepare-clean-cones-squad-secure-results-v54.js
           node scripts/prepare-final-school-usb-v55.js
+          node scripts/patch-v55-preview-readiness.js
           node scripts/prepare-persistent-timer-pythagoras-v56.js
       - name: Package generated source
         run: |

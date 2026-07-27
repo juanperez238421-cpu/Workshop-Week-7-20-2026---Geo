@@ -3,13 +3,13 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const target = path.resolve(__dirname, "..", "school-game", "v55", "game.js");
-let source = fs.readFileSync(target, "utf8");
-const needle = `await window.schoolAPI?.markReady?.({
+const gameTarget = path.resolve(__dirname, "..", "school-game", "v55", "game.js");
+let gameSource = fs.readFileSync(gameTarget, "utf8");
+const previewNeedle = `await window.schoolAPI?.markReady?.({
       phase: "question-layout-preview",
       preview,
       questionSeconds: 60,`;
-const replacement = `await window.schoolAPI?.markReady?.({
+const previewReplacement = `await window.schoolAPI?.markReady?.({
       phase: "question-layout-preview",
       preview,
       fixedSimulationHz: 120,
@@ -21,7 +21,16 @@ const replacement = `await window.schoolAPI?.markReady?.({
       questionSeconds: 60,
       questionCanvasWidth: questionCanvas.width,
       questionCanvasHeight: questionCanvas.height,`;
-if (!source.includes(needle)) throw new Error("V55 preview readiness insertion point was not found.");
-source = source.replace(needle, replacement);
-fs.writeFileSync(target, source, "utf8");
-console.log("Patched V55 complete packaged question-preview readiness.");
+if (!gameSource.includes(previewNeedle)) throw new Error("V55 preview readiness insertion point was not found.");
+gameSource = gameSource.replace(previewNeedle, previewReplacement);
+fs.writeFileSync(gameTarget, gameSource, "utf8");
+
+const mainTarget = path.resolve(__dirname, "..", "school-game", "v55", "main.js");
+let mainSource = fs.readFileSync(mainTarget, "utf8");
+const lockNeedle = `const singleInstance = app.requestSingleInstanceLock();`;
+const lockReplacement = `const singleInstance = process.env.V55_ALLOW_SECOND_INSTANCE === "true" || app.requestSingleInstanceLock();`;
+if (!mainSource.includes(lockNeedle)) throw new Error("V55 single-instance insertion point was not found.");
+mainSource = mainSource.replace(lockNeedle, lockReplacement);
+fs.writeFileSync(mainTarget, mainSource, "utf8");
+
+console.log("Patched V55 complete preview readiness and isolated portable CI startup.");

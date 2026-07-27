@@ -1,0 +1,237 @@
+name: Build Room 3 Transparent Glass V57 Windows EXE
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "school-game/v57/**"
+      - "scripts/prepare-room3-glass-ballistics-v57.js"
+      - "scripts/room3-glass-ballistics-v57-static-test.js"
+      - "scripts/**"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-windows-exe.yml"
+  push:
+    branches: [main]
+    paths:
+      - "school-game/v57/**"
+      - "scripts/prepare-room3-glass-ballistics-v57.js"
+      - "scripts/room3-glass-ballistics-v57-static-test.js"
+      - "scripts/**"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-windows-exe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 55
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: npm install --no-audit --no-fund
+
+      - name: Validate V57 source, Room 3 reachability and glass contract
+        shell: pwsh
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath room3-transparent-glass-v57-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build NSIS installer and portable EXE
+        shell: pwsh
+        run: |
+          npm run dist:win 2>&1 | Tee-Object -FilePath room3-transparent-glass-v57-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install and validate Room 3 movement, glass and encrypted vault
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $dist = Resolve-Path "dist/room3-transparent-glass-v57-windows"
+          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-V57-Setup-57.0.0-x64.exe" -File | Select-Object -First 1
+          if (-not $setup) { throw "V57 installer was not found." }
+
+          $installDir = Join-Path $env:RUNNER_TEMP "V57SchoolInstall"
+          Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
+          $installer = Start-Process $setup.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
+          if ($installer.ExitCode -ne 0) { throw "Silent installation failed with code $($installer.ExitCode)." }
+
+          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School V57.exe" -File -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Installed V57 executable was not found." }
+
+          $ready = Join-Path $env:RUNNER_TEMP "v57-installed-ready.json"
+          $runtime = Join-Path $env:RUNNER_TEMP "v57-installed-runtime.log"
+          $vaultFile = Join-Path $env:RUNNER_TEMP "v57-installed-vault.json"
+          Remove-Item $ready,$runtime,$vaultFile -Force -ErrorAction SilentlyContinue
+          $env:V57_READY_FILE = $ready
+          $env:V57_STARTUP_LOG = $runtime
+          $env:V57_SELF_TEST_FILE = $vaultFile
+          $env:V57_TEST_PIN = "9109"
+          $env:V57_ROOM3_PROBE = "true"
+          $env:V57_ALLOW_SECOND_INSTANCE = "true"
+          $env:ELECTRON_ENABLE_LOGGING = "1"
+
+          $process = Start-Process $exe.FullName -PassThru
+          "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object room3-transparent-glass-v57-startup.log
+          $report = $null
+          for ($i = 0; $i -lt 90; $i++) {
+            Start-Sleep 1
+            $process.Refresh()
+            if ($process.HasExited) {
+              if (Test-Path $runtime) { Get-Content $runtime | Tee-Object room3-transparent-glass-v57-startup.log -Append }
+              throw "Installed application exited with code $($process.ExitCode)."
+            }
+            if (Test-Path $ready) {
+              try {
+                $candidate = Get-Content $ready -Raw | ConvertFrom-Json
+                if ($candidate.renderer.phase -eq "room3-glass-probe") { $report = $candidate; break }
+              } catch {}
+            }
+          }
+          if (-not $report) {
+            if (Test-Path $ready) { Copy-Item $ready "room3-transparent-glass-v57-ready-last.json" -Force }
+            if (Test-Path $runtime) { Copy-Item $runtime "room3-transparent-glass-v57-runtime.log" -Force }
+            throw "Installed V57 did not reach the Room 3 glass probe."
+          }
+          if ($report.version -ne "57.0.0" -or $report.edition -ne "room3-transparent-glass-v57") { throw "Installed V57 identity is incorrect." }
+          if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 4) { throw "Installed engine contract failed." }
+          if ($report.renderer.room3SpawnClear -ne $true) { throw "Room 3 spawn still overlaps collision geometry." }
+          if ($report.renderer.room3CanMoveFromSpawn -ne $true) { throw "The player still cannot move away from the Room 3 spawn." }
+          if ($report.renderer.room3ReachabilityTargets -lt 13) { throw "Room 3 reachability audit is incomplete." }
+          if ($report.renderer.room3ReachableTargets -ne $report.renderer.room3ReachabilityTargets) { throw "At least one Room 3 sector is unreachable." }
+          if ($report.renderer.room3WidenedPassages -ne $true) { throw "Room 3 widened passages were not reported." }
+          if ($report.renderer.glassPanelCount -lt 1) { throw "Room 3 glass panel is missing." }
+          if ($report.renderer.glassBlocksMovement -ne $true) { throw "The glass does not block physical movement." }
+          if ($report.renderer.glassAllowsVision -ne $true) { throw "Enemy and player sight does not pass through glass." }
+          if ($report.renderer.glassAllowsProjectiles -ne $true) { throw "Player and enemy bullets do not pass through glass." }
+          if ($report.renderer.thrownWeaponsStopAtGlass -ne $true) { throw "Thrown equipment does not stop at glass." }
+          if ($report.renderer.transparentGlassRendering -ne $true) { throw "Transparent glass rendering was not reported." }
+          if ($report.renderer.questionSeconds -ne 60 -or $report.renderer.fixedMatchSeconds -ne 1200) { throw "The established timing contract changed." }
+          if ($report.renderer.missionTimerRunsDuringQuestions -ne $true -or $report.renderer.pythagorasQuestions -ne $true) { throw "The V56 assessment contract changed." }
+          if ($report.renderer.roomOneScoreCap -ne 2.5 -or $report.renderer.answerRevealDisabled -ne $true) { throw "The V56 scoring or answer-nondisclosure contract changed." }
+          if ($report.renderer.offlineOnly -ne $true -or $report.renderer.schoolPcHardening -ne $true) { throw "Offline school-PC hardening was not reported." }
+          if ($report.renderer.protectedResultsVault -ne $true -or $report.renderer.passwordGate -ne $true) { throw "Protected results controls were not reported." }
+
+          for ($i = 0; $i -lt 30 -and -not (Test-Path $vaultFile); $i++) { Start-Sleep 1 }
+          if (-not (Test-Path $vaultFile)) { throw "Encrypted vault self-test was not created." }
+          $vault = Get-Content $vaultFile -Raw | ConvertFrom-Json
+          if ($vault.ok -ne $true -or $vault.encryptedSave -ne $true -or $vault.wrongPinRejected -ne $true -or $vault.correctPinUnlocked -ne $true) { throw "Encrypted vault security checks failed." }
+          if ($vault.questionRecorded -ne $true -or $vault.scoreRecorded -ne $true -or $vault.consolidatedStudentRows -lt 3) { throw "Student data consolidation checks failed." }
+
+          Get-Content $ready | Tee-Object room3-transparent-glass-v57-startup.log -Append
+          Get-Content $vaultFile | Tee-Object room3-transparent-glass-v57-startup.log -Append
+          if (Test-Path $runtime) { Get-Content $runtime | Tee-Object room3-transparent-glass-v57-startup.log -Append }
+          & taskkill.exe /PID $process.Id /T /F | Out-Null
+          Start-Sleep 3
+
+      - name: Validate portable package structure
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $portable = Get-ChildItem "dist/room3-transparent-glass-v57-windows" -Filter "Geometry-Tactical-Final-School-V57-57.0.0-Portable-x64.exe" -File | Select-Object -First 1
+          if (-not $portable) { throw "Portable V57 executable was not found." }
+          if ($portable.Length -lt 80000000) { throw "Portable executable is unexpectedly small." }
+          $stream = [System.IO.File]::OpenRead($portable.FullName)
+          try { $first = $stream.ReadByte(); $second = $stream.ReadByte() } finally { $stream.Dispose() }
+          if ($first -ne 0x4D -or $second -ne 0x5A) { throw "Portable executable does not have a Windows PE header." }
+          "Portable file validated: $($portable.Name) · $($portable.Length) bytes" | Tee-Object room3-transparent-glass-v57-portable.log
+
+      - name: Create checksums and school USB verification kit
+        shell: pwsh
+        run: |
+          $dist = Resolve-Path "dist/room3-transparent-glass-v57-windows"
+          Remove-Item "$dist/SHA256SUMS.txt" -Force -ErrorAction SilentlyContinue
+          Get-ChildItem $dist -Filter *.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)" | Out-File "$dist/SHA256SUMS.txt" -Append -Encoding ascii
+          }
+
+          @'
+          param([string]$FileName,[switch]$Run)
+          $ErrorActionPreference = "Stop"
+          $root = Split-Path -Parent $MyInvocation.MyCommand.Path
+          $target = Join-Path $root $FileName
+          $line = Get-Content (Join-Path $root "SHA256SUMS.txt") | Where-Object { $_ -match [regex]::Escape($FileName) } | Select-Object -First 1
+          if (-not (Test-Path $target) -or -not $line) { throw "Verification target or checksum is missing." }
+          $expected = ($line -split "\s+")[0].ToLowerInvariant()
+          $actual = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { Write-Host "CHECKSUM FAILED. Do not run this file." -ForegroundColor Red; exit 2 }
+          Write-Host "SHA-256 verified: $FileName" -ForegroundColor Green
+          if ($Run) { Start-Process $target }
+          '@ | Set-Content "$dist/VERIFY_FILE.ps1" -Encoding UTF8
+
+          @'
+          @echo off
+          cd /d "%~dp0"
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V57-Setup-57.0.0-x64.exe" -Run
+          if errorlevel 1 (pause & exit /b 1)
+          '@ | Set-Content "$dist/INSTALL_VERIFIED_FROM_USB.cmd" -Encoding ASCII
+
+          @'
+          @echo off
+          cd /d "%~dp0"
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V57-57.0.0-Portable-x64.exe" -Run
+          if errorlevel 1 (pause & exit /b 1)
+          '@ | Set-Content "$dist/RUN_PORTABLE_VERIFIED.cmd" -Encoding ASCII
+
+          @'
+          GEOMETRY TACTICAL FINAL SCHOOL V57 · OFFLINE USB KIT
+
+          Copy this complete folder from the USB drive to each school PC.
+          Run INSTALL_VERIFIED_FROM_USB.cmd for normal per-user installation.
+          Run RUN_PORTABLE_VERIFIED.cmd to use the game without installation.
+          Both scripts verify SHA-256 before launch.
+
+          Room 3 movement is repaired and every authored Room 3 sector is reachable.
+          Cyan reflective glass blocks players, enemies and thrown equipment, but allows enemy vision and bullets in both directions.
+          Four complete rooms; fixed 20-minute mission; 60 seconds per geometry question.
+          Teacher Results PIN: 9109.
+
+          Student names, answers and scores are encrypted locally with AES-256-GCM and a Windows-protected key.
+          The game is offline and contains no analytics, telemetry, cloud upload, updater or external navigation.
+          This build is not commercially code-signed, so Windows may display Unknown publisher.
+          School IT should verify SHA256SUMS.txt before approval.
+          '@ | Set-Content "$dist/README_SCHOOL_USB.txt" -Encoding UTF8
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: room3-transparent-glass-v57-diagnostics
+          path: |
+            room3-transparent-glass-v57-validation.log
+            room3-transparent-glass-v57-build.log
+            room3-transparent-glass-v57-startup.log
+            room3-transparent-glass-v57-portable.log
+            room3-transparent-glass-v57-runtime.log
+            room3-transparent-glass-v57-ready-last.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload final school USB package
+        uses: actions/upload-artifact@v4
+        with:
+          name: geometry-tactical-room3-transparent-glass-v57-usb-kit
+          path: |
+            dist/room3-transparent-glass-v57-windows/*.exe
+            dist/room3-transparent-glass-v57-windows/SHA256SUMS.txt
+            dist/room3-transparent-glass-v57-windows/VERIFY_FILE.ps1
+            dist/room3-transparent-glass-v57-windows/INSTALL_VERIFIED_FROM_USB.cmd
+            dist/room3-transparent-glass-v57-windows/RUN_PORTABLE_VERIFIED.cmd
+            dist/room3-transparent-glass-v57-windows/README_SCHOOL_USB.txt
+          if-no-files-found: error
+          retention-days: 30

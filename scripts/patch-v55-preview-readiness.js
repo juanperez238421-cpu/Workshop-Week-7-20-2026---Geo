@@ -28,7 +28,7 @@ fs.writeFileSync(gameTarget, gameSource, "utf8");
 const mainTarget = path.resolve(__dirname, "..", "school-game", "v55", "main.js");
 let mainSource = fs.readFileSync(mainTarget, "utf8");
 const lockNeedle = `const singleInstance = app.requestSingleInstanceLock();`;
-const lockReplacement = `const singleInstance = process.env.V55_ALLOW_SECOND_INSTANCE === "true" || app.requestSingleInstanceLock();`;
+const lockReplacement = `const singleInstance = process.env.V55_ALLOW_SECOND_INSTANCE === "true" || (Boolean(process.env.PORTABLE_EXECUTABLE_FILE) && Boolean(process.env.V55_READY_FILE)) || app.requestSingleInstanceLock();`;
 if (!mainSource.includes(lockNeedle)) throw new Error("V55 single-instance insertion point was not found.");
 mainSource = mainSource.replace(lockNeedle, lockReplacement);
 fs.writeFileSync(mainTarget, mainSource, "utf8");

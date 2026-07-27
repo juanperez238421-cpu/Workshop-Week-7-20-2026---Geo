@@ -1,0 +1,33 @@
+name: Export V53 Generated Source
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/export-v53-source.yml"
+      - "scripts/v53-payload/**"
+      - "scripts/prepare-right-thales-vision-hounds-v53.js"
+      - "package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Reconstruct generated source
+        run: node scripts/prepare-right-thales-vision-hounds-v53.js
+      - name: Package V53 source
+        run: zip -r v53-generated-source.zip school-game/v53
+      - name: Upload generated source
+        uses: actions/upload-artifact@v4
+        with:
+          name: v53-generated-source
+          path: v53-generated-source.zip
+          retention-days: 7

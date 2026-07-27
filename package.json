@@ -1,13 +1,13 @@
 {
-  "name": "geometry-tactical-clean-cones-squad-secure-results-local",
-  "version": "54.0.0",
+  "name": "geometry-tactical-final-school-local",
+  "version": "55.0.0",
   "private": true,
-  "description": "School-safe three-student tactical geometry game with clear enemy scan cones, squad alert decisions, reduced ammunition, right-triangle-only Thales problems and password-protected encrypted local student results.",
-  "main": "school-game/v54/main.js",
+  "description": "Final offline school edition of the three-student tactical geometry game with four complete rooms, 60-second right-triangle questions, encrypted PIN-protected local results and hardened Electron packaging.",
+  "main": "school-game/v55/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v54/main.js && node --check school-game/v54/preload.js && node --check school-game/v54/game.js && node scripts/clean-cones-squad-secure-results-v54-static-test.js",
+    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && node scripts/prepare-final-school-usb-v55.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v55/main.js && node --check school-game/v55/preload.js && node --check school-game/v55/game.js && node scripts/final-school-usb-v55-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
@@ -21,11 +21,12 @@
   },
   "build": {
     "appId": "co.jpanalyst.geometrytactical.cleanvision.local",
-    "productName": "Geometry Tactical Clean Vision Local",
+    "productName": "Geometry Tactical Final School Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
+    "compression": "normal",
     "directories": {
-      "output": "dist/clean-cones-squad-secure-results-v54-windows",
+      "output": "dist/final-school-usb-v55-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
@@ -34,9 +35,20 @@
     ],
     "win": {
       "icon": "desktop/assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "nsis": {
@@ -45,11 +57,12 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Clean Vision Local",
-      "uninstallDisplayName": "Geometry Tactical Clean Vision Local"
+      "shortcutName": "Geometry Tactical Final School",
+      "uninstallDisplayName": "Geometry Tactical Final School",
+      "artifactName": "Geometry-Tactical-Final-School-Setup-${version}-${arch}.${ext}"
     },
     "portable": {
-      "artifactName": "Geometry-Tactical-Clean-Vision-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Final-School-${version}-Portable-${arch}.${ext}"
     }
   }
 }

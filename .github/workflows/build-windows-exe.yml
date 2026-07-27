@@ -1,4 +1,4 @@
-name: Build Professional V2 Windows EXE
+name: Build Advanced Coop V51 Windows EXE
 
 on:
   workflow_dispatch:
@@ -6,7 +6,11 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/school-game-static-test.js"
+      - "scripts/advanced-coop-v51-static-test.js"
+      - "scripts/prepare-professional-v50.js"
+      - "scripts/v50-payload/**"
+      - "scripts/prepare-advanced-v51.js"
+      - "scripts/v51-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -15,7 +19,11 @@ on:
     branches: [main]
     paths:
       - "school-game/**"
-      - "scripts/school-game-static-test.js"
+      - "scripts/advanced-coop-v51-static-test.js"
+      - "scripts/prepare-professional-v50.js"
+      - "scripts/v50-payload/**"
+      - "scripts/prepare-advanced-v51.js"
+      - "scripts/v51-payload/**"
       - "scripts/prepare-desktop-assets.js"
       - "desktop/assets/**"
       - "package.json"
@@ -27,7 +35,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 38
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -43,31 +51,31 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate professional V2 game and atlases
+      - name: Validate Advanced Coop V51 game
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath professional-v2-validation.log
+          npm test 2>&1 | Tee-Object -FilePath advanced-coop-v51-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath professional-v2-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath advanced-coop-v51-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Launch packaged professional V2 application smoke test
+      - name: Launch packaged Advanced Coop V51 application
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $exe = Get-ChildItem -Path "dist/professional-v2-windows/win-unpacked" -Filter "Geometry Tactical Professional V2 Local.exe" -File | Select-Object -First 1
-          if (-not $exe) { throw "Packaged Professional V2 executable was not found." }
+          $exe = Get-ChildItem -Path "dist/advanced-coop-v51-windows/win-unpacked" -Filter "Geometry Tactical Advanced Coop Local.exe" -File | Select-Object -First 1
+          if (-not $exe) { throw "Packaged Advanced Coop V51 executable was not found." }
 
-          $ready = Join-Path $env:APPDATA "Geometry Tactical Professional V2 Local\ready.json"
+          $ready = Join-Path $env:APPDATA "Geometry Tactical Advanced Coop Local\ready.json"
           Remove-Item $ready -Force -ErrorAction SilentlyContinue
           $process = Start-Process -FilePath $exe.FullName -PassThru
-          "Started PID=$($process.Id)" | Tee-Object -FilePath professional-v2-startup.log
+          "Started PID=$($process.Id)" | Tee-Object -FilePath advanced-coop-v51-startup.log
 
-          for ($attempt = 0; $attempt -lt 45; $attempt++) {
+          for ($attempt = 0; $attempt -lt 50; $attempt++) {
             Start-Sleep -Seconds 1
             $process.Refresh()
             if ($process.HasExited) { throw "Application exited with code $($process.ExitCode)." }
@@ -76,42 +84,46 @@ jobs:
 
           if (-not (Test-Path $ready)) {
             & taskkill.exe /PID $process.Id /T /F | Out-Null
-            throw "The Professional V2 game did not report atlas and renderer readiness within 45 seconds."
+            throw "Advanced Coop V51 did not report renderer readiness within 50 seconds."
           }
 
           $readyJson = Get-Content $ready -Raw | ConvertFrom-Json
-          if ($readyJson.version -ne "50.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
-          if ($readyJson.edition -ne "professional-v2-assets-v50") { throw "Unexpected readiness edition: $($readyJson.edition)" }
-          Get-Content $ready | Tee-Object -FilePath professional-v2-startup.log -Append
-          "Packaged Professional V2 game reached the registration screen with all dedicated atlases and both level images loaded." | Tee-Object -FilePath professional-v2-startup.log -Append
+          if ($readyJson.version -ne "51.0.0") { throw "Unexpected readiness version: $($readyJson.version)" }
+          if ($readyJson.edition -ne "advanced-coop-weapons-v51") { throw "Unexpected readiness edition: $($readyJson.edition)" }
+          if ($readyJson.renderer.fixedSimulationHz -ne 120) { throw "The renderer did not report the 120 Hz simulation." }
+          if ($readyJson.renderer.levels -ne 2) { throw "The renderer did not report both levels." }
+          if ($readyJson.renderer.weapons -lt 6) { throw "The renderer did not report the complete weapon catalog." }
+          if ($readyJson.renderer.controlRoles -ne 3) { throw "The renderer did not report three control roles." }
+          Get-Content $ready | Tee-Object -FilePath advanced-coop-v51-startup.log -Append
+          "Packaged Advanced Coop V51 reached registration with Professional V2 assets, two levels, six weapons and three cooperative roles." | Tee-Object -FilePath advanced-coop-v51-startup.log -Append
           & taskkill.exe /PID $process.Id /T /F | Out-Null
 
       - name: Create SHA-256 checksums
         shell: pwsh
         run: |
-          Get-ChildItem -Path dist/professional-v2-windows -Filter *.exe | ForEach-Object {
+          Get-ChildItem -Path dist/advanced-coop-v51-windows -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$hash  $($_.Name)" | Out-File -FilePath dist/professional-v2-windows/SHA256SUMS.txt -Append -Encoding utf8
+            "$hash  $($_.Name)" | Out-File -FilePath dist/advanced-coop-v51-windows/SHA256SUMS.txt -Append -Encoding utf8
           }
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: professional-v2-diagnostics
+          name: advanced-coop-v51-diagnostics
           path: |
-            professional-v2-validation.log
-            professional-v2-build.log
-            professional-v2-startup.log
+            advanced-coop-v51-validation.log
+            advanced-coop-v51-build.log
+            advanced-coop-v51-startup.log
           if-no-files-found: warn
           retention-days: 7
 
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-professional-v2-windows
+          name: geometry-tactical-advanced-coop-v51-windows
           path: |
-            dist/professional-v2-windows/*.exe
-            dist/professional-v2-windows/SHA256SUMS.txt
+            dist/advanced-coop-v51-windows/*.exe
+            dist/advanced-coop-v51-windows/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30

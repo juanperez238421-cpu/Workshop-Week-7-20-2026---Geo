@@ -1,6 +1,10 @@
 name: Export V56 Source for V57
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/export-v56-source-for-v57.yml"
   push:
     branches:
       - feature/room3-glass-ballistics-v57

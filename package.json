@@ -1,13 +1,13 @@
 {
-  "name": "geometry-tactical-professional-v2-local",
-  "version": "50.0.0",
+  "name": "geometry-tactical-advanced-coop-local",
+  "version": "51.0.0",
   "private": true,
-  "description": "Professional two-level local pixel-art tactical game using explicit V2 animation atlases, A* enemy navigation, three-person shared controls, three-strike trigonometry checkpoints and automatic local results.",
-  "main": "school-game/main.js",
+  "description": "Advanced school-safe local tactical geometry game with two complex rooms, 120 Hz simulation, coordinated A* enemy squads, six weapon profiles and drops, strict three-student controls, three-strike trigonometry checkpoints and automatic local JSON/CSV results.",
+  "main": "school-game/v51/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-professional-v50.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/main.js && node --check school-game/preload.js && node --check school-game/game.js && node scripts/school-game-static-test.js",
+    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v51/main.js && node --check school-game/v51/preload.js && node --check school-game/v51/game.js && node scripts/advanced-coop-v51-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
@@ -20,12 +20,12 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.professionalv2.local",
-    "productName": "Geometry Tactical Professional V2 Local",
+    "appId": "co.jpanalyst.geometrytactical.advancedcoop.local",
+    "productName": "Geometry Tactical Advanced Coop Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "directories": {
-      "output": "dist/professional-v2-windows",
+      "output": "dist/advanced-coop-v51-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
@@ -35,14 +35,8 @@
     "win": {
       "icon": "desktop/assets/icon.ico",
       "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
       ]
     },
     "nsis": {
@@ -51,11 +45,11 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Professional V2 Local",
-      "uninstallDisplayName": "Geometry Tactical Professional V2 Local"
+      "shortcutName": "Geometry Tactical Advanced Coop Local",
+      "uninstallDisplayName": "Geometry Tactical Advanced Coop Local"
     },
     "portable": {
-      "artifactName": "Geometry-Tactical-Professional-V2-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Advanced-Coop-Local-${version}-Portable-${arch}.${ext}"
     }
   }
 }

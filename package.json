@@ -1,13 +1,13 @@
 {
-  "name": "geometry-tactical-advanced-coop-local",
-  "version": "51.0.0",
+  "name": "geometry-tactical-ratio-thales-local",
+  "version": "52.0.0",
   "private": true,
-  "description": "Advanced school-safe local tactical geometry game with two complex rooms, 120 Hz simulation, coordinated A* enemy squads, six weapon profiles and drops, strict three-student controls, three-strike trigonometry checkpoints and automatic local JSON/CSV results.",
-  "main": "school-game/v51/main.js",
+  "description": "School-safe three-student local tactical geometry game with safe Level 1 deployment, fixed mission settings, live 5.00 scoring, large sine/cosine ratio and Thales proportion checkpoints, 120 Hz simulation, coordinated A* enemies, six weapons and automatic local JSON/CSV results.",
+  "main": "school-game/v52/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v51/main.js && node --check school-game/v51/preload.js && node --check school-game/v51/game.js && node scripts/advanced-coop-v51-static-test.js",
+    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v52/main.js && node --check school-game/v52/preload.js && node --check school-game/v52/game.js && node scripts/ratio-thales-v52-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis portable --x64",
     "dir:win": "npm run prepare && electron-builder --win dir --x64"
@@ -20,12 +20,12 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.advancedcoop.local",
-    "productName": "Geometry Tactical Advanced Coop Local",
+    "appId": "co.jpanalyst.geometrytactical.ratiothales.local",
+    "productName": "Geometry Tactical Ratio Thales Local",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "directories": {
-      "output": "dist/advanced-coop-v51-windows",
+      "output": "dist/ratio-thales-v52-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
@@ -45,11 +45,11 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Advanced Coop Local",
-      "uninstallDisplayName": "Geometry Tactical Advanced Coop Local"
+      "shortcutName": "Geometry Tactical Ratio Thales Local",
+      "uninstallDisplayName": "Geometry Tactical Ratio Thales Local"
     },
     "portable": {
-      "artifactName": "Geometry-Tactical-Advanced-Coop-Local-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Ratio-Thales-Local-${version}-Portable-${arch}.${ext}"
     }
   }
 }

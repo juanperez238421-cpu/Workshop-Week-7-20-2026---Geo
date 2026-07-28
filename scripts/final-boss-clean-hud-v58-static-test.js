@@ -1,5 +1,6 @@
 "use strict";
 
+// Full V58 release gate: source, HUD, assessment fairness and final-boss interaction contracts.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");

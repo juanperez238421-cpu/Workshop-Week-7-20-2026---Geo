@@ -1,6 +1,13 @@
 name: Export prepared V57 source
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/export-v57-source.yml"
+      - "scripts/**"
+      - "school-game/**"
+      - "package.json"
   push:
     branches:
       - feature/final-boss-clean-hud-v58

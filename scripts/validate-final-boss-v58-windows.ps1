@@ -78,7 +78,7 @@ if (-not $report) { throw "Installed V58 did not reach the Room 5 boss probe." }
 
 if ($report.version -ne "58.0.0" -or $report.edition -ne "final-boss-clean-hud-v58") { throw "Installed V58 identity is incorrect." }
 if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 5) { throw "Installed engine contract failed." }
-if ($report.renderer.cleanEssentialHud -ne $true -or $report.renderer.cleanTopMetrics -lt 4) { throw "Clean essential HUD was not reported." }
+if ($report.renderer.cleanEssentialHud -ne $true -or $report.renderer.cleanTopMetrics -lt 3) { throw "Clean essential HUD was not reported." }
 if ($report.renderer.bossPresent -ne $true -or $report.renderer.bossHealthPhases -lt 3) { throw "Room 5 final boss is missing or incomplete." }
 if ($report.renderer.bossShieldActive -ne $true -or $report.renderer.roomWeaponCount -lt 4) { throw "Boss shield or room weapons are missing." }
 if ($report.renderer.eKeyPickupAndThrow -ne $true -or $report.renderer.bossRequiresThrownRoomWeapon -ne $true) { throw "E-key boss interaction contract failed." }

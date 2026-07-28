@@ -59,7 +59,9 @@ jobs:
 
       - name: Install dependencies
         shell: pwsh
-        run: npm install --no-audit --no-fund
+        run: |
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Validate V58 source and assessment contracts
         shell: pwsh
@@ -83,6 +85,7 @@ jobs:
         with:
           name: final-boss-clean-hud-v58-diagnostics
           path: |
+            final-boss-clean-hud-v58-install.log
             final-boss-clean-hud-v58-validation.log
             final-boss-clean-hud-v58-build.log
             final-boss-clean-hud-v58-startup.log

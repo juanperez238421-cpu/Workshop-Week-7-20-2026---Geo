@@ -1,5 +1,6 @@
 "use strict";
 
+// Release gate: this file intentionally changes whenever the complete V58 Windows validation must be retriggered.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");

@@ -29,3 +29,7 @@ This release resolves the classroom-login, weapon-throw, melee-combat and repeat
 - The key is derived with scrypt and the teacher screen remains protected by PIN `9109`.
 - Incorrect PIN attempts are throttled and the vault is replaced atomically.
 - No plaintext student JSON or CSV files are written.
+
+## Portable package
+
+- GitHub Actions validates the real Windows runtime and encrypted vault before publishing the downloadable x64 package.

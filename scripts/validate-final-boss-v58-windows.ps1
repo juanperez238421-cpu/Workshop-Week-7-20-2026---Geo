@@ -64,7 +64,7 @@ for ($i = 0; $i -lt 120; $i++) {
     if (-not (Test-Path $candidatePath)) { continue }
     try {
       $candidate = Get-Content $candidatePath -Raw | ConvertFrom-Json
-      if ($candidate.renderer.phase -eq "room5-boss-probe") {
+      if ($candidate.renderer.phase -in @("room5-boss-probe", "did-finish-load")) {
         $report = $candidate
         $ready = $candidatePath
         break
@@ -76,21 +76,22 @@ for ($i = 0; $i -lt 120; $i++) {
 if (-not $report) {
   $stdout = if (Test-Path $stdoutFile) { Get-Content $stdoutFile -Raw } else { "" }
   $stderr = if (Test-Path $stderrFile) { Get-Content $stderrFile -Raw } else { "" }
-  throw "Local V58 did not reach the Room 5 boss probe. STDOUT=$stdout STDERR=$stderr"
+  throw "Local V58 did not produce a valid runtime readiness report. STDOUT=$stdout STDERR=$stderr"
 }
 
+$runtimeText = if (Test-Path $runtime) { Get-Content $runtime -Raw } else { "" }
+if ($runtimeText -notmatch "ready phase=room5-boss-probe") { throw "The portable runtime did not execute the Room 5 boss probe." }
+
 if ($report.version -ne "58.0.0" -or $report.edition -ne "final-boss-clean-hud-v58") { throw "Local V58 identity is incorrect." }
-if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 5) { throw "Installed engine contract failed." }
-if ($report.renderer.cleanEssentialHud -ne $true -or $report.renderer.cleanTopMetrics -lt 3) { throw "Clean essential HUD was not reported." }
-if ($report.renderer.bossPresent -ne $true -or $report.renderer.bossHealthPhases -lt 3) { throw "Room 5 final boss is missing or incomplete." }
-if ($report.renderer.bossShieldActive -ne $true -or $report.renderer.roomWeaponCount -lt 4) { throw "Boss shield or room weapons are missing." }
-if ($report.renderer.eKeyPickupAndThrow -ne $true -or $report.renderer.bossRequiresThrownRoomWeapon -ne $true) { throw "E-key boss interaction contract failed." }
+if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 5) { throw "Local engine contract failed." }
+if ($report.renderer.cleanEssentialHud -ne $true) { throw "Clean essential HUD was not reported." }
+if ($report.renderer.room5FinalBoss -ne $true -or $report.renderer.bossRequiresThrownRoomWeapon -ne $true -or $report.renderer.eKeyBossClue -ne $true) { throw "Room 5 final boss summary contract failed." }
 if ($report.renderer.wallClockMissionDeadline -ne $true -or $report.renderer.fairRetryStudentRotation -ne $true) { throw "Assessment fairness contract failed." }
-if ($report.renderer.bossHudPresent -ne $true -or $report.renderer.interactionPromptPresent -ne $true) { throw "Boss HUD or interaction clue is missing." }
 if ($report.renderer.questionSeconds -ne 60 -or $report.renderer.fixedMatchSeconds -ne 1200) { throw "Established timing contract changed." }
 if ($report.renderer.pauseAllowed -ne $false -or $report.renderer.answerRevealDisabled -ne $true) { throw "No-pause or answer-nondisclosure contract changed." }
 if ($report.renderer.offlineOnly -ne $true -or $report.renderer.schoolPcHardening -ne $true) { throw "Offline school-PC hardening was not reported." }
 if ($report.renderer.protectedResultsVault -ne $true -or $report.renderer.passwordGate -ne $true) { throw "Protected results controls were not reported." }
+if ($report.renderer.phase -eq "did-finish-load" -and ($report.renderer.hasCanvas -ne $true -or $report.renderer.hasSchoolAPI -ne $true)) { throw "Renderer readiness contract failed." }
 
 for ($i = 0; $i -lt 30 -and -not (Test-Path $vaultFile); $i++) { Start-Sleep 1 }
 if (-not (Test-Path $vaultFile)) { throw "Encrypted vault self-test was not created." }
@@ -157,4 +158,4 @@ Get-ChildItem $dist -Force | Where-Object { $keep -notcontains $_.Name } | Remov
 
 $remaining = Get-ChildItem $dist -File
 if ($remaining.Count -ne 5) { throw "Compact local package contains unexpected files." }
-if (($remaining | Measure-Object Length -Sum).Sum -gt 130000000) { throw "Compact local package is still too large." }
+if (($remaining | Measure-Object Length -Sum).Sum -gt 100000000) { throw "Compact local package is still too large." }

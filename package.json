@@ -2,14 +2,14 @@
   "name": "geometry-tactical-final-boss-clean-hud-local",
   "version": "58.0.0",
   "private": true,
-  "description": "Final offline school edition with clean essential HUD, wall-clock mission timing, fair three-student retry rotation, five tactical rooms, a final boss defeated through E-key room-weapon throws, and encrypted PIN-protected local results.",
+  "description": "Compact local portable school edition with clean essential HUD, wall-clock mission timing, fair three-student retry rotation, five tactical rooms, a final boss defeated through E-key room-weapon throws, and encrypted PIN-protected local results.",
   "main": "school-game/v58/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
     "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && node scripts/prepare-final-school-usb-v55.js && node scripts/patch-v55-preview-readiness.js && node scripts/prepare-persistent-timer-pythagoras-v56.js && node scripts/prepare-room3-glass-ballistics-v57.js && node scripts/prepare-final-boss-v58.js && npm run prepare:icons",
     "test": "npm run prepare && node --check school-game/v58/main.js && node --check school-game/v58/preload.js && node --check school-game/v58/game.js && node scripts/final-boss-clean-hud-v58-static-test.js",
     "start": "npm run prepare && electron .",
-    "dist:win": "npm run prepare && electron-builder --win nsis portable --x64 --publish never",
+    "dist:win": "npm run prepare && electron-builder --win portable --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
   },
   "engines": {
@@ -24,7 +24,8 @@
     "productName": "Geometry Tactical Final School V58",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
-    "compression": "normal",
+    "compression": "maximum",
+    "electronLanguages": ["es", "en-US"],
     "directories": {
       "output": "dist/final-boss-clean-hud-v58-windows",
       "buildResources": "desktop/assets"
@@ -37,23 +38,11 @@
       "icon": "desktop/assets/icon.ico",
       "requestedExecutionLevel": "asInvoker",
       "target": [
-        {"target": "nsis", "arch": ["x64"]},
         {"target": "portable", "arch": ["x64"]}
       ]
     },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "runAfterFinish": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Final School V58",
-      "uninstallDisplayName": "Geometry Tactical Final School V58",
-      "artifactName": "Geometry-Tactical-Final-School-V58-Setup-${version}-${arch}.${ext}"
-    },
     "portable": {
-      "artifactName": "Geometry-Tactical-Final-School-V58-${version}-Portable-${arch}.${ext}"
+      "artifactName": "Geometry-Tactical-Final-School-V58-${version}-Local-x64.${ext}"
     }
   }
 }

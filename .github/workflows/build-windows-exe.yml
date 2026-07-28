@@ -1,39 +1,37 @@
-name: Build Compact V58 Local Windows EXE
+name: Build Geometry Tactical Classroom V59
 
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
-      - "scripts/prepare-final-boss-v58.js"
-      - "scripts/patch-v58-fluid-motion.js"
-      - "scripts/v58-patch/**"
-      - "scripts/final-boss-clean-hud-v58-static-test.js"
-      - "scripts/validate-final-boss-v58-windows.ps1"
+      - "scripts/prepare-classroom-v59.js"
+      - "scripts/v59-source/**"
+      - "scripts/classroom-v59-static-test.js"
+      - "scripts/validate-classroom-v59-windows.ps1"
+      - "school-game/V59_RELEASE.md"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
   push:
     branches:
       - main
-      - feature/final-boss-clean-hud-v58
+      - feature/classroom-v59-login-melee-questions
     paths:
-      - "scripts/prepare-final-boss-v58.js"
-      - "scripts/patch-v58-fluid-motion.js"
-      - "scripts/v58-patch/**"
-      - "scripts/final-boss-clean-hud-v58-static-test.js"
-      - "scripts/validate-final-boss-v58-windows.ps1"
+      - "scripts/prepare-classroom-v59.js"
+      - "scripts/v59-source/**"
+      - "scripts/classroom-v59-static-test.js"
+      - "scripts/validate-classroom-v59-windows.ps1"
+      - "school-game/V59_RELEASE.md"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
 
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
 
 concurrency:
-  group: v58-local-${{ github.ref }}
+  group: classroom-v59-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -46,14 +44,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Report compact validation start
-        if: github.event_name != 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          gh pr comment 45 --body "Compact V58 local Windows validation started in Actions run **${{ github.run_id }}**."
-
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
@@ -62,62 +52,54 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: |
-          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-install.log
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath classroom-v59-install.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate V58 source and assessment contracts
+      - name: Validate classroom V59 source and contracts
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-validation.log
+          npm test 2>&1 | Tee-Object -FilePath classroom-v59-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build compact local portable EXE
+      - name: Build portable Windows application
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath classroom-v59-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate portable runtime and remove duplicate packaging
+      - name: Validate portable runtime and encrypted vault
         shell: pwsh
-        run: ./scripts/validate-final-boss-v58-windows.ps1
+        run: ./scripts/validate-classroom-v59-windows.ps1
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: final-boss-clean-hud-v58-local-diagnostics
+          name: geometry-tactical-v59-diagnostics
           path: |
-            final-boss-clean-hud-v58-install.log
-            final-boss-clean-hud-v58-validation.log
-            final-boss-clean-hud-v58-build.log
-            final-boss-clean-hud-v58-startup.log
-            final-boss-clean-hud-v58-portable.log
-            final-boss-clean-hud-v58-runtime.log
-            final-boss-clean-hud-v58-ready-last.json
-            final-boss-clean-hud-v58-fallback-ready-last.json
-            final-boss-clean-hud-v58-stdout.log
-            final-boss-clean-hud-v58-stderr.log
-            final-boss-clean-hud-v58-validation-error.log
-            final-boss-clean-hud-v58-vault-last.json
-            school-game/v58/game.js
-            school-game/v58/styles.css
-            school-game/v58/index.html
+            classroom-v59-install.log
+            classroom-v59-validation.log
+            classroom-v59-build.log
+            classroom-v59-startup.log
+            classroom-v59-portable.log
+            classroom-v59-ready-last.json
+            classroom-v59-vault-last.json
+            classroom-v59-stdout.log
+            classroom-v59-stderr.log
+            classroom-v59-validation-error.log
+            school-game/v59/game.js
+            school-game/v59/styles.css
+            school-game/v59/index.html
+            school-game/v59/main.js
+            school-game/v59/preload.js
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload compact local package
+      - name: Upload downloadable classroom package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-v58-local-portable
-          path: dist/final-boss-clean-hud-v58-windows/**
+          name: geometry-tactical-v59-classroom-portable
+          path: dist/classroom-v59-windows/**
           if-no-files-found: error
           compression-level: 0
           retention-days: 30
-
-      - name: Report successful compact package
-        if: success() && github.event_name != 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          gh pr comment 45 --body "Compact V58 local package validated in Actions run **${{ github.run_id }}**. Artifact: geometry-tactical-v58-local-portable. The installer, USB kit and unpacked runtime were removed."

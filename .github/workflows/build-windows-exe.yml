@@ -1,30 +1,34 @@
-name: Build Room 3 Transparent Glass V57 Windows EXE
+name: Build Final Boss Clean HUD V58 Windows EXE
 
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
-      - "school-game/v57/**"
-      - "scripts/prepare-room3-glass-ballistics-v57.js"
-      - "scripts/room3-glass-ballistics-v57-static-test.js"
-      - "scripts/**"
+      - "school-game/v58/**"
+      - "scripts/prepare-final-boss-v58.js"
+      - "scripts/v58-source/**"
+      - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature/final-boss-clean-hud-v58
     paths:
-      - "school-game/v57/**"
-      - "scripts/prepare-room3-glass-ballistics-v57.js"
-      - "scripts/room3-glass-ballistics-v57-static-test.js"
-      - "scripts/**"
+      - "school-game/v58/**"
+      - "scripts/prepare-final-boss-v58.js"
+      - "scripts/v58-source/**"
+      - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   build-windows:
@@ -45,84 +49,79 @@ jobs:
         shell: pwsh
         run: npm install --no-audit --no-fund
 
-      - name: Validate V57 source, Room 3 reachability and glass contract
+      - name: Validate V58 source and assessment contracts
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath room3-transparent-glass-v57-validation.log
+          npm test 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build NSIS installer and portable EXE
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath room3-transparent-glass-v57-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Install and validate Room 3 movement, glass and encrypted vault
+      - name: Install and validate clean HUD, final boss and encrypted vault
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $dist = Resolve-Path "dist/room3-transparent-glass-v57-windows"
-          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-V57-Setup-57.0.0-x64.exe" -File | Select-Object -First 1
-          if (-not $setup) { throw "V57 installer was not found." }
+          $dist = Resolve-Path "dist/final-boss-clean-hud-v58-windows"
+          $setup = Get-ChildItem $dist -Filter "Geometry-Tactical-Final-School-V58-Setup-58.0.0-x64.exe" -File | Select-Object -First 1
+          if (-not $setup) { throw "V58 installer was not found." }
 
-          $installDir = Join-Path $env:RUNNER_TEMP "V57SchoolInstall"
+          $installDir = Join-Path $env:RUNNER_TEMP "V58SchoolInstall"
           Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
           $installer = Start-Process $setup.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
           if ($installer.ExitCode -ne 0) { throw "Silent installation failed with code $($installer.ExitCode)." }
 
-          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School V57.exe" -File -Recurse | Select-Object -First 1
-          if (-not $exe) { throw "Installed V57 executable was not found." }
+          $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School V58.exe" -File -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Installed V58 executable was not found." }
 
-          $ready = Join-Path $env:RUNNER_TEMP "v57-installed-ready.json"
-          $runtime = Join-Path $env:RUNNER_TEMP "v57-installed-runtime.log"
-          $vaultFile = Join-Path $env:RUNNER_TEMP "v57-installed-vault.json"
+          $ready = Join-Path $env:RUNNER_TEMP "v58-installed-ready.json"
+          $runtime = Join-Path $env:RUNNER_TEMP "v58-installed-runtime.log"
+          $vaultFile = Join-Path $env:RUNNER_TEMP "v58-installed-vault.json"
           Remove-Item $ready,$runtime,$vaultFile -Force -ErrorAction SilentlyContinue
-          $env:V57_READY_FILE = $ready
-          $env:V57_STARTUP_LOG = $runtime
-          $env:V57_SELF_TEST_FILE = $vaultFile
-          $env:V57_TEST_PIN = "9109"
-          $env:V57_ROOM3_PROBE = "true"
-          $env:V57_ALLOW_SECOND_INSTANCE = "true"
+          $env:V58_READY_FILE = $ready
+          $env:V58_STARTUP_LOG = $runtime
+          $env:V58_SELF_TEST_FILE = $vaultFile
+          $env:V58_TEST_PIN = "9109"
+          $env:V58_BOSS_PROBE = "true"
+          $env:V58_ALLOW_SECOND_INSTANCE = "true"
           $env:ELECTRON_ENABLE_LOGGING = "1"
 
           $process = Start-Process $exe.FullName -PassThru
-          "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object room3-transparent-glass-v57-startup.log
+          "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object final-boss-clean-hud-v58-startup.log
           $report = $null
-          for ($i = 0; $i -lt 90; $i++) {
+          for ($i = 0; $i -lt 100; $i++) {
             Start-Sleep 1
             $process.Refresh()
             if ($process.HasExited) {
-              if (Test-Path $runtime) { Get-Content $runtime | Tee-Object room3-transparent-glass-v57-startup.log -Append }
+              if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-boss-clean-hud-v58-startup.log -Append }
               throw "Installed application exited with code $($process.ExitCode)."
             }
             if (Test-Path $ready) {
               try {
                 $candidate = Get-Content $ready -Raw | ConvertFrom-Json
-                if ($candidate.renderer.phase -eq "room3-glass-probe") { $report = $candidate; break }
+                if ($candidate.renderer.phase -eq "room5-boss-probe") { $report = $candidate; break }
               } catch {}
             }
           }
           if (-not $report) {
-            if (Test-Path $ready) { Copy-Item $ready "room3-transparent-glass-v57-ready-last.json" -Force }
-            if (Test-Path $runtime) { Copy-Item $runtime "room3-transparent-glass-v57-runtime.log" -Force }
-            throw "Installed V57 did not reach the Room 3 glass probe."
+            if (Test-Path $ready) { Copy-Item $ready "final-boss-clean-hud-v58-ready-last.json" -Force }
+            if (Test-Path $runtime) { Copy-Item $runtime "final-boss-clean-hud-v58-runtime.log" -Force }
+            throw "Installed V58 did not reach the Room 5 boss probe."
           }
-          if ($report.version -ne "57.0.0" -or $report.edition -ne "room3-transparent-glass-v57") { throw "Installed V57 identity is incorrect." }
-          if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 4) { throw "Installed engine contract failed." }
-          if ($report.renderer.room3SpawnClear -ne $true) { throw "Room 3 spawn still overlaps collision geometry." }
-          if ($report.renderer.room3CanMoveFromSpawn -ne $true) { throw "The player still cannot move away from the Room 3 spawn." }
-          if ($report.renderer.room3ReachabilityTargets -lt 13) { throw "Room 3 reachability audit is incomplete." }
-          if ($report.renderer.room3ReachableTargets -ne $report.renderer.room3ReachabilityTargets) { throw "At least one Room 3 sector is unreachable." }
-          if ($report.renderer.room3WidenedPassages -ne $true) { throw "Room 3 widened passages were not reported." }
-          if ($report.renderer.glassPanelCount -lt 1) { throw "Room 3 glass panel is missing." }
-          if ($report.renderer.glassBlocksMovement -ne $true) { throw "The glass does not block physical movement." }
-          if ($report.renderer.glassAllowsVision -ne $true) { throw "Enemy and player sight does not pass through glass." }
-          if ($report.renderer.glassAllowsProjectiles -ne $true) { throw "Player and enemy bullets do not pass through glass." }
-          if ($report.renderer.thrownWeaponsStopAtGlass -ne $true) { throw "Thrown equipment does not stop at glass." }
-          if ($report.renderer.transparentGlassRendering -ne $true) { throw "Transparent glass rendering was not reported." }
-          if ($report.renderer.questionSeconds -ne 60 -or $report.renderer.fixedMatchSeconds -ne 1200) { throw "The established timing contract changed." }
-          if ($report.renderer.missionTimerRunsDuringQuestions -ne $true -or $report.renderer.pythagorasQuestions -ne $true) { throw "The V56 assessment contract changed." }
-          if ($report.renderer.roomOneScoreCap -ne 2.5 -or $report.renderer.answerRevealDisabled -ne $true) { throw "The V56 scoring or answer-nondisclosure contract changed." }
+
+          if ($report.version -ne "58.0.0" -or $report.edition -ne "final-boss-clean-hud-v58") { throw "Installed V58 identity is incorrect." }
+          if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 5) { throw "Installed engine contract failed." }
+          if ($report.renderer.cleanEssentialHud -ne $true -or $report.renderer.cleanTopMetrics -lt 4) { throw "Clean essential HUD was not reported." }
+          if ($report.renderer.bossPresent -ne $true -or $report.renderer.bossHealthPhases -lt 3) { throw "Room 5 final boss is missing or incomplete." }
+          if ($report.renderer.bossShieldActive -ne $true -or $report.renderer.roomWeaponCount -lt 4) { throw "Boss shield or room weapons are missing." }
+          if ($report.renderer.eKeyPickupAndThrow -ne $true -or $report.renderer.bossRequiresThrownRoomWeapon -ne $true) { throw "E-key boss interaction contract failed." }
+          if ($report.renderer.wallClockMissionDeadline -ne $true -or $report.renderer.fairRetryStudentRotation -ne $true) { throw "Assessment fairness contract failed." }
+          if ($report.renderer.bossHudPresent -ne $true -or $report.renderer.interactionPromptPresent -ne $true) { throw "Boss HUD or interaction clue is missing." }
+          if ($report.renderer.questionSeconds -ne 60 -or $report.renderer.fixedMatchSeconds -ne 1200) { throw "Established timing contract changed." }
+          if ($report.renderer.pauseAllowed -ne $false -or $report.renderer.answerRevealDisabled -ne $true) { throw "No-pause or answer-nondisclosure contract changed." }
           if ($report.renderer.offlineOnly -ne $true -or $report.renderer.schoolPcHardening -ne $true) { throw "Offline school-PC hardening was not reported." }
           if ($report.renderer.protectedResultsVault -ne $true -or $report.renderer.passwordGate -ne $true) { throw "Protected results controls were not reported." }
 
@@ -132,9 +131,9 @@ jobs:
           if ($vault.ok -ne $true -or $vault.encryptedSave -ne $true -or $vault.wrongPinRejected -ne $true -or $vault.correctPinUnlocked -ne $true) { throw "Encrypted vault security checks failed." }
           if ($vault.questionRecorded -ne $true -or $vault.scoreRecorded -ne $true -or $vault.consolidatedStudentRows -lt 3) { throw "Student data consolidation checks failed." }
 
-          Get-Content $ready | Tee-Object room3-transparent-glass-v57-startup.log -Append
-          Get-Content $vaultFile | Tee-Object room3-transparent-glass-v57-startup.log -Append
-          if (Test-Path $runtime) { Get-Content $runtime | Tee-Object room3-transparent-glass-v57-startup.log -Append }
+          Get-Content $ready | Tee-Object final-boss-clean-hud-v58-startup.log -Append
+          Get-Content $vaultFile | Tee-Object final-boss-clean-hud-v58-startup.log -Append
+          if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-boss-clean-hud-v58-startup.log -Append }
           & taskkill.exe /PID $process.Id /T /F | Out-Null
           Start-Sleep 3
 
@@ -142,18 +141,18 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $portable = Get-ChildItem "dist/room3-transparent-glass-v57-windows" -Filter "Geometry-Tactical-Final-School-V57-57.0.0-Portable-x64.exe" -File | Select-Object -First 1
-          if (-not $portable) { throw "Portable V57 executable was not found." }
+          $portable = Get-ChildItem "dist/final-boss-clean-hud-v58-windows" -Filter "Geometry-Tactical-Final-School-V58-58.0.0-Portable-x64.exe" -File | Select-Object -First 1
+          if (-not $portable) { throw "Portable V58 executable was not found." }
           if ($portable.Length -lt 80000000) { throw "Portable executable is unexpectedly small." }
           $stream = [System.IO.File]::OpenRead($portable.FullName)
           try { $first = $stream.ReadByte(); $second = $stream.ReadByte() } finally { $stream.Dispose() }
           if ($first -ne 0x4D -or $second -ne 0x5A) { throw "Portable executable does not have a Windows PE header." }
-          "Portable file validated: $($portable.Name) · $($portable.Length) bytes" | Tee-Object room3-transparent-glass-v57-portable.log
+          "Portable file validated: $($portable.Name) · $($portable.Length) bytes" | Tee-Object final-boss-clean-hud-v58-portable.log
 
       - name: Create checksums and school USB verification kit
         shell: pwsh
         run: |
-          $dist = Resolve-Path "dist/room3-transparent-glass-v57-windows"
+          $dist = Resolve-Path "dist/final-boss-clean-hud-v58-windows"
           Remove-Item "$dist/SHA256SUMS.txt" -Force -ErrorAction SilentlyContinue
           Get-ChildItem $dist -Filter *.exe | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
@@ -177,28 +176,30 @@ jobs:
           @'
           @echo off
           cd /d "%~dp0"
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V57-Setup-57.0.0-x64.exe" -Run
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V58-Setup-58.0.0-x64.exe" -Run
           if errorlevel 1 (pause & exit /b 1)
           '@ | Set-Content "$dist/INSTALL_VERIFIED_FROM_USB.cmd" -Encoding ASCII
 
           @'
           @echo off
           cd /d "%~dp0"
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V57-57.0.0-Portable-x64.exe" -Run
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_FILE.ps1" -FileName "Geometry-Tactical-Final-School-V58-58.0.0-Portable-x64.exe" -Run
           if errorlevel 1 (pause & exit /b 1)
           '@ | Set-Content "$dist/RUN_PORTABLE_VERIFIED.cmd" -Encoding ASCII
 
           @'
-          GEOMETRY TACTICAL FINAL SCHOOL V57 · OFFLINE USB KIT
+          GEOMETRY TACTICAL FINAL SCHOOL V58 · OFFLINE USB KIT
 
           Copy this complete folder from the USB drive to each school PC.
           Run INSTALL_VERIFIED_FROM_USB.cmd for normal per-user installation.
           Run RUN_PORTABLE_VERIFIED.cmd to use the game without installation.
           Both scripts verify SHA-256 before launch.
 
-          Room 3 movement is repaired and every authored Room 3 sector is reachable.
-          Cyan reflective glass blocks players, enemies and thrown equipment, but allows enemy vision and bullets in both directions.
-          Four complete rooms; fixed 20-minute mission; 60 seconds per geometry question.
+          V58 includes five rooms and a high-contrast clean player HUD showing only essential information.
+          Room 5 is the Final Archive Warden boss encounter.
+          The boss shield ignores bullets. Move near a room weapon and press E to pick it up; aim and press E again to throw it into the shield. When the core opens, fire normally. Repeat for all three phases.
+
+          The mission uses a real wall-clock 20-minute deadline. Geometry questions allow 60 seconds and retries rotate fairly among the three registered students.
           Teacher Results PIN: 9109.
 
           Student names, answers and scores are encrypted locally with AES-256-GCM and a Windows-protected key.
@@ -211,27 +212,28 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: room3-transparent-glass-v57-diagnostics
+          name: final-boss-clean-hud-v58-diagnostics
           path: |
-            room3-transparent-glass-v57-validation.log
-            room3-transparent-glass-v57-build.log
-            room3-transparent-glass-v57-startup.log
-            room3-transparent-glass-v57-portable.log
-            room3-transparent-glass-v57-runtime.log
-            room3-transparent-glass-v57-ready-last.json
+            final-boss-clean-hud-v58-validation.log
+            final-boss-clean-hud-v58-build.log
+            final-boss-clean-hud-v58-startup.log
+            final-boss-clean-hud-v58-portable.log
+            final-boss-clean-hud-v58-runtime.log
+            final-boss-clean-hud-v58-ready-last.json
           if-no-files-found: warn
           retention-days: 14
 
       - name: Upload final school USB package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-room3-transparent-glass-v57-usb-kit
-          path: |
-            dist/room3-transparent-glass-v57-windows/*.exe
-            dist/room3-transparent-glass-v57-windows/SHA256SUMS.txt
-            dist/room3-transparent-glass-v57-windows/VERIFY_FILE.ps1
-            dist/room3-transparent-glass-v57-windows/INSTALL_VERIFIED_FROM_USB.cmd
-            dist/room3-transparent-glass-v57-windows/RUN_PORTABLE_VERIFIED.cmd
-            dist/room3-transparent-glass-v57-windows/README_SCHOOL_USB.txt
+          name: geometry-tactical-final-boss-clean-hud-v58-usb-kit
+          path: dist/final-boss-clean-hud-v58-windows/**
           if-no-files-found: error
           retention-days: 30
+
+      - name: Report successful package
+        if: success() && github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: gh pr comment 45 --body "V58 Windows package validated in Actions run **${{ github.run_id }}**. Artifact: `geometry-tactical-final-boss-clean-hud-v58-usb-kit`."

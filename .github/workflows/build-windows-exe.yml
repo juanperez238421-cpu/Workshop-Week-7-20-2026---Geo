@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "scripts/prepare-final-boss-v58.js"
+      - "scripts/patch-v58-fluid-motion.js"
       - "scripts/v58-patch/**"
       - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "scripts/validate-final-boss-v58-windows.ps1"
@@ -18,6 +19,7 @@ on:
       - feature/final-boss-clean-hud-v58
     paths:
       - "scripts/prepare-final-boss-v58.js"
+      - "scripts/patch-v58-fluid-motion.js"
       - "scripts/v58-patch/**"
       - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "scripts/validate-final-boss-v58-windows.ps1"
@@ -97,6 +99,9 @@ jobs:
             final-boss-clean-hud-v58-stderr.log
             final-boss-clean-hud-v58-validation-error.log
             final-boss-clean-hud-v58-vault-last.json
+            school-game/v58/game.js
+            school-game/v58/styles.css
+            school-game/v58/index.html
           if-no-files-found: warn
           retention-days: 14
 

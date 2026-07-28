@@ -1,4 +1,4 @@
-name: Build Final Boss Clean HUD V58 Windows EXE
+name: Build Compact V58 Local Windows EXE
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: v58-windows-${{ github.ref }}
+  group: v58-local-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -44,13 +44,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Report validation start
+      - name: Report compact validation start
         if: github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh pr comment 45 --body "V58 Windows validation started in Actions run **${{ github.run_id }}**."
+          gh pr comment 45 --body "Compact V58 local Windows validation started in Actions run **${{ github.run_id }}**."
 
       - name: Use Node.js 20
         uses: actions/setup-node@v4
@@ -69,13 +69,13 @@ jobs:
           npm test 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build NSIS installer and portable EXE
+      - name: Build compact local portable EXE
         shell: pwsh
         run: |
           npm run dist:win 2>&1 | Tee-Object -FilePath final-boss-clean-hud-v58-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate installed package and create USB kit
+      - name: Validate portable runtime and remove duplicate packaging
         shell: pwsh
         run: ./scripts/validate-final-boss-v58-windows.ps1
 
@@ -83,7 +83,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: final-boss-clean-hud-v58-diagnostics
+          name: final-boss-clean-hud-v58-local-diagnostics
           path: |
             final-boss-clean-hud-v58-install.log
             final-boss-clean-hud-v58-validation.log
@@ -92,6 +92,7 @@ jobs:
             final-boss-clean-hud-v58-portable.log
             final-boss-clean-hud-v58-runtime.log
             final-boss-clean-hud-v58-ready-last.json
+            final-boss-clean-hud-v58-fallback-ready-last.json
             final-boss-clean-hud-v58-stdout.log
             final-boss-clean-hud-v58-stderr.log
             final-boss-clean-hud-v58-validation-error.log
@@ -99,18 +100,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload final school USB package
+      - name: Upload compact local package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-final-boss-clean-hud-v58-usb-kit
+          name: geometry-tactical-v58-local-portable
           path: dist/final-boss-clean-hud-v58-windows/**
           if-no-files-found: error
+          compression-level: 0
           retention-days: 30
 
-      - name: Report successful package
+      - name: Report successful compact package
         if: success() && github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh pr comment 45 --body "V58 Windows package validated in Actions run **${{ github.run_id }}**. Artifact: geometry-tactical-final-boss-clean-hud-v58-usb-kit."
+          gh pr comment 45 --body "Compact V58 local package validated in Actions run **${{ github.run_id }}**. Artifact: geometry-tactical-v58-local-portable. The installer, USB kit and unpacked runtime were removed."

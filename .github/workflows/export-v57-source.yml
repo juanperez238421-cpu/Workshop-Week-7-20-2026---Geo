@@ -1,13 +1,6 @@
 name: Export prepared V57 source
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/export-v57-source.yml"
-      - "scripts/**"
-      - "school-game/**"
-      - "package.json"
   push:
     branches:
       - feature/final-boss-clean-hud-v58
@@ -19,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   export:
@@ -41,3 +36,8 @@ jobs:
           path: prepared-v57-source.tar.gz
           if-no-files-found: error
           retention-days: 2
+      - name: Report source artifact run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment 45 --body "Prepared V57 source artifact is ready from Actions run **${{ github.run_id }}** on commit \`${{ github.sha }}\`."

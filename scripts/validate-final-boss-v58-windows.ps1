@@ -7,6 +7,36 @@ $setup = Get-ChildItem $dist -Filter $setupName -File | Select-Object -First 1
 if (-not $setup) { throw "V58 installer was not found." }
 
 $installDir = Join-Path $env:RUNNER_TEMP "V58SchoolInstall"
+$ready = Join-Path $env:RUNNER_TEMP "v58-installed-ready.json"
+$runtime = Join-Path $env:RUNNER_TEMP "v58-installed-runtime.log"
+$vaultFile = Join-Path $env:RUNNER_TEMP "v58-installed-vault.json"
+$stdoutFile = Join-Path $env:RUNNER_TEMP "v58-installed-stdout.log"
+$stderrFile = Join-Path $env:RUNNER_TEMP "v58-installed-stderr.log"
+$errorFile = "final-boss-clean-hud-v58-validation-error.log"
+$process = $null
+
+trap {
+  $details = @(
+    "V58 installed runtime validation failed.",
+    "Exception: $($_.Exception.Message)",
+    "Position: $($_.InvocationInfo.PositionMessage)",
+    "Script stack: $($_.ScriptStackTrace)"
+  ) -join "`r`n"
+  $details | Set-Content $errorFile -Encoding UTF8
+  foreach ($pair in @(
+    @($ready, "final-boss-clean-hud-v58-ready-last.json"),
+    @($runtime, "final-boss-clean-hud-v58-runtime.log"),
+    @($stdoutFile, "final-boss-clean-hud-v58-stdout.log"),
+    @($stderrFile, "final-boss-clean-hud-v58-stderr.log"),
+    @($vaultFile, "final-boss-clean-hud-v58-vault-last.json")
+  )) {
+    if (Test-Path $pair[0]) { Copy-Item $pair[0] $pair[1] -Force }
+  }
+  if ($process -and -not $process.HasExited) { & taskkill.exe /PID $process.Id /T /F | Out-Null }
+  Write-Error $details
+  exit 1
+}
+
 Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
 $installer = Start-Process $setup.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
 if ($installer.ExitCode -ne 0) { throw "Silent installation failed with code $($installer.ExitCode)." }
@@ -14,10 +44,7 @@ if ($installer.ExitCode -ne 0) { throw "Silent installation failed with code $($
 $exe = Get-ChildItem $installDir -Filter "Geometry Tactical Final School V58.exe" -File -Recurse | Select-Object -First 1
 if (-not $exe) { throw "Installed V58 executable was not found." }
 
-$ready = Join-Path $env:RUNNER_TEMP "v58-installed-ready.json"
-$runtime = Join-Path $env:RUNNER_TEMP "v58-installed-runtime.log"
-$vaultFile = Join-Path $env:RUNNER_TEMP "v58-installed-vault.json"
-Remove-Item $ready,$runtime,$vaultFile -Force -ErrorAction SilentlyContinue
+Remove-Item $ready,$runtime,$vaultFile,$stdoutFile,$stderrFile -Force -ErrorAction SilentlyContinue
 $env:V58_READY_FILE = $ready
 $env:V58_STARTUP_LOG = $runtime
 $env:V58_SELF_TEST_FILE = $vaultFile
@@ -26,28 +53,28 @@ $env:V58_BOSS_PROBE = "true"
 $env:V58_ALLOW_SECOND_INSTANCE = "true"
 $env:ELECTRON_ENABLE_LOGGING = "1"
 
-$process = Start-Process $exe.FullName -PassThru
+$process = Start-Process $exe.FullName -WorkingDirectory $installDir -ArgumentList @("--disable-gpu") -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile -PassThru
 "Installed PID=$($process.Id) PATH=$($exe.FullName)" | Tee-Object final-boss-clean-hud-v58-startup.log
 $report = $null
+$fallbackReady = Join-Path $env:APPDATA "Geometry Tactical Clean Vision Local\ready-v58.json"
 for ($i = 0; $i -lt 100; $i++) {
   Start-Sleep 1
   $process.Refresh()
   if ($process.HasExited) {
-    if (Test-Path $runtime) { Get-Content $runtime | Tee-Object final-boss-clean-hud-v58-startup.log -Append }
-    throw "Installed application exited with code $($process.ExitCode)."
+    $stdout = if (Test-Path $stdoutFile) { Get-Content $stdoutFile -Raw } else { "" }
+    $stderr = if (Test-Path $stderrFile) { Get-Content $stderrFile -Raw } else { "" }
+    throw "Installed application exited with code $($process.ExitCode). STDOUT=$stdout STDERR=$stderr"
   }
-  if (Test-Path $ready) {
+  foreach ($candidatePath in @($ready, $fallbackReady)) {
+    if (-not (Test-Path $candidatePath)) { continue }
     try {
-      $candidate = Get-Content $ready -Raw | ConvertFrom-Json
-      if ($candidate.renderer.phase -eq "room5-boss-probe") { $report = $candidate; break }
+      $candidate = Get-Content $candidatePath -Raw | ConvertFrom-Json
+      if ($candidate.renderer.phase -eq "room5-boss-probe") { $report = $candidate; $ready = $candidatePath; break }
     } catch {}
   }
+  if ($report) { break }
 }
-if (-not $report) {
-  if (Test-Path $ready) { Copy-Item $ready "final-boss-clean-hud-v58-ready-last.json" -Force }
-  if (Test-Path $runtime) { Copy-Item $runtime "final-boss-clean-hud-v58-runtime.log" -Force }
-  throw "Installed V58 did not reach the Room 5 boss probe."
-}
+if (-not $report) { throw "Installed V58 did not reach the Room 5 boss probe." }
 
 if ($report.version -ne "58.0.0" -or $report.edition -ne "final-boss-clean-hud-v58") { throw "Installed V58 identity is incorrect." }
 if ($report.renderer.fixedSimulationHz -ne 120 -or $report.renderer.levels -ne 5) { throw "Installed engine contract failed." }

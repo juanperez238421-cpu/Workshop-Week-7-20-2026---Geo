@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "scripts/prepare-final-boss-v58.js"
-      - "scripts/v58-source/**"
+      - "scripts/v58-patch/**"
       - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "scripts/validate-final-boss-v58-windows.ps1"
       - "desktop/assets/**"
@@ -18,7 +18,7 @@ on:
       - feature/final-boss-clean-hud-v58
     paths:
       - "scripts/prepare-final-boss-v58.js"
-      - "scripts/v58-source/**"
+      - "scripts/v58-patch/**"
       - "scripts/final-boss-clean-hud-v58-static-test.js"
       - "scripts/validate-final-boss-v58-windows.ps1"
       - "desktop/assets/**"
@@ -92,6 +92,10 @@ jobs:
             final-boss-clean-hud-v58-portable.log
             final-boss-clean-hud-v58-runtime.log
             final-boss-clean-hud-v58-ready-last.json
+            final-boss-clean-hud-v58-stdout.log
+            final-boss-clean-hud-v58-stderr.log
+            final-boss-clean-hud-v58-validation-error.log
+            final-boss-clean-hud-v58-vault-last.json
           if-no-files-found: warn
           retention-days: 14
 

@@ -1,6 +1,5 @@
 "use strict";
 
-// Release gate: this file intentionally changes whenever the complete V58 Windows validation must be retriggered.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -23,6 +22,7 @@ assert.match(game, /const VERSION = "58\.0\.0"/);
 assert.match(game, /const EDITION = "final-boss-clean-hud-v58"/);
 assert.match(main, /const VERSION = "58\.0\.0"/);
 assert.match(main, /const PRODUCT = "Geometry Tactical Final School V58"/);
+assert.match(main, /app\.setName\("Geometry Tactical Clean Vision Local"\)/);
 assert.match(main, /levels: 5/);
 assert.match(game, /name: "LEVEL 5 · FINAL ARCHIVE WARDEN"/);
 assert.match(game, /bossRoom: true/);
@@ -34,6 +34,8 @@ assert.match(game, /SHIELD BROKEN · CORE OPEN · FIRE NOW/);
 assert.match(game, /keys\.has\("KeyE"\)/);
 assert.match(game, /throwEquippedWeapon\(player\)/);
 assert.match(game, /roomWeapon: true/);
+assert.match(game, /roomWeapon: Boolean\(thrown\.roomWeapon\)/);
+assert.match(game, /THE SHIELD REJECTED IT · THROW A ROOM WEAPON/);
 assert.match(html, /FINAL BOSS · E IS THE KEY/);
 assert.match(html, /id="interactionPrompt"/);
 assert.match(html, /id="bossHud"/);

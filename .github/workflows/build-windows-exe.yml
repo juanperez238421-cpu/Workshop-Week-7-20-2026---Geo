@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "scripts/prepare-classroom-v60.js"
+      - "scripts/v60-source/**"
       - "scripts/classroom-v60-static-test.js"
       - "scripts/validate-classroom-v60-windows.ps1"
       - "school-game/V60_RELEASE.md"
@@ -18,6 +19,7 @@ on:
       - feature/classroom-v60-thales-labels-pause
     paths:
       - "scripts/prepare-classroom-v60.js"
+      - "scripts/v60-source/**"
       - "scripts/classroom-v60-static-test.js"
       - "scripts/validate-classroom-v60-windows.ps1"
       - "school-game/V60_RELEASE.md"

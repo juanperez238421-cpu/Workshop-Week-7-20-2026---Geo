@@ -1,28 +1,26 @@
-name: Build Geometry Tactical Classroom V59 Installer
+name: Build Geometry Tactical Classroom V60 Installer
 
 on:
   workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
-      - "scripts/prepare-classroom-v59.js"
-      - "scripts/v59-source/**"
-      - "scripts/classroom-v59-static-test.js"
-      - "scripts/validate-classroom-v59-windows.ps1"
-      - "school-game/V59_RELEASE.md"
+      - "scripts/prepare-classroom-v60.js"
+      - "scripts/classroom-v60-static-test.js"
+      - "scripts/validate-classroom-v60-windows.ps1"
+      - "school-game/V60_RELEASE.md"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
   push:
     branches:
       - main
-      - feature/classroom-v59-login-melee-questions
+      - feature/classroom-v60-thales-labels-pause
     paths:
-      - "scripts/prepare-classroom-v59.js"
-      - "scripts/v59-source/**"
-      - "scripts/classroom-v59-static-test.js"
-      - "scripts/validate-classroom-v59-windows.ps1"
-      - "school-game/V59_RELEASE.md"
+      - "scripts/prepare-classroom-v60.js"
+      - "scripts/classroom-v60-static-test.js"
+      - "scripts/validate-classroom-v60-windows.ps1"
+      - "school-game/V60_RELEASE.md"
       - "desktop/assets/**"
       - "package.json"
       - ".github/workflows/build-windows-exe.yml"
@@ -31,7 +29,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: classroom-v59-installer-${{ github.ref }}
+  group: classroom-v60-installer-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -52,54 +50,54 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: |
-          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath classroom-v59-install.log
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath classroom-v60-install.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate classroom V59 source and contracts
+      - name: Validate classroom V60 source and contracts
         shell: pwsh
         run: |
-          npm test 2>&1 | Tee-Object -FilePath classroom-v59-validation.log
+          npm test 2>&1 | Tee-Object -FilePath classroom-v60-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build full local Windows installer
         shell: pwsh
         run: |
-          npm run dist:win 2>&1 | Tee-Object -FilePath classroom-v59-build.log
+          npm run dist:win 2>&1 | Tee-Object -FilePath classroom-v60-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Install, launch and validate encrypted runtime
         shell: pwsh
-        run: ./scripts/validate-classroom-v59-windows.ps1
+        run: ./scripts/validate-classroom-v60-windows.ps1
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-v59-installer-diagnostics
+          name: geometry-tactical-v60-installer-diagnostics
           path: |
-            classroom-v59-install.log
-            classroom-v59-validation.log
-            classroom-v59-build.log
-            classroom-v59-startup.log
-            classroom-v59-installer.log
-            classroom-v59-ready-last.json
-            classroom-v59-vault-last.json
-            classroom-v59-stdout.log
-            classroom-v59-stderr.log
-            classroom-v59-validation-error.log
-            school-game/v59/game.js
-            school-game/v59/styles.css
-            school-game/v59/index.html
-            school-game/v59/main.js
-            school-game/v59/preload.js
+            classroom-v60-install.log
+            classroom-v60-validation.log
+            classroom-v60-build.log
+            classroom-v60-startup.log
+            classroom-v60-installer.log
+            classroom-v60-ready-last.json
+            classroom-v60-vault-last.json
+            classroom-v60-stdout.log
+            classroom-v60-stderr.log
+            classroom-v60-validation-error.log
+            school-game/v60/game.js
+            school-game/v60/styles.css
+            school-game/v60/index.html
+            school-game/v60/main.js
+            school-game/v60/preload.js
           if-no-files-found: warn
           retention-days: 14
 
       - name: Upload downloadable full installer package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-v59-full-local-installer
-          path: dist/classroom-v59-windows/**
+          name: geometry-tactical-v60-full-local-installer
+          path: dist/classroom-v60-windows/**
           if-no-files-found: error
           compression-level: 0
           retention-days: 30

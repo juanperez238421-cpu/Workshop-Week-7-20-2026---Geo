@@ -30,6 +30,12 @@ This release resolves the classroom-login, weapon-throw, melee-combat and repeat
 - Incorrect PIN attempts are throttled and the vault is replaced atomically.
 - No plaintext student JSON or CSV files are written.
 
-## Portable package
+## Full local Windows installer
 
-- GitHub Actions validates the real Windows runtime and encrypted vault before publishing the downloadable x64 package.
+- V59 is built as an assisted NSIS x64 installer rather than only as a portable package.
+- Installation is per Windows user and does not require a machine-wide deployment.
+- The student or teacher may select the installation directory.
+- Desktop and Start Menu shortcuts are created.
+- Windows Settings > Apps includes an uninstall entry.
+- Uninstalling the game preserves the encrypted classroom-result vault.
+- GitHub Actions silently installs the generated setup, launches the installed application, validates the renderer and encrypted-vault contracts, uninstalls the test copy and publishes only the compact installer package.

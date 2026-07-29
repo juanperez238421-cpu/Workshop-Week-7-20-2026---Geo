@@ -1,4 +1,4 @@
-name: Build Geometry Tactical Classroom V59
+name: Build Geometry Tactical Classroom V59 Installer
 
 on:
   workflow_dispatch:
@@ -31,13 +31,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: classroom-v59-${{ github.ref }}
+  group: classroom-v59-installer-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-windows:
+  build-windows-installer:
     runs-on: windows-latest
-    timeout-minutes: 55
+    timeout-minutes: 60
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
@@ -61,13 +61,13 @@ jobs:
           npm test 2>&1 | Tee-Object -FilePath classroom-v59-validation.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Build portable Windows application
+      - name: Build full local Windows installer
         shell: pwsh
         run: |
           npm run dist:win 2>&1 | Tee-Object -FilePath classroom-v59-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate portable runtime and encrypted vault
+      - name: Install, launch and validate encrypted runtime
         shell: pwsh
         run: ./scripts/validate-classroom-v59-windows.ps1
 
@@ -75,13 +75,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-v59-diagnostics
+          name: geometry-tactical-v59-installer-diagnostics
           path: |
             classroom-v59-install.log
             classroom-v59-validation.log
             classroom-v59-build.log
             classroom-v59-startup.log
-            classroom-v59-portable.log
+            classroom-v59-installer.log
             classroom-v59-ready-last.json
             classroom-v59-vault-last.json
             classroom-v59-stdout.log
@@ -95,10 +95,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Upload downloadable classroom package
+      - name: Upload downloadable full installer package
         uses: actions/upload-artifact@v4
         with:
-          name: geometry-tactical-v59-classroom-portable
+          name: geometry-tactical-v59-full-local-installer
           path: dist/classroom-v59-windows/**
           if-no-files-found: error
           compression-level: 0

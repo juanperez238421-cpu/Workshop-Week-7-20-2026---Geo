@@ -1,15 +1,16 @@
 $ErrorActionPreference = "Stop"
 
 $dist = Resolve-Path "dist/classroom-v59-windows"
-$portableName = "Geometry-Tactical-Classroom-V59-59.0.0-Local-x64.exe"
-$portable = Get-ChildItem $dist -Filter $portableName -File | Select-Object -First 1
-if (-not $portable) { throw "Classroom V59 portable executable was not found." }
-if ($portable.Length -lt 70000000) { throw "Classroom V59 executable is unexpectedly small." }
+$installerName = "Geometry-Tactical-Classroom-V59-Setup-59.0.0-Local-x64.exe"
+$installer = Get-ChildItem $dist -Filter $installerName -File | Select-Object -First 1
+if (-not $installer) { throw "Classroom V59 Windows installer was not found." }
+if ($installer.Length -lt 70000000) { throw "Classroom V59 installer is unexpectedly small." }
 
-$stream = [System.IO.File]::OpenRead($portable.FullName)
+$stream = [System.IO.File]::OpenRead($installer.FullName)
 try { $first = $stream.ReadByte(); $second = $stream.ReadByte() } finally { $stream.Dispose() }
-if ($first -ne 0x4D -or $second -ne 0x5A) { throw "The package does not have a Windows PE header." }
+if ($first -ne 0x4D -or $second -ne 0x5A) { throw "The installer does not have a Windows PE header." }
 
+$installDir = Join-Path $env:RUNNER_TEMP "GeometryTacticalClassroomV59"
 $ready = Join-Path $env:RUNNER_TEMP "v59-classroom-ready.json"
 $vaultFile = Join-Path $env:RUNNER_TEMP "v59-classroom-vault-self-test.json"
 $stdoutFile = Join-Path $env:RUNNER_TEMP "v59-classroom-stdout.log"
@@ -19,7 +20,7 @@ $process = $null
 
 trap {
   $details = @(
-    "Classroom V59 portable runtime validation failed.",
+    "Classroom V59 installed-runtime validation failed.",
     "Exception: $($_.Exception.Message)",
     "Position: $($_.InvocationInfo.PositionMessage)",
     "Script stack: $($_.ScriptStackTrace)"
@@ -41,15 +42,32 @@ trap {
   exit 1
 }
 
+Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item $ready,$vaultFile,$stdoutFile,$stderrFile -Force -ErrorAction SilentlyContinue
+
+$installProcess = Start-Process -FilePath $installer.FullName -ArgumentList @("/S", "/D=$installDir") -Wait -PassThru
+if ($installProcess.ExitCode -ne 0) { throw "Silent installer returned exit code $($installProcess.ExitCode)." }
+if (-not (Test-Path $installDir)) { throw "The installer did not create the requested local installation directory." }
+
+$installedExe = Get-ChildItem $installDir -Filter "*.exe" -File -Recurse |
+  Where-Object { $_.Name -notmatch "(?i)uninstall" } |
+  Sort-Object Length -Descending |
+  Select-Object -First 1
+if (-not $installedExe) { throw "The installed Geometry Tactical V59 executable was not found." }
+if ($installedExe.Length -lt 100000000) { throw "The installed application payload is unexpectedly small." }
+
+$installedStream = [System.IO.File]::OpenRead($installedExe.FullName)
+try { $installedFirst = $installedStream.ReadByte(); $installedSecond = $installedStream.ReadByte() } finally { $installedStream.Dispose() }
+if ($installedFirst -ne 0x4D -or $installedSecond -ne 0x5A) { throw "The installed application does not have a Windows PE header." }
+
 $env:V59_READY_FILE = $ready
 $env:V59_SELF_TEST_FILE = $vaultFile
 $env:V59_TEACHER_PIN = "9109"
 $env:V59_ALLOW_SECOND_INSTANCE = "true"
 $env:ELECTRON_ENABLE_LOGGING = "1"
 
-$process = Start-Process $portable.FullName -WorkingDirectory $dist -ArgumentList @("--disable-gpu") -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile -PassThru
-"Classroom V59 PID=$($process.Id) PATH=$($portable.FullName) SIZE=$($portable.Length)" | Tee-Object classroom-v59-startup.log
+$process = Start-Process $installedExe.FullName -WorkingDirectory $installedExe.DirectoryName -ArgumentList @("--disable-gpu") -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile -PassThru
+"Classroom V59 installed PID=$($process.Id) PATH=$($installedExe.FullName) SIZE=$($installedExe.Length)" | Tee-Object classroom-v59-startup.log
 
 $report = $null
 for ($i = 0; $i -lt 120; $i++) {
@@ -64,7 +82,7 @@ for ($i = 0; $i -lt 120; $i++) {
 if (-not $report) {
   $stdout = if (Test-Path $stdoutFile) { Get-Content $stdoutFile -Raw } else { "" }
   $stderr = if (Test-Path $stderrFile) { Get-Content $stderrFile -Raw } else { "" }
-  throw "Classroom V59 did not produce a renderer-bootstrap readiness report. STDOUT=$stdout STDERR=$stderr"
+  throw "Installed V59 did not produce a renderer-bootstrap readiness report. STDOUT=$stdout STDERR=$stderr"
 }
 
 if ($report.version -ne "59.0.0" -or $report.edition -ne "classroom-login-melee-question-bank-v59") { throw "Classroom V59 identity is incorrect." }
@@ -94,39 +112,50 @@ Get-Process -ErrorAction SilentlyContinue | Where-Object {
 } | Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep 3
 
-$hash = (Get-FileHash $portable.FullName -Algorithm SHA256).Hash.ToLower()
-"$hash  $portableName" | Set-Content "$dist/SHA256SUMS.txt" -Encoding ascii
-"Classroom V59 validated: $portableName · $($portable.Length) bytes · SHA256 $hash" | Tee-Object classroom-v59-portable.log
+$uninstaller = Get-ChildItem $installDir -Filter "*Uninstall*.exe" -File -Recurse | Select-Object -First 1
+if ($uninstaller) {
+  $uninstallProcess = Start-Process -FilePath $uninstaller.FullName -ArgumentList @("/S") -Wait -PassThru
+  if ($uninstallProcess.ExitCode -ne 0) { throw "Silent uninstaller returned exit code $($uninstallProcess.ExitCode)." }
+}
+
+$hash = (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower()
+"$hash  $installerName" | Set-Content "$dist/SHA256SUMS.txt" -Encoding ascii
+"Classroom V59 installer validated: $installerName · $($installer.Length) bytes · SHA256 $hash" | Tee-Object classroom-v59-installer.log
 
 @'
-param([switch]$Run)
+param([switch]$Install)
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$fileName = "Geometry-Tactical-Classroom-V59-59.0.0-Local-x64.exe"
+$fileName = "Geometry-Tactical-Classroom-V59-Setup-59.0.0-Local-x64.exe"
 $target = Join-Path $root $fileName
 $line = Get-Content (Join-Path $root "SHA256SUMS.txt") | Select-Object -First 1
-if (-not (Test-Path $target) -or -not $line) { throw "Local executable or checksum is missing." }
+if (-not (Test-Path $target) -or -not $line) { throw "Installer or checksum is missing." }
 $expected = ($line -split "\s+")[0].ToLowerInvariant()
 $actual = (Get-FileHash $target -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($actual -ne $expected) { Write-Host "CHECKSUM FAILED. Do not run this file." -ForegroundColor Red; exit 2 }
+if ($actual -ne $expected) { Write-Host "CHECKSUM FAILED. Do not install this file." -ForegroundColor Red; exit 2 }
 Write-Host "SHA-256 verified: $fileName" -ForegroundColor Green
-if ($Run) { Start-Process $target }
-'@ | Set-Content "$dist/VERIFY_LOCAL.ps1" -Encoding UTF8
+if ($Install) { Start-Process $target }
+'@ | Set-Content "$dist/VERIFY_INSTALLER.ps1" -Encoding UTF8
 
 @'
 @echo off
 cd /d "%~dp0"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_LOCAL.ps1" -Run
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0VERIFY_INSTALLER.ps1" -Install
 if errorlevel 1 (pause & exit /b 1)
-'@ | Set-Content "$dist/RUN_LOCAL_VERIFIED.cmd" -Encoding ASCII
+'@ | Set-Content "$dist/INSTALL_VERIFIED.cmd" -Encoding ASCII
 
 @'
-GEOMETRY TACTICAL CLASSROOM V59 · PORTABLE LOCAL VERSION
+GEOMETRY TACTICAL CLASSROOM V59 · FULL LOCAL WINDOWS INSTALLER
 
-Recommended start:
-1. Extract the ZIP completely.
-2. Run RUN_LOCAL_VERIFIED.cmd to verify SHA-256 and start the game.
-3. You may also open Geometry-Tactical-Classroom-V59-59.0.0-Local-x64.exe directly.
+Recommended installation:
+1. Extract this ZIP completely.
+2. Run INSTALL_VERIFIED.cmd.
+3. The script verifies SHA-256 and then opens the standard Windows installer.
+4. Choose the installation folder and finish the wizard.
+5. A desktop shortcut and Start Menu shortcut are created.
+
+The uninstaller is available in Windows Settings > Apps and inside the installation folder.
+Uninstalling the application does not delete the encrypted classroom-result vault.
 
 Registration:
 - Enter three different full names. Spaces are supported.
@@ -139,22 +168,22 @@ Controls:
 - After E throws a weapon, it leaves the player's hand. Fight unarmed or recover a weapon.
 
 Assessment:
-- All generated figures are right triangles.
+- Every generated figure is a right triangle with a visible 90-degree marker.
 - Values, orientations and missing sides vary procedurally.
-- A recent-question memory reduces repeated patterns.
+- Recent-question memory reduces repeated questions and answer-position patterns.
 - Mission time: 20 real minutes. Question time: 60 seconds.
 
 Protected records:
-- Names, answers and scores are encrypted locally with AES-256-GCM.
+- Names, selected answers, correct answers and scores are encrypted locally with AES-256-GCM.
 - Teacher Results PIN: 9109.
 - No plaintext JSON or CSV student report is created.
 - The application is offline and contains no analytics, telemetry, updater or external navigation.
 
 This build is not commercially code-signed, so Windows may display Unknown publisher.
-'@ | Set-Content "$dist/README_LOCAL.txt" -Encoding UTF8
+'@ | Set-Content "$dist/README_INSTALLER.txt" -Encoding UTF8
 
-$keep = @($portableName, "SHA256SUMS.txt", "VERIFY_LOCAL.ps1", "RUN_LOCAL_VERIFIED.cmd", "README_LOCAL.txt")
+$keep = @($installerName, "SHA256SUMS.txt", "VERIFY_INSTALLER.ps1", "INSTALL_VERIFIED.cmd", "README_INSTALLER.txt")
 Get-ChildItem $dist -Force | Where-Object { $keep -notcontains $_.Name } | Remove-Item -Recurse -Force
 $remaining = Get-ChildItem $dist -File
-if ($remaining.Count -ne 5) { throw "Classroom V59 package contains unexpected files." }
-if (($remaining | Measure-Object Length -Sum).Sum -gt 110000000) { throw "Classroom V59 package is unexpectedly large." }
+if ($remaining.Count -ne 5) { throw "Classroom V59 installer package contains unexpected files." }
+if (($remaining | Measure-Object Length -Sum).Sum -gt 135000000) { throw "Classroom V59 installer package is unexpectedly large." }

@@ -1,13 +1,13 @@
 {
-  "name": "geometry-tactical-classroom-v59",
-  "version": "59.0.0",
+  "name": "geometry-tactical-classroom-v60",
+  "version": "60.0.0",
   "private": true,
-  "description": "Offline classroom Windows installer with full-name login, eighth-grade group selection, finite weapon throws, player melee combat, humanoid melee enemies, procedural right-triangle questions, and encrypted PIN-protected local results.",
-  "main": "school-game/v59/main.js",
+  "description": "Offline classroom Windows installer with improved Thales labels, a 30-minute mission, three controlled 30-second pauses, full-name login, eighth-grade group selection, finite weapon throws, melee combat, procedural right-triangle questions, and encrypted PIN-protected local results.",
+  "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && node scripts/prepare-final-school-usb-v55.js && node scripts/patch-v55-preview-readiness.js && node scripts/prepare-persistent-timer-pythagoras-v56.js && node scripts/prepare-room3-glass-ballistics-v57.js && node scripts/prepare-final-boss-v58.js && node scripts/patch-v58-fluid-motion.js && node scripts/prepare-classroom-v59.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v59/main.js && node --check school-game/v59/preload.js && node --check school-game/v59/game.js && node scripts/classroom-v59-static-test.js",
+    "prepare": "node scripts/prepare-classroom-v60.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/classroom-v60-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
@@ -20,19 +20,20 @@
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.classroom.v59",
-    "productName": "Geometry Tactical Classroom V59",
+    "appId": "co.jpanalyst.geometrytactical.classroom.v60",
+    "productName": "Geometry Tactical Classroom V60",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "maximum",
     "electronLanguages": ["es", "en-US"],
     "directories": {
-      "output": "dist/classroom-v59-windows",
+      "output": "dist/classroom-v60-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
       "package.json",
-      "school-game/**/*"
+      "school-game/v60/**/*",
+      "school-game/assets/**/*"
     ],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -42,14 +43,14 @@
       ]
     },
     "nsis": {
-      "artifactName": "Geometry-Tactical-Classroom-V59-Setup-${version}-Local-x64.${ext}",
+      "artifactName": "Geometry-Tactical-Classroom-V60-Setup-${version}-Local-x64.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Classroom V59",
+      "shortcutName": "Geometry Tactical Classroom V60",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "displayLanguageSelector": false

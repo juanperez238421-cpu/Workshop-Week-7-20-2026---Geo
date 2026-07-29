@@ -32,3 +32,5 @@ V60 preserves the complete V59 classroom game and focuses on two teacher-request
 - full per-user Windows x64 installer with shortcuts and uninstall entry.
 
 V60 can read the existing encrypted V59 vault and migrates those reports into the V60 vault on the next protected save.
+
+Validation target: full installed Windows x64 runtime, encrypted-vault self-test and compact installer artifact.

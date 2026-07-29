@@ -2,14 +2,14 @@
   "name": "geometry-tactical-classroom-v59",
   "version": "59.0.0",
   "private": true,
-  "description": "Portable offline classroom release with full-name login, eighth-grade group selection, finite weapon throws, player melee combat, humanoid melee enemies, procedural right-triangle questions, and encrypted PIN-protected results.",
+  "description": "Offline classroom Windows installer with full-name login, eighth-grade group selection, finite weapon throws, player melee combat, humanoid melee enemies, procedural right-triangle questions, and encrypted PIN-protected local results.",
   "main": "school-game/v59/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
     "prepare": "node scripts/prepare-professional-v50.js && node scripts/prepare-advanced-v51.js && node scripts/patch-advanced-v51-readiness.js && node scripts/prepare-ratio-thales-v52.js && node scripts/prepare-right-thales-vision-hounds-v53.js && node scripts/prepare-clean-cones-squad-secure-results-v54.js && node scripts/prepare-final-school-usb-v55.js && node scripts/patch-v55-preview-readiness.js && node scripts/prepare-persistent-timer-pythagoras-v56.js && node scripts/prepare-room3-glass-ballistics-v57.js && node scripts/prepare-final-boss-v58.js && node scripts/patch-v58-fluid-motion.js && node scripts/prepare-classroom-v59.js && npm run prepare:icons",
     "test": "npm run prepare && node --check school-game/v59/main.js && node --check school-game/v59/preload.js && node --check school-game/v59/game.js && node scripts/classroom-v59-static-test.js",
     "start": "npm run prepare && electron .",
-    "dist:win": "npm run prepare && electron-builder --win portable --x64 --publish never",
+    "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
   },
   "engines": {
@@ -38,11 +38,21 @@
       "icon": "desktop/assets/icon.ico",
       "requestedExecutionLevel": "asInvoker",
       "target": [
-        {"target": "portable", "arch": ["x64"]}
+        {"target": "nsis", "arch": ["x64"]}
       ]
     },
-    "portable": {
-      "artifactName": "Geometry-Tactical-Classroom-V59-${version}-Local-x64.${ext}"
+    "nsis": {
+      "artifactName": "Geometry-Tactical-Classroom-V59-Setup-${version}-Local-x64.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Geometry Tactical Classroom V59",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "displayLanguageSelector": false
     }
   }
 }

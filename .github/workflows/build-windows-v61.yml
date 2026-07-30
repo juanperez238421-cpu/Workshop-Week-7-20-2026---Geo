@@ -1,0 +1,107 @@
+name: Build Geometry Tactical Classroom V61 Installer
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/prepare-classroom-v61.js"
+      - "scripts/v61-source/**"
+      - "scripts/classroom-v61-static-test.js"
+      - "scripts/classroom-v61-layout-audit.js"
+      - "scripts/validate-classroom-v61-windows.ps1"
+      - "school-game/V61_RELEASE.md"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-windows-v61.yml"
+  push:
+    branches:
+      - main
+      - feature/classroom-v61-triangle-line-separation
+    paths:
+      - "scripts/prepare-classroom-v61.js"
+      - "scripts/v61-source/**"
+      - "scripts/classroom-v61-static-test.js"
+      - "scripts/classroom-v61-layout-audit.js"
+      - "scripts/validate-classroom-v61-windows.ps1"
+      - "school-game/V61_RELEASE.md"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-windows-v61.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: classroom-v61-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath classroom-v61-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate V61 source, gameplay contracts and 112-case layout audit
+        shell: pwsh
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath classroom-v61-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build full local Windows installer
+        shell: pwsh
+        run: |
+          npm run dist:win 2>&1 | Tee-Object -FilePath classroom-v61-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install, launch and validate encrypted runtime
+        shell: pwsh
+        run: ./scripts/validate-classroom-v61-windows.ps1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geometry-tactical-v61-installer-diagnostics
+          path: |
+            classroom-v61-install.log
+            classroom-v61-validation.log
+            classroom-v61-build.log
+            classroom-v61-startup.log
+            classroom-v61-installer.log
+            classroom-v61-ready-last.json
+            classroom-v61-vault-last.json
+            classroom-v61-stdout.log
+            classroom-v61-stderr.log
+            classroom-v61-validation-error.log
+            school-game/v61/game.js
+            school-game/v61/styles.css
+            school-game/v61/index.html
+            school-game/v61/main.js
+            school-game/v61/preload.js
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload downloadable full installer package
+        uses: actions/upload-artifact@v4
+        with:
+          name: geometry-tactical-v61-full-local-installer
+          path: dist/classroom-v61-windows/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

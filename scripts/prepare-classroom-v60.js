@@ -11,10 +11,20 @@ const requiredFiles = ["game.js", "index.html", "styles.css", "main.js", "preloa
 
 if (!fs.existsSync(partsDir)) throw new Error("V60 source payload directory is missing.");
 
-const partNames = fs.readdirSync(partsDir)
-  .filter((name) => /^part-\d+\.txt$/.test(name))
+const prefixNames = fs.readdirSync(partsDir)
+  .filter((name) => /^verified-\d{3}\.txt$/.test(name))
   .sort();
-if (partNames.length < 1) throw new Error("V60 source payload parts are missing.");
+const suffixNames = fs.readdirSync(partsDir)
+  .filter((name) => /^part-00[1-4]\.txt$/.test(name))
+  .sort();
+const partNames = [...prefixNames, ...suffixNames];
+
+if (prefixNames.length !== 18) {
+  throw new Error(`Expected 18 verified V60 prefix chunks, found ${prefixNames.length}.`);
+}
+if (suffixNames.length !== 4) {
+  throw new Error(`Expected 4 V60 suffix payload parts, found ${suffixNames.length}.`);
+}
 
 const encoded = partNames
   .map((name) => fs.readFileSync(path.join(partsDir, name), "utf8").trim())
@@ -41,4 +51,4 @@ for (const fileName of requiredFiles) {
   fs.writeFileSync(path.join(target, fileName), manifest[fileName], "utf8");
 }
 
-console.log(`Prepared Geometry Tactical Classroom V60 from ${partNames.length} validated source payload parts.`);
+console.log(`Prepared Geometry Tactical Classroom V60 from ${partNames.length} verified source payload chunks.`);

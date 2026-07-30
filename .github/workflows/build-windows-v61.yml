@@ -3,7 +3,7 @@ name: Build Geometry Tactical Classroom V61 Installer
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [main, feature/classroom-v60-thales-labels-pause]
     paths:
       - "scripts/prepare-classroom-v61.js"
       - "scripts/v61-source/**"
@@ -114,7 +114,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh pr comment 48 --body "V61 full local installer validated successfully in Actions run **${{ github.run_id }}**. Artifact: `geometry-tactical-v61-full-local-installer`."
+          gh pr comment 49 --body "V61 full local installer validated successfully in Actions run **${{ github.run_id }}**. Artifact: `geometry-tactical-v61-full-local-installer`."
 
       - name: Report failed V61 validation
         if: failure()
@@ -122,4 +122,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh pr comment 48 --body "V61 installer validation failed in Actions run **${{ github.run_id }}**. Review artifact: `geometry-tactical-v61-installer-diagnostics`."
+          gh pr comment 49 --body "V61 installer validation failed in Actions run **${{ github.run_id }}**. Review artifact: `geometry-tactical-v61-installer-diagnostics`."

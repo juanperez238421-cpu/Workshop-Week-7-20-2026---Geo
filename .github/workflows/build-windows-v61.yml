@@ -31,6 +31,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: classroom-v61-installer-${{ github.ref }}
@@ -105,3 +107,19 @@ jobs:
           if-no-files-found: error
           compression-level: 0
           retention-days: 30
+
+      - name: Report successful V61 installer
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh pr comment 48 --body "V61 full local installer validated successfully in Actions run **${{ github.run_id }}**. Artifact: `geometry-tactical-v61-full-local-installer`."
+
+      - name: Report failed V61 validation
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh pr comment 48 --body "V61 installer validation failed in Actions run **${{ github.run_id }}**. Review artifact: `geometry-tactical-v61-installer-diagnostics`."

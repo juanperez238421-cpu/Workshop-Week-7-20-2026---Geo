@@ -72,6 +72,8 @@ assert(main.includes('format: "GT-V61-AES-256-GCM"'), "V61 encrypted-vault forma
 assert(main.includes("decryptLegacyV60Envelope"), "V60 encrypted-vault migration support is missing.");
 assert(main.includes("decryptLegacyV59Envelope"), "V59 encrypted-vault migration support is missing.");
 assert(main.indexOf("legacyV60VaultPath") < main.indexOf("legacyV59VaultPath"), "V60 migration must be attempted before V59 migration.");
+assert(main.includes('app.getPath("appData"), "Geometry Tactical Classroom V60"'), "V60 migration must read the previous application user-data root.");
+assert(main.includes('app.getPath("appData"), "Geometry Tactical Classroom V59"'), "V59 migration must read the previous application user-data root.");
 assert(main.includes("fs.renameSync(temporary, target)"), "Atomic vault replacement is missing.");
 assert(main.includes("pausePolicyRecorded"), "Pause policy is not tested in protected records.");
 assert(!main.includes("LATEST_RESULT.json") && !main.includes("LATEST_RESULT.csv"), "Plaintext student result exports must not be written.");

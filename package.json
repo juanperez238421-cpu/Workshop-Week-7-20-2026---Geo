@@ -1,56 +1,38 @@
 {
-  "name": "geometry-tactical-classroom-v60",
-  "version": "60.0.0",
+  "name": "math-tactical-classroom-v60-factorization",
+  "version": "60.2.0",
   "private": true,
-  "description": "Offline classroom Windows installer with improved Thales labels, a 30-minute mission, three controlled 30-second pauses, full-name login, eighth-grade group selection, finite weapon throws, melee combat, procedural right-triangle questions, and encrypted PIN-protected local results.",
+  "description": "Offline Math Tactical classroom Windows installer based on the validated V60 five-room engine, with fast 1–2 hit normal enemies, the preserved Room 5 final boss, five procedural factorization cases, controlled pauses, encrypted PIN-protected local results, and an isolated application data vault.",
   "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-classroom-v60.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/classroom-v60-static-test.js",
+    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v60-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
   },
-  "engines": {
-    "node": ">=20"
-  },
-  "devDependencies": {
-    "electron": "43.2.0",
-    "electron-builder": "26.9.1"
-  },
+  "engines": {"node": ">=20"},
+  "devDependencies": {"electron": "43.2.0", "electron-builder": "26.9.1"},
   "build": {
-    "appId": "co.jpanalyst.geometrytactical.classroom.v60",
-    "productName": "Geometry Tactical Classroom V60",
+    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization",
+    "productName": "Math Tactical Classroom V60 Factorization",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "maximum",
     "electronLanguages": ["es", "en-US"],
-    "directories": {
-      "output": "dist/classroom-v60-windows",
-      "buildResources": "desktop/assets"
-    },
-    "files": [
-      "package.json",
-      "school-game/v60/**/*",
-      "school-game/assets/**/*"
-    ],
-    "win": {
-      "icon": "desktop/assets/icon.ico",
-      "requestedExecutionLevel": "asInvoker",
-      "target": [
-        {"target": "nsis", "arch": ["x64"]}
-      ]
-    },
+    "directories": {"output": "dist/math-factorization-v60-windows", "buildResources": "desktop/assets"},
+    "files": ["package.json", "school-game/v60/**/*", "school-game/assets/**/*"],
+    "win": {"icon": "desktop/assets/icon.ico", "requestedExecutionLevel": "asInvoker", "target": [{"target": "nsis", "arch": ["x64"]}]},
     "nsis": {
-      "artifactName": "Geometry-Tactical-Classroom-V60-Setup-${version}-Local-x64.${ext}",
+      "artifactName": "Math-Tactical-Classroom-V60-Factorization-Setup-${version}-Local-x64.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Geometry Tactical Classroom V60",
+      "shortcutName": "Math Tactical Classroom V60 Factorization",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "displayLanguageSelector": false

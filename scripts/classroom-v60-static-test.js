@@ -51,6 +51,16 @@ assert(game.includes("function performPlayerMelee"), "Player melee attack is mis
 assert(game.includes('duelist: { label: "BATON DUELIST"'), "Baton duelist enemy is missing.");
 assert(game.includes('enforcer: { label: "STAFF ENFORCER"'), "Staff enforcer enemy is missing.");
 
+// Normal rooms should be fast combat: no normal-enemy shield and a one/two-hit durability budget.
+assert(game.includes("NORMAL_ENEMY_TWO_HIT_TYPES"), "Normal-enemy 1–2 hit tuning is missing.");
+assert(game.includes('new Set(["heavy", "enforcer", "warden", "breacher"])'), "Two-hit heavy enemy set is missing.");
+assert(game.includes("NORMAL_ENEMY_SHIELD_KEYS"), "Normal-enemy shield suppression is missing.");
+assert(game.includes('if (enemyType === "boss") return;'), "Final boss must be excluded from normal-enemy tuning.");
+assert(game.includes("enemy[key] = 0"), "Normal-enemy numeric shields are not forced off.");
+assert(game.includes("enemy[key] = hitBudget"), "Normal-enemy durability is not capped to the one/two-hit budget.");
+assert(game.includes("bossShieldActive"), "Final-boss shield mechanic must remain present.");
+assert(game.includes("BOSS SHIELD BLOCKS BULLETS"), "Final-boss shield presentation must remain present.");
+
 const tripleMatch = game.match(/const PYTHAGOREAN_TRIPLES = Object\.freeze\(\[([\s\S]*?)\]\);/);
 assert(tripleMatch, "Procedural Pythagorean triple bank is missing.");
 const tripleCount = (tripleMatch[1].match(/\[[^\]]+\]/g) || []).length;
@@ -69,4 +79,4 @@ for (const method of ["discoverAssets", "saveResult", "getProtectedResults", "ma
   assert(preload.includes(method), `Preload API method ${method} is missing.`);
 }
 
-console.log(`Geometry Tactical Classroom V60 static contracts passed (${tripleCount} right-triangle triples, 30-minute mission, 3 × 30-second pauses).`);
+console.log(`Geometry Tactical Classroom V60 static contracts passed (${tripleCount} right-triangle triples, 30-minute mission, 3 × 30-second pauses, normal enemies 1–2 hits, boss shield preserved).`);

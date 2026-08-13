@@ -1,0 +1,290 @@
+  const FACTORIZATION_TYPES = Object.freeze([
+    "common-factor",
+    "grouping",
+    "difference-squares",
+    "perfect-square-trinomial",
+    "general-trinomial"
+  ]);
+  const FACTORIZATION_CASE_LABELS = Object.freeze({
+    "common-factor": "CASO 1 · FACTOR COMÚN",
+    grouping: "CASO 2 · AGRUPACIÓN",
+    "difference-squares": "CASO 3 · DIFERENCIA DE CUADRADOS",
+    "perfect-square-trinomial": "CASO 4 · TRINOMIO CUADRADO PERFECTO",
+    "general-trinomial": "CASO 5 · TRINOMIO GENERAL"
+  });
+
+  function choice(items) { return items[Math.floor(Math.random() * items.length)]; }
+  function shuffled(items) {
+    const result = [...items];
+    for (let index = result.length - 1; index > 0; index--) {
+      const swap = Math.floor(Math.random() * (index + 1));
+      [result[index], result[swap]] = [result[swap], result[index]];
+    }
+    return result;
+  }
+  function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function randomSigned(min = 1, max = 8) { return randomInt(min, max) * (Math.random() < 0.5 ? -1 : 1); }
+  function rememberQuestion(question) {
+    if (state.questionKeys.includes(question.key)) return false;
+    state.questionKeys.push(question.key);
+    if (state.questionKeys.length > QUESTION_MEMORY_LIMIT) state.questionKeys.shift();
+    return true;
+  }
+  function variablePart(power) {
+    if (power === 0) return "";
+    if (power === 1) return "x";
+    if (power === 2) return "x²";
+    return `x^${power}`;
+  }
+  function formatPolynomial(terms) {
+    let output = "";
+    for (const { coef, power } of terms) {
+      if (!coef) continue;
+      const negative = coef < 0;
+      const absolute = Math.abs(coef);
+      const variable = variablePart(power);
+      const coefficient = variable && absolute === 1 ? "" : String(absolute);
+      const body = `${coefficient}${variable}` || "0";
+      if (!output) output = negative ? `−${body}` : body;
+      else output += negative ? ` − ${body}` : ` + ${body}`;
+    }
+    return output || "0";
+  }
+  function formatLinear(a, b) {
+    return formatPolynomial([{ coef: a, power: 1 }, { coef: b, power: 0 }]);
+  }
+  function factor(a, b) { return `(${formatLinear(a, b)})`; }
+  function factoredPair(a, b, c, d) { return `${factor(a, b)}${factor(c, d)}`; }
+  function makeOptions(correct, candidates) {
+    const unique = [...new Set([correct, ...candidates].filter(Boolean))];
+    let guard = 0;
+    while (unique.length < 4 && guard < 20) {
+      guard++;
+      const fallback = `${factor(randomInt(1, 4), randomSigned(1, 7))}${factor(randomInt(1, 4), randomSigned(1, 7))}`;
+      if (!unique.includes(fallback)) unique.push(fallback);
+    }
+    return shuffled(unique).slice(0, 4);
+  }
+
+  function createCommonFactorQuestion() {
+    const g = randomInt(2, 9);
+    const a = randomInt(1, 7);
+    const b = randomSigned(1, 9);
+    const display = formatPolynomial([{ coef: g * a, power: 2 }, { coef: g * b, power: 1 }]);
+    const correct = `${g}x${factor(a, b)}`;
+    return {
+      type: "common-factor",
+      caseLabel: FACTORIZATION_CASE_LABELS["common-factor"],
+      display,
+      rule: "Extrae el MCD y la menor potencia común de x.",
+      steps: ["Busca el factor numérico común.", "Extrae también x cuando aparece en todos los términos."],
+      correct,
+      explanation: `El factor común completo es ${g}x; al dividir cada término queda ${formatLinear(a, b)}.`,
+      options: makeOptions(correct, [
+        `${g}${factor(a, b)}`,
+        `${g}x${factor(a + 1, b)}`,
+        `${g}x${factor(a, -b)}`,
+        `${g + 1}x${factor(a, b)}`
+      ])
+    };
+  }
+
+  function createGroupingQuestion() {
+    const a = randomInt(1, 4);
+    const c = randomInt(1, 4);
+    const b = randomSigned(1, 7);
+    const d = randomSigned(1, 7);
+    const display = formatPolynomial([
+      { coef: a * c, power: 2 },
+      { coef: a * d, power: 1 },
+      { coef: b * c, power: 1 },
+      { coef: b * d, power: 0 }
+    ]);
+    const correct = factoredPair(a, b, c, d);
+    return {
+      type: "grouping",
+      caseLabel: FACTORIZATION_CASE_LABELS.grouping,
+      display,
+      rule: "Agrupa los cuatro términos en dos pares con un binomio común.",
+      steps: ["Factoriza el primer par.", "Factoriza el segundo par y verifica el mismo binomio."],
+      correct,
+      explanation: `Al agrupar aparecen los factores ${factor(a, b)} y ${factor(c, d)}.`,
+      options: makeOptions(correct, [
+        factoredPair(a, -b, c, d),
+        factoredPair(a, b, c, -d),
+        factoredPair(a, d, c, b),
+        `${factor(a * c, b)}${factor(1, d)}`
+      ])
+    };
+  }
+
+  function createDifferenceSquaresQuestion() {
+    const a = randomInt(1, 7);
+    const b = randomInt(2, 12);
+    const display = formatPolynomial([{ coef: a * a, power: 2 }, { coef: -(b * b), power: 0 }]);
+    const correct = `${factor(a, -b)}${factor(a, b)}`;
+    return {
+      type: "difference-squares",
+      caseLabel: FACTORIZATION_CASE_LABELS["difference-squares"],
+      display,
+      rule: "A² − B² = (A − B)(A + B).",
+      steps: ["Comprueba que ambos términos sean cuadrados perfectos.", "Usa binomios conjugados."],
+      correct,
+      explanation: `${a * a}x² = (${a}x)² y ${b * b} = ${b}²; por eso se usan conjugados.`,
+      options: makeOptions(correct, [
+        `${factor(a, -b)}²`,
+        `${factor(a, b)}²`,
+        `${factor(a * a, -b)}${factor(1, b)}`,
+        `${factor(a, -b * b)}${factor(a, 1)}`
+      ])
+    };
+  }
+
+  function createPerfectSquareTrinomialQuestion() {
+    const a = randomInt(1, 6);
+    const b = randomInt(1, 9);
+    const sign = Math.random() < 0.5 ? -1 : 1;
+    const display = formatPolynomial([
+      { coef: a * a, power: 2 },
+      { coef: sign * 2 * a * b, power: 1 },
+      { coef: b * b, power: 0 }
+    ]);
+    const correct = `${factor(a, sign * b)}²`;
+    return {
+      type: "perfect-square-trinomial",
+      caseLabel: FACTORIZATION_CASE_LABELS["perfect-square-trinomial"],
+      display,
+      rule: "A² ± 2AB + B² = (A ± B)².",
+      steps: ["Verifica los cuadrados perfectos de los extremos.", "Confirma que el término medio sea ±2AB."],
+      correct,
+      explanation: `Los extremos son (${a}x)² y ${b}², y el término medio coincide con ${sign < 0 ? "−" : "+"}2(${a}x)(${b}).`,
+      options: makeOptions(correct, [
+        `${factor(a, -sign * b)}²`,
+        `${factor(a, -b)}${factor(a, b)}`,
+        `${factor(a * a, sign * b)}²`,
+        factoredPair(a, sign * b, 1, sign * b)
+      ])
+    };
+  }
+
+  function createGeneralTrinomialQuestion() {
+    let a, b, c, d, middle;
+    do {
+      a = randomInt(1, 3);
+      c = randomInt(1, 3);
+      b = randomSigned(1, 8);
+      d = randomSigned(1, 8);
+      middle = a * d + b * c;
+    } while ((a === c && b === d) || middle === 0);
+    const display = formatPolynomial([
+      { coef: a * c, power: 2 },
+      { coef: middle, power: 1 },
+      { coef: b * d, power: 0 }
+    ]);
+    const correct = factoredPair(a, b, c, d);
+    return {
+      type: "general-trinomial",
+      caseLabel: FACTORIZATION_CASE_LABELS["general-trinomial"],
+      display,
+      rule: "Reconstruye dos binomios cuyo producto produzca ax² + bx + c.",
+      steps: ["Relaciona el producto de los primeros términos con x².", "Verifica término medio y término independiente al multiplicar."],
+      correct,
+      explanation: `Al multiplicar ${factor(a, b)} por ${factor(c, d)} se recuperan los tres coeficientes del trinomio.`,
+      options: makeOptions(correct, [
+        factoredPair(a, -b, c, d),
+        factoredPair(a, b, c, -d),
+        factoredPair(a, d, c, b),
+        factoredPair(c, b, a, d)
+      ])
+    };
+  }
+
+  function generateQuestionCandidate(type) {
+    const builders = {
+      "common-factor": createCommonFactorQuestion,
+      grouping: createGroupingQuestion,
+      "difference-squares": createDifferenceSquaresQuestion,
+      "perfect-square-trinomial": createPerfectSquareTrinomialQuestion,
+      "general-trinomial": createGeneralTrinomialQuestion
+    };
+    const question = builders[type]();
+    question.id = `${type}-${question.display.replace(/\s+/g, "-")}`;
+    question.key = `${type}|${question.display}|${question.correct}`;
+    question.prompt = `Factoriza completamente: ${question.display}`;
+    return question;
+  }
+
+  function createQuestion() {
+    const types = shuffled(FACTORIZATION_TYPES);
+    for (let attempt = 0; attempt < 180; attempt++) {
+      const candidate = generateQuestionCandidate(types[attempt % types.length]);
+      if (rememberQuestion(candidate)) return candidate;
+    }
+    state.questionKeys.length = 0;
+    const fallback = generateQuestionCandidate(choice(FACTORIZATION_TYPES));
+    rememberQuestion(fallback);
+    return fallback;
+  }
+
+  function drawWrappedQuestionText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+    const words = String(text).split(/\s+/);
+    let line = "";
+    let lineIndex = 0;
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word;
+      if (context.measureText(test).width > maxWidth && line) {
+        context.fillText(line, x, y + lineIndex * lineHeight);
+        lineIndex++;
+        line = word;
+        if (lineIndex >= maxLines - 1) break;
+      } else line = test;
+    }
+    if (lineIndex < maxLines) context.fillText(line, x, y + lineIndex * lineHeight);
+  }
+
+  function drawFactorizationPanel(question) {
+    const x = 790, y = 70, width = 360, height = 480;
+    qctx.fillStyle = "#f7f9fc";
+    roundedRect(qctx, x, y, width, height, 20); qctx.fill();
+    qctx.strokeStyle = "#c7d2e0"; qctx.lineWidth = 3; qctx.stroke();
+    qctx.textAlign = "left"; qctx.textBaseline = "alphabetic";
+    qctx.fillStyle = "#4d5c72"; qctx.font = "900 18px Segoe UI";
+    drawWrappedQuestionText(qctx, question.caseLabel, x + 28, y + 48, width - 56, 24, 2);
+    qctx.fillStyle = "#172033"; qctx.font = "900 24px Segoe UI";
+    drawWrappedQuestionText(qctx, question.rule, x + 28, y + 126, width - 56, 32, 4);
+    qctx.fillStyle = "#2457d6"; qctx.font = "900 20px Segoe UI";
+    qctx.fillText("ESTRATEGIA", x + 28, y + 265);
+    qctx.fillStyle = "#596579"; qctx.font = "700 19px Segoe UI";
+    drawWrappedQuestionText(qctx, `1. ${question.steps[0]}`, x + 28, y + 310, width - 56, 27, 3);
+    drawWrappedQuestionText(qctx, `2. ${question.steps[1]}`, x + 28, y + 400, width - 56, 27, 3);
+  }
+
+  function drawQuestionFigure(question) {
+    const width = questionCanvas.width, height = questionCanvas.height;
+    qctx.clearRect(0, 0, width, height);
+    qctx.fillStyle = "#ffffff"; qctx.fillRect(0, 0, width, height);
+    qctx.strokeStyle = "#d4deea"; qctx.lineWidth = 3; qctx.strokeRect(2, 2, width - 4, height - 4);
+
+    qctx.fillStyle = "#2457d6";
+    roundedRect(qctx, 50, 54, 700, 58, 14); qctx.fill();
+    qctx.fillStyle = "#ffffff"; qctx.font = "900 24px Segoe UI"; qctx.textAlign = "center"; qctx.textBaseline = "middle";
+    qctx.fillText("TALLER DE MATEMÁTICAS · 5 CASOS DE FACTORIZACIÓN", 400, 83, 650);
+
+    qctx.fillStyle = "#fbfcfe";
+    roundedRect(qctx, 50, 136, 700, 414, 22); qctx.fill();
+    qctx.strokeStyle = "#c7d2e0"; qctx.lineWidth = 3; qctx.stroke();
+
+    qctx.textAlign = "left"; qctx.textBaseline = "alphabetic";
+    qctx.fillStyle = "#596579"; qctx.font = "900 20px Segoe UI";
+    qctx.fillText("FACTORIZA COMPLETAMENTE", 92, 195);
+
+    qctx.fillStyle = "#172033"; qctx.font = "900 46px Segoe UI"; qctx.textAlign = "center";
+    drawWrappedQuestionText(qctx, question.display, 400, 300, 610, 62, 3);
+
+    qctx.fillStyle = "#eaf1ff";
+    roundedRect(qctx, 94, 430, 612, 82, 16); qctx.fill();
+    qctx.fillStyle = "#2457d6"; qctx.font = "800 20px Segoe UI"; qctx.textAlign = "center";
+    qctx.fillText("Selecciona la forma factorizada equivalente.", 400, 480, 570);
+
+    drawFactorizationPanel(question);
+  }

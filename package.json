@@ -6,7 +6,7 @@
   "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604.js && npm run prepare:icons",
+    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604-runner.js scripts/patch-v60-teacher-mode-v604.js && npm run prepare:icons",
     "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v604-teacher-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",

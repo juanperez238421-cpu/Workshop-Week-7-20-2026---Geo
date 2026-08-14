@@ -1,0 +1,100 @@
+name: Build Math Tactical V60.3 Boss Edition Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/math-tactical-v60-3-boss-final
+    paths:
+      - "scripts/prepare-classroom-v60.js"
+      - "scripts/v60-source/**"
+      - "scripts/patch-v60-factorization-workshop.js"
+      - "scripts/v60-factorization-question-block.txt"
+      - "scripts/unpack-v61-boss-patch.js"
+      - "scripts/v61-boss-patch.js.gz"
+      - "scripts/v61-boss-engine-block.txt"
+      - "scripts/v61-draw-drops-block.txt"
+      - "scripts/v61-factor-panel-block.txt"
+      - "scripts/math-factorization-v61-boss-static-test.js"
+      - "scripts/validate-math-factorization-v61-windows.ps1"
+      - "package.json"
+      - ".github/workflows/build-math-factorization-boss-v61.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: math-factorization-boss-v61-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 70
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath math-v61-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate boss AI factorization and floor weapon contracts
+        shell: pwsh
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath math-v61-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build full local Windows installer
+        shell: pwsh
+        run: |
+          npm run dist:win 2>&1 | Tee-Object -FilePath math-v61-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install launch and validate final boss gameplay
+        shell: pwsh
+        run: ./scripts/validate-math-factorization-v61-windows.ps1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.3-boss-diagnostics
+          path: |
+            math-v61-install.log
+            math-v61-validation.log
+            math-v61-build.log
+            math-v61-startup.log
+            math-v61-installer.log
+            math-v61-ready-last.json
+            math-v61-boss-last.json
+            math-v61-question-last.json
+            math-v61-vault-last.json
+            math-v61-stdout.log
+            math-v61-stderr.log
+            math-v61-validation-error.log
+            school-game/v60/game.js
+            school-game/v60/styles.css
+            school-game/v60/index.html
+            school-game/v60/main.js
+            school-game/v60/preload.js
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload final playable Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.3-boss-final-playable
+          path: dist/math-factorization-v60-boss-windows/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

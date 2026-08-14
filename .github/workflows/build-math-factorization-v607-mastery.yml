@@ -1,0 +1,107 @@
+name: Build Math Tactical V60.7 Mastery Boss Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/math-tactical-v60-7-mastery-boss
+    paths:
+      - "scripts/prepare-classroom-v60.js"
+      - "scripts/v60-source/**"
+      - "scripts/patch-v60-factorization-workshop.js"
+      - "scripts/v60-factorization-question-block.txt"
+      - "scripts/unpack-v61-boss-patch.js"
+      - "scripts/v61-boss-patch.js.gz"
+      - "scripts/patch-v60-teacher-mode-v604.js"
+      - "scripts/patch-v60-teacher-mode-v604-runner.js"
+      - "scripts/run-v605-relentless-patch.js"
+      - "scripts/v605-relentless-patch-source.txt"
+      - "scripts/unpack-v606-fair-dodge-patch.js"
+      - "scripts/v606-fair-dodge-patch.js.gz"
+      - "scripts/unpack-v607-mastery-patch.js"
+      - "scripts/v607-mastery-patch.js.gz"
+      - "scripts/math-factorization-v607-mastery-static-test.js"
+      - "scripts/validate-math-factorization-v607-windows.ps1"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-math-factorization-v607-mastery.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: math-factorization-v607-mastery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 80
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath math-v607-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate mastery boss teacher mode timers and factorization
+        shell: pwsh
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath math-v607-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build full local Windows installer
+        shell: pwsh
+        run: |
+          npm run dist:win 2>&1 | Tee-Object -FilePath math-v607-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install launch and validate V60.7 mastery runtime
+        shell: pwsh
+        run: ./scripts/validate-math-factorization-v607-windows.ps1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.7-mastery-diagnostics
+          path: |
+            math-v607-install.log
+            math-v607-validation.log
+            math-v607-build.log
+            math-v607-startup.log
+            math-v607-installer.log
+            math-v607-ready-last.json
+            math-v607-boss-last.json
+            math-v607-teacher-last.json
+            math-v607-question-last.json
+            math-v607-vault-last.json
+            math-v607-stdout.log
+            math-v607-stderr.log
+            math-v607-validation-error.log
+            school-game/v60/game.js
+            school-game/v60/styles.css
+            school-game/v60/index.html
+            school-game/v60/main.js
+            school-game/v60/preload.js
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload final playable V60.7 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.7-mastery-final-playable
+          path: dist/math-factorization-v60-mastery-windows/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

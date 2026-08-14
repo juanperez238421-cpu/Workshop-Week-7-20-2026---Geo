@@ -1,16 +1,16 @@
   const FACTORIZATION_TYPES = Object.freeze([
-    "common-factor",
-    "grouping",
-    "difference-squares",
-    "perfect-square-trinomial",
-    "general-trinomial"
+    "common-difference-squares",
+    "common-perfect-square",
+    "common-general-trinomial",
+    "grouping-difference-squares",
+    "common-grouping"
   ]);
   const FACTORIZATION_CASE_LABELS = Object.freeze({
-    "common-factor": "CASO 1 · FACTOR COMÚN",
-    grouping: "CASO 2 · AGRUPACIÓN",
-    "difference-squares": "CASO 3 · DIFERENCIA DE CUADRADOS",
-    "perfect-square-trinomial": "CASO 4 · TRINOMIO CUADRADO PERFECTO",
-    "general-trinomial": "CASO 5 · TRINOMIO GENERAL"
+    "common-difference-squares": "COMBO 1 · FACTOR COMÚN → DIFERENCIA DE CUADRADOS",
+    "common-perfect-square": "COMBO 2 · FACTOR COMÚN → TRINOMIO CUADRADO PERFECTO",
+    "common-general-trinomial": "COMBO 3 · FACTOR COMÚN → TRINOMIO GENERAL",
+    "grouping-difference-squares": "COMBO 4 · AGRUPACIÓN → DIFERENCIA DE CUADRADOS",
+    "common-grouping": "COMBO 5 · FACTOR COMÚN → AGRUPACIÓN"
   });
 
   function choice(items) { return items[Math.floor(Math.random() * items.length)]; }
@@ -37,16 +37,43 @@
     if (state.questionKeys.length > QUESTION_MEMORY_LIMIT) state.questionKeys.shift();
     return true;
   }
+  function normalizePoly(coefficients) {
+    const result = [...coefficients].map(Number);
+    while (result.length > 1 && result[0] === 0) result.shift();
+    return result;
+  }
+  function polySignature(coefficients) { return normalizePoly(coefficients).join("|"); }
+  function polyAdd(left, right) {
+    const size = Math.max(left.length, right.length);
+    const a = Array(size - left.length).fill(0).concat(left);
+    const b = Array(size - right.length).fill(0).concat(right);
+    return normalizePoly(a.map((value, index) => value + b[index]));
+  }
+  function polyScale(coefficients, scalar) { return normalizePoly(coefficients.map((value) => value * scalar)); }
+  function polyMultiply(left, right) {
+    const result = Array(left.length + right.length - 1).fill(0);
+    for (let i = 0; i < left.length; i++) for (let j = 0; j < right.length; j++) result[i + j] += left[i] * right[j];
+    return normalizePoly(result);
+  }
+  function linearPoly(a, b) { return [a, b]; }
+  function monomialPoly(coef, power) { return [coef, ...Array(power).fill(0)]; }
+  function pairPoly(a, b, c, d) { return polyMultiply(linearPoly(a, b), linearPoly(c, d)); }
+
   function variablePart(power) {
     if (power === 0) return "";
     if (power === 1) return "x";
     if (power === 2) return "x²";
+    if (power === 3) return "x³";
+    if (power === 4) return "x⁴";
     return `x^${power}`;
   }
-  function formatPolynomial(terms) {
+  function formatPolynomialFromCoefficients(coefficients) {
+    const values = normalizePoly(coefficients);
+    const degree = values.length - 1;
     let output = "";
-    for (const { coef, power } of terms) {
-      if (!coef) continue;
+    values.forEach((coef, index) => {
+      if (!coef) return;
+      const power = degree - index;
       const negative = coef < 0;
       const absolute = Math.abs(coef);
       const variable = variablePart(power);
@@ -54,231 +81,209 @@
       const body = `${coefficient}${variable}` || "0";
       if (!output) output = negative ? `−${body}` : body;
       else output += negative ? ` − ${body}` : ` + ${body}`;
-    }
+    });
     return output || "0";
   }
-  function formatLinear(a, b) {
-    return formatPolynomial([{ coef: a, power: 1 }, { coef: b, power: 0 }]);
-  }
+  function formatLinear(a, b) { return formatPolynomialFromCoefficients([a, b]); }
+  function formatQuadraticNoLinear(a, b) { return formatPolynomialFromCoefficients([a, 0, b]); }
   function factor(a, b) { return `(${formatLinear(a, b)})`; }
-  function factoredPair(a, b, c, d) { return `${factor(a, b)}${factor(c, d)}`; }
-  function polynomialSignature(c2 = 0, c1 = 0, c0 = 0) {
-    return `${Number(c2)}|${Number(c1)}|${Number(c0)}`;
+  function quadraticFactor(a, b) { return `(${formatQuadraticNoLinear(a, b)})`; }
+  function monomialText(coef, power) {
+    const coefficient = coef === 1 && power > 0 ? "" : String(coef);
+    return `${coefficient}${variablePart(power)}` || "1";
   }
-  function pairCoefficients(a, b, c, d) { return [a * c, a * d + b * c, b * d]; }
-  function pairSignature(a, b, c, d) { return polynomialSignature(...pairCoefficients(a, b, c, d)); }
-  function optionEntry(text, signature) { return { text, signature }; }
-  function makeVerifiedOptions(correctText, correctSignature, candidates) {
-    const entries = [optionEntry(correctText, correctSignature)];
-    const seenText = new Set([correctText]);
-    const seenSignature = new Set([correctSignature]);
-    for (const candidate of candidates.filter(Boolean)) {
-      if (!candidate.text || !candidate.signature) continue;
-      if (seenText.has(candidate.text) || seenSignature.has(candidate.signature)) continue;
-      seenText.add(candidate.text);
-      seenSignature.add(candidate.signature);
-      entries.push(candidate);
+  function normalizedVisibleText(text) { return String(text).replaceAll("−", "-").replace(/\s+/g, ""); }
+
+  function optionEntry(text, coefficients, isCorrect = false) {
+    return { text, coefficients: normalizePoly(coefficients), signature: polySignature(coefficients), isCorrect };
+  }
+  function genericDistractor(degree) {
+    if (degree >= 4) {
+      const a = randomInt(1, 4), b = randomInt(1, 8), c = randomInt(1, 4), d = randomSigned(1, 7);
+      const coefficients = polyMultiply([1, 0], polyMultiply([a, 0, b], [c, d]));
+      return optionEntry(`x${quadraticFactor(a, b)}${factor(c, d)}`, coefficients);
+    }
+    const g = randomInt(1, 7), a = randomInt(1, 4), c = randomInt(1, 4), b = randomSigned(1, 7), d = randomSigned(1, 7);
+    const coefficients = polyMultiply(monomialPoly(g, 1), pairPoly(a, b, c, d));
+    return optionEntry(`${monomialText(g, 1)}${factor(a, b)}${factor(c, d)}`, coefficients);
+  }
+  function makeVerifiedOptions(correctEntry, candidates) {
+    const entries = [];
+    const seenText = new Set();
+    const seenSignature = new Set();
+    function add(entry) {
+      if (!entry || !entry.text || !entry.signature) return false;
+      const textKey = normalizedVisibleText(entry.text);
+      if (seenText.has(textKey) || seenSignature.has(entry.signature)) return false;
+      seenText.add(textKey); seenSignature.add(entry.signature); entries.push(entry); return true;
+    }
+    if (!add(correctEntry)) throw new Error("Correct option could not be registered.");
+    for (const candidate of candidates) {
       if (entries.length >= 4) break;
+      add(candidate);
     }
     let guard = 0;
-    while (entries.length < 4 && guard++ < 120) {
-      const a = randomInt(1, 4), c = randomInt(1, 4);
-      const b = randomSigned(1, 7), d = randomSigned(1, 7);
-      const text = factoredPair(a, b, c, d);
-      const signature = pairSignature(a, b, c, d);
-      if (seenText.has(text) || seenSignature.has(signature)) continue;
-      seenText.add(text); seenSignature.add(signature);
-      entries.push(optionEntry(text, signature));
-    }
-    if (entries.length < 4) throw new Error("Could not build four algebraically distinct factorization options.");
-    return shuffled(entries).map((entry) => entry.text);
+    const degree = correctEntry.coefficients.length - 1;
+    while (entries.length < 4 && guard++ < 300) add(genericDistractor(degree));
+    if (entries.length !== 4) throw new Error("Could not build exactly four distinct answer options.");
+    const result = shuffled(entries).map((entry, index) => ({ ...entry, id: `option-${index + 1}` }));
+    const correct = result.filter((entry) => entry.isCorrect);
+    if (correct.length !== 1) throw new Error("Question must contain exactly one correct option.");
+    if (new Set(result.map((entry) => normalizedVisibleText(entry.text))).size !== 4) throw new Error("Duplicate visible option text detected.");
+    if (new Set(result.map((entry) => entry.signature)).size !== 4) throw new Error("Algebraically duplicate option detected.");
+    return result;
   }
-
-  function createCommonFactorQuestion() {
-    const g = randomInt(2, 9);
-    let a, b;
-    do {
-      a = randomInt(1, 7);
-      b = randomSigned(1, 9);
-    } while (!coprime(a, b));
-    const coefficients = [g * a, g * b, 0];
-    const display = formatPolynomial([{ coef: coefficients[0], power: 2 }, { coef: coefficients[1], power: 1 }]);
-    const correct = `${g}x${factor(a, b)}`;
-    const correctSignature = polynomialSignature(...coefficients);
+  function finalizeQuestion(base, correctEntry, distractors) {
+    const options = makeVerifiedOptions({ ...correctEntry, isCorrect: true }, distractors.map((entry) => ({ ...entry, isCorrect: false })));
+    const correctOption = options.find((entry) => entry.isCorrect);
     return {
-      type: "common-factor",
-      caseLabel: FACTORIZATION_CASE_LABELS["common-factor"],
-      display,
-      coefficients,
-      correctSignature,
-      rule: "Extrae el MCD y la menor potencia común de x.",
-      steps: ["Calcula el máximo factor numérico común.", "Extrae también x porque aparece en todos los términos."],
-      correct,
-      explanation: `El MCD de los coeficientes es ${g} y la menor potencia común es x; por eso el factor común completo es ${g}x y queda ${formatLinear(a, b)}.`,
-      options: makeVerifiedOptions(correct, correctSignature, [
-        optionEntry(`${g}${factor(a, b)}`, polynomialSignature(0, g * a, g * b)),
-        optionEntry(`${g}x${factor(a + 1, b)}`, polynomialSignature(g * (a + 1), g * b, 0)),
-        optionEntry(`${g}x${factor(a, -b)}`, polynomialSignature(g * a, -g * b, 0)),
-        optionEntry(`${g + 1}x${factor(a, b)}`, polynomialSignature((g + 1) * a, (g + 1) * b, 0))
-      ])
+      ...base,
+      coefficients: normalizePoly(correctEntry.coefficients),
+      correctSignature: correctEntry.signature,
+      correct: correctOption.text,
+      correctOptionId: correctOption.id,
+      options
     };
   }
 
-  function createGroupingQuestion() {
-    let a, b, c, d, middle;
-    do {
-      a = randomInt(1, 4);
-      c = randomInt(1, 4);
-      b = randomSigned(1, 7);
-      d = randomSigned(1, 7);
-      middle = a * d + b * c;
-    } while (!coprime(a, b) || !coprime(c, d) || middle === 0 || (a === c && b === d) || (a === c && b === -d));
-    const coefficients = pairCoefficients(a, b, c, d);
-    const display = formatPolynomial([
-      { coef: a * c, power: 2 },
-      { coef: a * d, power: 1 },
-      { coef: b * c, power: 1 },
-      { coef: b * d, power: 0 }
+  function createCommonDifferenceSquaresQuestion() {
+    const g = randomInt(2, 7);
+    let a, b;
+    do { a = randomInt(1, 6); b = randomInt(2, 10); } while (!coprime(a, b));
+    const inner = polyMultiply([a, -b], [a, b]);
+    const coefficients = polyMultiply(monomialPoly(g, 1), inner);
+    const correctText = `${monomialText(g, 1)}${factor(a, -b)}${factor(a, b)}`;
+    return finalizeQuestion({
+      type: "common-difference-squares",
+      caseLabel: FACTORIZATION_CASE_LABELS["common-difference-squares"],
+      display: formatPolynomialFromCoefficients(coefficients),
+      rule: "No te detengas en el primer factor: extrae factor común y vuelve a factorizar el binomio restante.",
+      steps: ["Extrae el MCD y la menor potencia de x.", "Reconoce A² − B² y usa binomios conjugados."],
+      explanation: `Primero sale ${monomialText(g, 1)}. El factor restante es una diferencia de cuadrados: (${a}x)² − ${b}².`
+    }, optionEntry(correctText, coefficients), [
+      optionEntry(`${g}${factor(a, -b)}${factor(a, b)}`, polyScale(inner, g)),
+      optionEntry(`${monomialText(g, 1)}${factor(a, -b)}²`, polyMultiply(monomialPoly(g, 1), polyMultiply([a, -b], [a, -b]))),
+      optionEntry(`${monomialText(g, 1)}${factor(a, b)}²`, polyMultiply(monomialPoly(g, 1), polyMultiply([a, b], [a, b]))),
+      optionEntry(`${monomialText(g + 1, 1)}${factor(a, -b)}${factor(a, b)}`, polyMultiply(monomialPoly(g + 1, 1), inner)),
+      optionEntry(`${monomialText(g, 1)}${factor(a, -(b + 1))}${factor(a, b + 1)}`, polyMultiply(monomialPoly(g, 1), polyMultiply([a, -(b + 1)], [a, b + 1])))
     ]);
-    const correct = factoredPair(a, b, c, d);
-    const correctSignature = polynomialSignature(...coefficients);
-    return {
-      type: "grouping",
-      caseLabel: FACTORIZATION_CASE_LABELS.grouping,
-      display,
-      coefficients,
-      correctSignature,
-      rule: "Agrupa los cuatro términos en dos pares con un binomio común.",
-      steps: ["Factoriza el primer par.", "Factoriza el segundo par y verifica el mismo binomio."],
-      correct,
-      explanation: `La expansión inversa de ${factor(a, b)}${factor(c, d)} produce exactamente los cuatro términos mostrados; ambos binomios son primitivos, así que la factorización ya está completa.`,
-      options: makeVerifiedOptions(correct, correctSignature, [
-        optionEntry(factoredPair(a, -b, c, d), pairSignature(a, -b, c, d)),
-        optionEntry(factoredPair(a, b, c, -d), pairSignature(a, b, c, -d)),
-        optionEntry(factoredPair(a, d, c, b), pairSignature(a, d, c, b)),
-        optionEntry(`${factor(a * c, b)}${factor(1, d)}`, pairSignature(a * c, b, 1, d))
-      ])
-    };
   }
 
-  function createDifferenceSquaresQuestion() {
+  function createCommonPerfectSquareQuestion() {
+    const g = randomInt(2, 7);
     let a, b;
-    do {
-      a = randomInt(1, 7);
-      b = randomInt(2, 12);
-    } while (!coprime(a, b));
-    const coefficients = [a * a, 0, -(b * b)];
-    const display = formatPolynomial([{ coef: coefficients[0], power: 2 }, { coef: coefficients[2], power: 0 }]);
-    const correct = `${factor(a, -b)}${factor(a, b)}`;
-    const correctSignature = polynomialSignature(...coefficients);
-    return {
-      type: "difference-squares",
-      caseLabel: FACTORIZATION_CASE_LABELS["difference-squares"],
-      display,
-      coefficients,
-      correctSignature,
-      rule: "A² − B² = (A − B)(A + B).",
-      steps: ["Comprueba que ambos términos sean cuadrados perfectos.", "Usa binomios conjugados y verifica que no quede factor común."],
-      correct,
-      explanation: `${a * a}x² = (${a}x)² y ${b * b} = ${b}². Como ${a} y ${b} son coprimos, no queda un factor numérico común adicional.`,
-      options: makeVerifiedOptions(correct, correctSignature, [
-        optionEntry(`${factor(a, -b)}²`, pairSignature(a, -b, a, -b)),
-        optionEntry(`${factor(a, b)}²`, pairSignature(a, b, a, b)),
-        optionEntry(`${factor(a * a, -b)}${factor(1, b)}`, pairSignature(a * a, -b, 1, b)),
-        optionEntry(`${factor(a, -(b * b))}${factor(a, 1)}`, pairSignature(a, -(b * b), a, 1))
-      ])
-    };
-  }
-
-  function createPerfectSquareTrinomialQuestion() {
-    let a, b;
-    do {
-      a = randomInt(1, 6);
-      b = randomInt(1, 9);
-    } while (!coprime(a, b));
+    do { a = randomInt(1, 5); b = randomInt(1, 9); } while (!coprime(a, b));
     const sign = Math.random() < 0.5 ? -1 : 1;
     const signedB = sign * b;
-    const coefficients = [a * a, 2 * a * signedB, b * b];
-    const display = formatPolynomial([
-      { coef: coefficients[0], power: 2 },
-      { coef: coefficients[1], power: 1 },
-      { coef: coefficients[2], power: 0 }
+    const square = polyMultiply([a, signedB], [a, signedB]);
+    const coefficients = polyMultiply(monomialPoly(g, 1), square);
+    const correctText = `${monomialText(g, 1)}${factor(a, signedB)}²`;
+    return finalizeQuestion({
+      type: "common-perfect-square",
+      caseLabel: FACTORIZATION_CASE_LABELS["common-perfect-square"],
+      display: formatPolynomialFromCoefficients(coefficients),
+      rule: "Aplica dos etapas: factor común y luego trinomio cuadrado perfecto.",
+      steps: ["Extrae el factor común completo.", "Comprueba A² ± 2AB + B² y escribe (A ± B)²."],
+      explanation: `Después de extraer ${monomialText(g, 1)}, los tres términos forman el cuadrado de ${factor(a, signedB)}.`
+    }, optionEntry(correctText, coefficients), [
+      optionEntry(`${g}${factor(a, signedB)}²`, polyScale(square, g)),
+      optionEntry(`${monomialText(g, 1)}${factor(a, -signedB)}²`, polyMultiply(monomialPoly(g, 1), polyMultiply([a, -signedB], [a, -signedB]))),
+      optionEntry(`${monomialText(g, 1)}${factor(a, -b)}${factor(a, b)}`, polyMultiply(monomialPoly(g, 1), polyMultiply([a, -b], [a, b]))),
+      optionEntry(`${monomialText(g + 1, 1)}${factor(a, signedB)}²`, polyMultiply(monomialPoly(g + 1, 1), square)),
+      optionEntry(`${monomialText(g, 1)}${factor(a + 1, signedB)}²`, polyMultiply(monomialPoly(g, 1), polyMultiply([a + 1, signedB], [a + 1, signedB])))
     ]);
-    const correct = `${factor(a, signedB)}²`;
-    const correctSignature = polynomialSignature(...coefficients);
-    return {
-      type: "perfect-square-trinomial",
-      caseLabel: FACTORIZATION_CASE_LABELS["perfect-square-trinomial"],
-      display,
-      coefficients,
-      correctSignature,
-      rule: "A² ± 2AB + B² = (A ± B)².",
-      steps: ["Verifica los cuadrados perfectos de los extremos.", "Confirma que el término medio sea ±2AB y que el binomio sea primitivo."],
-      correct,
-      explanation: `Los extremos son (${a}x)² y ${b}², el término medio es ${sign < 0 ? "−" : "+"}2(${a}x)(${b}) y MCD(${a}, ${b}) = 1.`,
-      options: makeVerifiedOptions(correct, correctSignature, [
-        optionEntry(`${factor(a, -signedB)}²`, pairSignature(a, -signedB, a, -signedB)),
-        optionEntry(`${factor(a, -b)}${factor(a, b)}`, pairSignature(a, -b, a, b)),
-        optionEntry(`${factor(a * a, signedB)}²`, pairSignature(a * a, signedB, a * a, signedB)),
-        optionEntry(factoredPair(a, signedB, 1, signedB), pairSignature(a, signedB, 1, signedB))
-      ])
-    };
   }
 
-  function createGeneralTrinomialQuestion() {
-    let a, b, c, d, middle;
+  function createCommonGeneralTrinomialQuestion() {
+    const g = randomInt(2, 6);
+    let a, b, c, d;
     do {
-      a = randomInt(1, 3);
-      c = randomInt(1, 3);
-      b = randomSigned(1, 8);
-      d = randomSigned(1, 8);
-      middle = a * d + b * c;
-    } while (!coprime(a, b) || !coprime(c, d) || (a === c && b === d) || middle === 0);
-    const coefficients = pairCoefficients(a, b, c, d);
-    const display = formatPolynomial([
-      { coef: coefficients[0], power: 2 },
-      { coef: coefficients[1], power: 1 },
-      { coef: coefficients[2], power: 0 }
+      a = randomInt(1, 3); c = randomInt(1, 3); b = randomSigned(1, 7); d = randomSigned(1, 7);
+    } while (!coprime(a, b) || !coprime(c, d) || (a === c && b === d) || (a === c && b === -d) || a * d + b * c === 0);
+    const pair = pairPoly(a, b, c, d);
+    const coefficients = polyMultiply(monomialPoly(g, 1), pair);
+    const correctText = `${monomialText(g, 1)}${factor(a, b)}${factor(c, d)}`;
+    return finalizeQuestion({
+      type: "common-general-trinomial",
+      caseLabel: FACTORIZATION_CASE_LABELS["common-general-trinomial"],
+      display: formatPolynomialFromCoefficients(coefficients),
+      rule: "Primero simplifica con factor común; después factoriza completamente el trinomio general.",
+      steps: ["Extrae el factor común numérico y x.", "Busca dos binomios cuyo producto reconstruya los tres coeficientes restantes."],
+      explanation: `Al extraer ${monomialText(g, 1)} queda un trinomio que se descompone como ${factor(a, b)}${factor(c, d)}.`
+    }, optionEntry(correctText, coefficients), [
+      optionEntry(`${g}${factor(a, b)}${factor(c, d)}`, polyScale(pair, g)),
+      optionEntry(`${monomialText(g, 1)}${factor(a, -b)}${factor(c, d)}`, polyMultiply(monomialPoly(g, 1), pairPoly(a, -b, c, d))),
+      optionEntry(`${monomialText(g, 1)}${factor(a, b)}${factor(c, -d)}`, polyMultiply(monomialPoly(g, 1), pairPoly(a, b, c, -d))),
+      optionEntry(`${monomialText(g + 1, 1)}${factor(a, b)}${factor(c, d)}`, polyMultiply(monomialPoly(g + 1, 1), pair)),
+      optionEntry(`${monomialText(g, 1)}${factor(a + 1, b)}${factor(c, d)}`, polyMultiply(monomialPoly(g, 1), pairPoly(a + 1, b, c, d)))
     ]);
-    const correct = factoredPair(a, b, c, d);
-    const correctSignature = polynomialSignature(...coefficients);
-    return {
-      type: "general-trinomial",
-      caseLabel: FACTORIZATION_CASE_LABELS["general-trinomial"],
-      display,
-      coefficients,
-      correctSignature,
-      rule: "Reconstruye dos binomios primitivos cuyo producto produzca Ax² + Bx + C.",
-      steps: ["Relaciona el producto de los primeros términos con el coeficiente de x².", "Verifica término medio y término independiente al multiplicar."],
-      correct,
-      explanation: `Al multiplicar ${factor(a, b)} por ${factor(c, d)} se recuperan exactamente ${coefficients[0]}x², ${coefficients[1]}x y ${coefficients[2]}; además, cada binomio es primitivo.`,
-      options: makeVerifiedOptions(correct, correctSignature, [
-        optionEntry(factoredPair(a, -b, c, d), pairSignature(a, -b, c, d)),
-        optionEntry(factoredPair(a, b, c, -d), pairSignature(a, b, c, -d)),
-        optionEntry(factoredPair(a, d, c, b), pairSignature(a, d, c, b)),
-        optionEntry(factoredPair(c, b, a, d), pairSignature(c, b, a, d))
-      ])
-    };
+  }
+
+  function createGroupingDifferenceSquaresQuestion() {
+    let m, n;
+    do { m = randomInt(1, 5); n = randomInt(2, 9); } while (!coprime(m, n));
+    const c = randomSigned(1, 6);
+    const coefficients = polyMultiply([1, c], polyMultiply([m, -n], [m, n]));
+    const correctText = `${factor(1, c)}${factor(m, -n)}${factor(m, n)}`;
+    return finalizeQuestion({
+      type: "grouping-difference-squares",
+      caseLabel: FACTORIZATION_CASE_LABELS["grouping-difference-squares"],
+      display: formatPolynomialFromCoefficients(coefficients),
+      rule: "Busca primero el binomio común por agrupación; luego factoriza la diferencia de cuadrados que aparece.",
+      steps: ["Agrupa los términos para obtener un factor binomial común.", "Factoriza el segundo factor como A² − B²."],
+      explanation: `La agrupación produce ${factor(1, c)}((` + `${m}x)² − ${n}²), y la diferencia de cuadrados completa la factorización.`
+    }, optionEntry(correctText, coefficients), [
+      optionEntry(`${factor(1, -c)}${factor(m, -n)}${factor(m, n)}`, polyMultiply([1, -c], polyMultiply([m, -n], [m, n]))),
+      optionEntry(`${factor(1, c)}${factor(m, -n)}²`, polyMultiply([1, c], polyMultiply([m, -n], [m, -n]))),
+      optionEntry(`${factor(1, c)}${factor(m, n)}²`, polyMultiply([1, c], polyMultiply([m, n], [m, n]))),
+      optionEntry(`x${factor(1, c)}${factor(m, -n)}${factor(m, n)}`, polyMultiply([1, 0], coefficients)),
+      optionEntry(`${factor(1, c + (c > 0 ? 1 : -1))}${factor(m, -n)}${factor(m, n)}`, polyMultiply([1, c + (c > 0 ? 1 : -1)], polyMultiply([m, -n], [m, n])))
+    ]);
+  }
+
+  function createCommonGroupingQuestion() {
+    let a, b, c, d;
+    do {
+      a = randomInt(1, 4); b = randomInt(1, 8); c = randomInt(1, 4); d = randomSigned(1, 7);
+    } while (!coprime(a, b) || !coprime(c, d));
+    const quadratic = [a, 0, b];
+    const coefficients = polyMultiply([1, 0], polyMultiply(quadratic, [c, d]));
+    const correctText = `x${quadraticFactor(a, b)}${factor(c, d)}`;
+    return finalizeQuestion({
+      type: "common-grouping",
+      caseLabel: FACTORIZATION_CASE_LABELS["common-grouping"],
+      display: formatPolynomialFromCoefficients(coefficients),
+      rule: "Extrae el factor común y usa agrupación para obtener dos factores adicionales.",
+      steps: ["Saca x, que aparece en todos los términos.", "Agrupa el polinomio restante para obtener un factor cuadrático y uno lineal."],
+      explanation: `Después de extraer x, la agrupación reconstruye ${quadraticFactor(a, b)}${factor(c, d)}. El factor cuadrático tiene término constante positivo y es primitivo.`
+    }, optionEntry(correctText, coefficients), [
+      optionEntry(`${quadraticFactor(a, b)}${factor(c, d)}`, polyMultiply(quadratic, [c, d])),
+      optionEntry(`x${quadraticFactor(a, -b)}${factor(c, d)}`, polyMultiply([1, 0], polyMultiply([a, 0, -b], [c, d]))),
+      optionEntry(`x${quadraticFactor(a, b)}${factor(c, -d)}`, polyMultiply([1, 0], polyMultiply(quadratic, [c, -d]))),
+      optionEntry(`x${quadraticFactor(a + 1, b)}${factor(c, d)}`, polyMultiply([1, 0], polyMultiply([a + 1, 0, b], [c, d]))),
+      optionEntry(`x${quadraticFactor(a, b + 1)}${factor(c, d)}`, polyMultiply([1, 0], polyMultiply([a, 0, b + 1], [c, d])))
+    ]);
   }
 
   function generateQuestionCandidate(type) {
     const builders = {
-      "common-factor": createCommonFactorQuestion,
-      grouping: createGroupingQuestion,
-      "difference-squares": createDifferenceSquaresQuestion,
-      "perfect-square-trinomial": createPerfectSquareTrinomialQuestion,
-      "general-trinomial": createGeneralTrinomialQuestion
+      "common-difference-squares": createCommonDifferenceSquaresQuestion,
+      "common-perfect-square": createCommonPerfectSquareQuestion,
+      "common-general-trinomial": createCommonGeneralTrinomialQuestion,
+      "grouping-difference-squares": createGroupingDifferenceSquaresQuestion,
+      "common-grouping": createCommonGroupingQuestion
     };
     const question = builders[type]();
     question.id = `${type}-${question.display.replace(/\s+/g, "-")}`;
-    question.key = `${type}|${question.display}|${question.correct}`;
-    question.prompt = `Factoriza completamente: ${question.display}`;
+    question.key = `${type}|${question.display}|${question.correctSignature}`;
+    question.prompt = `Factoriza completamente aplicando más de un caso: ${question.display}`;
+    question.comboCases = question.caseLabel.split("·").slice(1).join("·").trim();
     return question;
   }
 
   function createQuestion() {
     const types = shuffled(FACTORIZATION_TYPES);
-    for (let attempt = 0; attempt < 180; attempt++) {
+    for (let attempt = 0; attempt < 200; attempt++) {
       const candidate = generateQuestionCandidate(types[attempt % types.length]);
       if (rememberQuestion(candidate)) return candidate;
     }
@@ -310,15 +315,15 @@
     roundedRect(qctx, x, y, width, height, 20); qctx.fill();
     qctx.strokeStyle = "#c7d2e0"; qctx.lineWidth = 3; qctx.stroke();
     qctx.textAlign = "left"; qctx.textBaseline = "alphabetic";
-    qctx.fillStyle = "#4d5c72"; qctx.font = "900 18px Segoe UI";
-    drawWrappedQuestionText(qctx, question.caseLabel, x + 28, y + 48, width - 56, 24, 2);
-    qctx.fillStyle = "#172033"; qctx.font = "900 24px Segoe UI";
-    drawWrappedQuestionText(qctx, question.rule, x + 28, y + 126, width - 56, 32, 4);
-    qctx.fillStyle = "#2457d6"; qctx.font = "900 20px Segoe UI";
-    qctx.fillText("ESTRATEGIA", x + 28, y + 265);
-    qctx.fillStyle = "#596579"; qctx.font = "700 19px Segoe UI";
-    drawWrappedQuestionText(qctx, `1. ${question.steps[0]}`, x + 28, y + 310, width - 56, 27, 3);
-    drawWrappedQuestionText(qctx, `2. ${question.steps[1]}`, x + 28, y + 400, width - 56, 27, 3);
+    qctx.fillStyle = "#4d5c72"; qctx.font = "900 17px Segoe UI";
+    drawWrappedQuestionText(qctx, question.caseLabel, x + 28, y + 44, width - 56, 23, 3);
+    qctx.fillStyle = "#172033"; qctx.font = "900 21px Segoe UI";
+    drawWrappedQuestionText(qctx, question.rule, x + 28, y + 128, width - 56, 28, 4);
+    qctx.fillStyle = "#2457d6"; qctx.font = "900 19px Segoe UI";
+    qctx.fillText("RUTA DE SOLUCIÓN", x + 28, y + 270);
+    qctx.fillStyle = "#596579"; qctx.font = "700 18px Segoe UI";
+    drawWrappedQuestionText(qctx, `1. ${question.steps[0]}`, x + 28, y + 312, width - 56, 26, 3);
+    drawWrappedQuestionText(qctx, `2. ${question.steps[1]}`, x + 28, y + 402, width - 56, 26, 3);
   }
 
   function drawQuestionFigure(question) {
@@ -329,8 +334,8 @@
 
     qctx.fillStyle = "#2457d6";
     roundedRect(qctx, 50, 54, 700, 58, 14); qctx.fill();
-    qctx.fillStyle = "#ffffff"; qctx.font = "900 24px Segoe UI"; qctx.textAlign = "center"; qctx.textBaseline = "middle";
-    qctx.fillText("TALLER DE MATEMÁTICAS · 5 CASOS DE FACTORIZACIÓN", 400, 83, 650);
+    qctx.fillStyle = "#ffffff"; qctx.font = "900 23px Segoe UI"; qctx.textAlign = "center"; qctx.textBaseline = "middle";
+    qctx.fillText("TALLER · COMBINACIÓN DE CASOS DE FACTORIZACIÓN", 400, 83, 650);
 
     qctx.fillStyle = "#fbfcfe";
     roundedRect(qctx, 50, 136, 700, 414, 22); qctx.fill();
@@ -338,15 +343,15 @@
 
     qctx.textAlign = "left"; qctx.textBaseline = "alphabetic";
     qctx.fillStyle = "#596579"; qctx.font = "900 20px Segoe UI";
-    qctx.fillText("FACTORIZA COMPLETAMENTE", 92, 195);
+    qctx.fillText("FACTORIZA COMPLETAMENTE · USA MÁS DE UN CASO", 92, 195);
 
-    qctx.fillStyle = "#172033"; qctx.font = "900 46px Segoe UI"; qctx.textAlign = "center";
-    drawWrappedQuestionText(qctx, question.display, 400, 300, 610, 62, 3);
+    qctx.fillStyle = "#172033"; qctx.font = "900 43px Segoe UI"; qctx.textAlign = "center";
+    drawWrappedQuestionText(qctx, question.display, 400, 300, 610, 58, 3);
 
     qctx.fillStyle = "#eaf1ff";
     roundedRect(qctx, 94, 430, 612, 82, 16); qctx.fill();
-    qctx.fillStyle = "#2457d6"; qctx.font = "800 20px Segoe UI"; qctx.textAlign = "center";
-    qctx.fillText("Selecciona la forma factorizada equivalente.", 400, 480, 570);
+    qctx.fillStyle = "#2457d6"; qctx.font = "800 19px Segoe UI"; qctx.textAlign = "center";
+    qctx.fillText("No pares en el primer paso: selecciona la factorización completa.", 400, 480, 570);
 
     drawFactorizationPanel(question);
   }

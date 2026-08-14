@@ -1,0 +1,47 @@
+"use strict";
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.join(__dirname, "..");
+const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
+const game = read("school-game/v60/game.js");
+const html = read("school-game/v60/index.html");
+const main = read("school-game/v60/main.js");
+const pkg = JSON.parse(read("package.json"));
+function assert(ok, msg) { if (!ok) throw new Error(msg); }
+
+assert(pkg.version === "60.7.0", "Package must be V60.7.0.");
+assert(pkg.name === "math-tactical-classroom-v60-factorization-mastery-boss", "Package identity is incorrect.");
+assert(pkg.build.productName === "Math Tactical Classroom V60.7 Mastery Boss Edition", "Product name is incorrect.");
+assert(pkg.scripts.prepare.includes("patch-v60-fair-dodge-boss-v606.js") && pkg.scripts.prepare.includes("unpack-v607-mastery-patch.js") && pkg.scripts.prepare.includes("patch-v60-mastery-boss-v607.js"), "Prepare chain must preserve V60.6 then apply V60.7.");
+
+assert(game.includes('const VERSION = "60.7.0";') && game.includes('const EDITION = "math-factorization-mastery-boss-v607";'), "Renderer identity is incorrect.");
+assert(game.includes("const FIXED_MATCH_SECONDS = 2700") && game.includes("const QUESTION_SECONDS = 90"), "45-minute / 90-second timers regressed.");
+assert(game.includes("BOSS_SHIELD_HITS_BY_PHASE = Object.freeze([6, 8, 10])"), "Mastery shield durability must be 6/8/10.");
+assert(game.includes("BOSS_CORE_HITS_BY_PHASE = Object.freeze([3, 4, 5])"), "Core armor must require 3/4/5 controlled hits.");
+assert(game.includes("BOSS_DASHES_BY_PHASE = Object.freeze([4, 6, 8])"), "Mastery dash chains must be 4/6/8.");
+assert(game.includes("BOSS_DASH_SPEED_BY_PHASE = Object.freeze([820, 990, 1160])"), "Mastery dash speeds are incorrect.");
+assert(game.includes("BOSS_DASH_TELEGRAPH_BY_PHASE = Object.freeze([0.58, 0.48, 0.40])"), "Mastery telegraphs are incorrect.");
+assert(game.includes("BOSS_DODGE_IFRAMES_SECONDS = 0.18") && game.includes("BOSS_DODGE_COOLDOWN_SECONDS = 0.38"), "Mastery dodge timing is incorrect.");
+assert(game.includes("BOSS_DODGE_FINAL_CUE_SECONDS = 0.12"), "Final dodge flash cue is missing.");
+assert(game.includes("BOSS_MASTERY_TARGET_DEATHS = 30") && game.includes("BOSS_MASTERY_ASSIST_TELEGRAPH = 0.07"), "Thirty-death mastery target / bounded assist is missing.");
+assert(game.includes('enemy.bossDashCadence = ["STANDARD", "HOLD", "QUICK", "LATE"][cadenceIndex]'), "Variable dash cadence is missing.");
+assert(game.includes("enemy.bossDashLockDuration = clamp("), "Per-dash lock duration variation is missing.");
+assert(game.includes('banner("DODGE!", 150)') && game.includes('finalCue ? "#ffffff"'), "Final visual/timing dodge cue is missing.");
+assert(game.includes("Math.hypot(player.x - enemy.x, player.y - enemy.y) <= enemy.radius + player.radius + 38"), "Dash danger radius must require deliberate dodge movement.");
+assert(game.includes("function registerBossPerfectDodge"), "Perfect-dodge mastery helper is missing.");
+assert(game.includes("PERFECT DODGE · COUNTER WINDOW") && !game.includes('damageBossShield(enemy, 1, "PERFECT DODGE")'), "Perfect dodge must build punish time instead of free shield damage.");
+assert(game.includes("CORE ARMOR") && game.includes("BOSS_CORE_HIT_COOLDOWN_SECONDS"), "Core execution challenge is missing.");
+assert(game.includes("bossCoreOneHitDoesNotAdvancePhase") && game.includes("bossPerfectDodgeBuildsCounterFocus"), "Runtime mastery probes are missing.");
+assert(game.includes("bossMasteryAssistAfterDeaths: true") && game.includes("bossVariableDashCadence: true"), "Mastery runtime markers are missing.");
+assert(game.includes("state.bossDeaths = (state.bossDeaths || 0) + 1") && game.includes("state.bossDeaths = 0"), "Boss death tracking is missing or not reset per mission.");
+assert(game.includes("BOSS_DASH_STEER_BY_PHASE = Object.freeze([0, 0, 0])"), "Committed dashes must remain non-homing after lock.");
+assert(game.includes("bossVisibleAimTelegraph: true") && game.includes("bossAimLocksBeforeDash: true") && game.includes("bossCommittedDashNoHoming: true"), "Readable fair telegraph contract regressed.");
+assert(game.includes("bossDynamicPatternCount: 8"), "Mastery fight should expose eight pressure/cadence patterns.");
+assert(game.includes("bossRequiresThrownRoomWeapon: false") && game.includes("roomWeaponPickupFunctional"), "Killable boss / floor weapon contract regressed.");
+assert(game.includes("teacherModeAvailable: true") && game.includes('event.code === "F8"'), "Teacher mode regressed.");
+assert(game.includes("AYUDA INICIAL") && game.includes("Empieza así:"), "Factorization help regressed.");
+for (const type of ["common-factor","grouping","difference-squares","perfect-square-trinomial","general-trinomial"]) assert(game.includes(`\"${type}\"`), `Missing factorization case ${type}.`);
+assert(html.includes("MATH TACTICAL · V60.7 · MASTERY BOSS") && html.includes("4 / 6 / 8") && html.includes("6 / 8 / 10") && html.includes("3 / 4 / 5"), "V60.7 mastery briefing is incomplete.");
+assert(main.includes('const APP_VERSION = "60.7.0";') && main.includes('const EDITION = "math-factorization-mastery-boss-v607";'), "Main-process V60.7 identity is incorrect.");
+assert(main.includes('app.setName("Math Tactical Classroom V60.7 Mastery Boss Edition")') && main.includes('"protected-results-v60-factorization-mastery-boss"'), "V60.7 app/vault isolation is incorrect.");
+console.log("Math Tactical V60.7 mastery contracts passed: 4/6/8 variable-cadence committed dash chains, 6/8/10 shields, narrow 0.18s intentional dodge, final white release cue, perfect-dodge counter focus without free damage, 3/4/5 core armor, bounded assist only after 30 boss deaths, teacher mode and factorization preserved.");

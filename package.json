@@ -2,6 +2,7 @@
   "name": "math-tactical-classroom-v60-factorization-relentless-boss",
   "version": "60.5.0",
   "private": true,
+  "author": "Juan Diego Pérez",
   "description": "Offline Math Tactical classroom Windows installer with 90-second factorization questions, a 45-minute mission, PIN-protected teacher access to all five rooms, fast 1–2 hit normal enemies, and a much harder three-phase Archive Warden that engages immediately with 3/5/7 predictive dash chains, phase-scaled speed and steering, projectile pressure, fatigue counter-windows, permanent floor weapons, and encrypted local student results.",
   "main": "school-game/v60/main.js",
   "scripts": {

@@ -13,7 +13,7 @@ function assert(condition, message) { if (!condition) throw new Error(message); 
 assert(packageJson.version === "60.5.0", "Package must be V60.5.0.");
 assert(packageJson.name === "math-tactical-classroom-v60-factorization-relentless-boss", "Package identity is incorrect.");
 assert(packageJson.build.productName === "Math Tactical Classroom V60.5 Relentless Boss Edition", "Product name is incorrect.");
-assert(packageJson.scripts.prepare.includes("patch-v60-relentless-boss-v605.js"), "V60.5 boss patch is missing from prepare chain.");
+assert(packageJson.scripts.prepare.includes("run-v605-relentless-patch.js"), "V60.5 boss patch runner is missing from prepare chain.");
 
 assert(game.includes('const VERSION = "60.5.0";'), "Renderer version is incorrect.");
 assert(game.includes('const EDITION = "math-factorization-relentless-boss-v605";'), "Renderer edition is incorrect.");

@@ -1,0 +1,44 @@
+"use strict";
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.join(__dirname, "..");
+const read = (p) => fs.readFileSync(path.join(root, p), "utf8");
+const game = read("school-game/v60/game.js");
+const html = read("school-game/v60/index.html");
+const main = read("school-game/v60/main.js");
+const pkg = JSON.parse(read("package.json"));
+function assert(ok, msg) { if (!ok) throw new Error(msg); }
+
+assert(pkg.version === "60.6.0", "Package must be V60.6.0.");
+assert(pkg.name === "math-tactical-classroom-v60-factorization-fair-dodge-boss", "Package identity is incorrect.");
+assert(pkg.build.productName === "Math Tactical Classroom V60.6 Fair Dodge Boss Edition", "Product name is incorrect.");
+assert(pkg.scripts.prepare.includes("run-v605-relentless-patch.js") && pkg.scripts.prepare.includes("unpack-v606-fair-dodge-patch.js") && pkg.scripts.prepare.includes("patch-v60-fair-dodge-boss-v606.js"), "Prepare chain must preserve V60.5 then apply V60.6 fair-dodge patch.");
+
+assert(game.includes('const VERSION = "60.6.0";'), "Renderer version is incorrect.");
+assert(game.includes('const EDITION = "math-factorization-fair-dodge-boss-v606";'), "Renderer edition is incorrect.");
+assert(game.includes("const FIXED_MATCH_SECONDS = 2700") && game.includes("const QUESTION_SECONDS = 90"), "45-minute / 90-second timers regressed.");
+assert(game.includes("BOSS_DASHES_BY_PHASE = Object.freeze([3, 5, 7])"), "3/5/7 phase escalation must remain.");
+assert(game.includes("BOSS_DASH_SPEED_BY_PHASE = Object.freeze([740, 900, 1040])"), "Fair phase dash speeds are incorrect.");
+assert(game.includes("BOSS_DASH_TELEGRAPH_BY_PHASE = Object.freeze([0.76, 0.62, 0.50])"), "Readable dash telegraphs are missing.");
+assert(game.includes("BOSS_DASH_LOCK_SECONDS_BY_PHASE = Object.freeze([0.24, 0.20, 0.17])"), "Aim-lock windows are missing.");
+assert(game.includes("BOSS_DASH_STEER_BY_PHASE = Object.freeze([0, 0, 0])"), "Dash must commit after lock rather than home during execution.");
+assert(game.includes("BOSS_DODGE_IFRAMES_SECONDS = 0.30") && game.includes("BOSS_DODGE_COOLDOWN_SECONDS = 0.42"), "Boss-room dodge timing is incorrect.");
+assert(game.includes("Math.max(1.05, baseTelegraph)"), "Opening attack needs a readable one-second telegraph.");
+assert(game.includes("function drawBossDashTelegraph"), "Visible boss aim lane renderer is missing.");
+assert(game.includes("WATCH THE RED LANE") && game.includes("DODGE NOW · AIM LOCKED"), "Readable attack cues are missing.");
+assert(game.includes("function drawBossDodgeStatus") && game.includes("SHIFT DODGE · READY"), "Dodge-ready feedback is missing.");
+assert(game.includes("keys.delete(\"ShiftLeft\")") && game.includes("event.repeat) return"), "Boss dodge must be an intentional tap, not hold-to-auto-dodge.");
+assert(game.includes("PERFECT DODGE") && game.includes('damageBossShield(enemy, 1, "PERFECT DODGE")'), "Perfect dodge must punish the boss shield.");
+assert(game.includes('if (stage !== "impact" || !enemy?.bossShieldActive) return;'), "Projectile pressure must not overlap the dash telegraph/launch.");
+assert(!game.includes("const steerStrength = BOSS_DASH_STEER_BY_PHASE[phaseIndex]"), "In-dash homing steering regressed into the fair boss.");
+assert(game.includes("bossVisibleAimTelegraph: true") && game.includes("bossAimLocksBeforeDash: true") && game.includes("bossCommittedDashNoHoming: true") && game.includes("bossPerfectDodgeDamagesShield"), "Fair-boss runtime markers are missing.");
+assert(game.includes("BOSS_SHIELD_HITS_BY_PHASE = Object.freeze([4, 5, 6])") && game.includes("bossRequiresThrownRoomWeapon: false"), "Killable shield contract regressed.");
+assert(game.includes("roomWeaponPickupFunctional") && game.includes("BOSS_ROOM_PICKUP_RADIUS = 118"), "Boss-room floor weapons regressed.");
+assert(game.includes("teacherModeAvailable: true") && game.includes('event.code === "F8"'), "Teacher mode regressed.");
+assert(game.includes("AYUDA INICIAL") && game.includes("Empieza así:"), "Factorization help regressed.");
+for (const type of ["common-factor","grouping","difference-squares","perfect-square-trinomial","general-trinomial"]) assert(game.includes(`\"${type}\"`), `Missing factorization case ${type}.`);
+assert(html.includes("MATH TACTICAL · V60.6 · FAIR DODGE BOSS") && html.includes("red aim lane") && html.includes("tap Shift"), "V60.6 fair-dodge instructions are missing.");
+assert(main.includes('const APP_VERSION = "60.6.0";') && main.includes('const EDITION = "math-factorization-fair-dodge-boss-v606";'), "Main-process V60.6 identity is incorrect.");
+assert(main.includes('app.setName("Math Tactical Classroom V60.6 Fair Dodge Boss Edition")'), "Electron app name is incorrect.");
+assert(main.includes('"protected-results-v60-factorization-fair-dodge-boss"'), "V60.6 encrypted results must be isolated.");
+console.log("Math Tactical V60.6 fair-dodge contracts passed: visible predictive lane, lock-before-commit dashes, intentional Shift i-frames, perfect-dodge shield punishment, readable 3/5/7 phase escalation, fatigue openings, teacher mode, 45m mission and 90s factorization questions.");

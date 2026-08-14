@@ -1,14 +1,14 @@
 {
-  "name": "math-tactical-classroom-v60-factorization-mastery-verified",
-  "version": "60.7.1",
+  "name": "math-tactical-classroom-v60-combined-factorization",
+  "version": "60.8.0",
   "private": true,
   "author": "Juan Diego Pérez",
-  "description": "Offline Math Tactical classroom Windows installer with the V60.7 high-mastery Archive Warden boss preserved and a mathematically audited five-case factorization bank: complete primitive factorizations, the correct answer guaranteed to be visible, algebraically unique distractors, 90-second questions, a 45-minute mission, teacher access, permanent boss-room weapons, and encrypted local results.",
+  "description": "Offline Math Tactical classroom Windows installer centered on combined factorization cases, with mathematically verified multi-stage questions, strict four-choice option objects, runtime DOM integrity guards, 90-second questions, a 45-minute mission, PIN-protected Teacher Mode, the V60.7 Mastery boss, permanent boss-room weapons, and encrypted local results.",
   "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604-runner.js scripts/patch-v60-teacher-mode-v604.js && node scripts/run-v605-relentless-patch.js && node scripts/unpack-v606-fair-dodge-patch.js && node scripts/patch-v60-fair-dodge-boss-v606.js && node scripts/unpack-v607-mastery-patch.js && node scripts/patch-v60-mastery-boss-v607.js && node scripts/patch-v60-math-verification-v6071.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v6071-verified-static-test.js && node scripts/audit-factorization-bank-v6071.js",
+    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604-runner.js scripts/patch-v60-teacher-mode-v604.js && node scripts/run-v605-relentless-patch.js && node scripts/unpack-v606-fair-dodge-patch.js && node scripts/patch-v60-fair-dodge-boss-v606.js && node scripts/unpack-v607-mastery-patch.js && node scripts/patch-v60-mastery-boss-v607.js && node scripts/patch-v60-math-verification-v6071.js && node scripts/patch-v60-combined-factorization-v608.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v608-combined-static-test.js && node scripts/audit-factorization-bank-v608.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
@@ -16,13 +16,13 @@
   "engines": { "node": ">=22.12.0" },
   "devDependencies": { "electron": "43.2.0", "electron-builder": "26.9.1" },
   "build": {
-    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.masteryverified",
-    "productName": "Math Tactical Classroom V60.7.1 Mastery Boss Verified Math",
+    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.combined.v608",
+    "productName": "Math Tactical Classroom V60.8 Combined Factorization",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "maximum",
     "electronLanguages": ["es", "en-US"],
-    "directories": { "output": "dist/math-factorization-v60-mastery-verified-windows", "buildResources": "desktop/assets" },
+    "directories": { "output": "dist/math-factorization-v60-combined-v608-windows", "buildResources": "desktop/assets" },
     "files": ["package.json", "school-game/v60/**/*", "school-game/assets/**/*"],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -30,14 +30,14 @@
       "target": [{ "target": "nsis", "arch": ["x64"] }]
     },
     "nsis": {
-      "artifactName": "Math-Tactical-Classroom-V60.7.1-Mastery-Boss-Verified-Math-Setup-${version}-Local-x64.${ext}",
+      "artifactName": "Math-Tactical-Classroom-V60.8-Combined-Factorization-Setup-${version}-Local-x64.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Math Tactical Classroom V60.7.1 Mastery Boss Verified Math",
+      "shortcutName": "Math Tactical Classroom V60.8 Combined Factorization",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "displayLanguageSelector": false

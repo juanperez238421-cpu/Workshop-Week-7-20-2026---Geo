@@ -1,14 +1,14 @@
 {
-  "name": "math-tactical-classroom-v60-factorization-fair-dodge-boss",
-  "version": "60.6.0",
+  "name": "math-tactical-classroom-v60-factorization-mastery-boss",
+  "version": "60.7.0",
   "private": true,
   "author": "Juan Diego Pérez",
-  "description": "Offline Math Tactical classroom Windows installer with 90-second factorization questions, a 45-minute mission, PIN-protected teacher access to all five rooms, fast 1–2 hit normal enemies, and a readable three-phase Archive Warden boss with visible predictive aim lanes, locked committed dashes, deliberate Shift dodge i-frames, perfect-dodge shield damage, fatigue counter-windows, permanent floor weapons, and encrypted local student results.",
+  "description": "Offline Math Tactical classroom Windows installer with a 45-minute mission, 90-second factorization questions, PIN-protected teacher access, fast normal enemies, and a high-mastery three-phase Archive Warden boss with visible predictive aim, variable committed dash cadence, narrow intentional dodge timing, multi-hit shield and core armor, punish windows, and bounded assist only after 30 boss deaths.",
   "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604-runner.js scripts/patch-v60-teacher-mode-v604.js && node scripts/run-v605-relentless-patch.js && node scripts/unpack-v606-fair-dodge-patch.js && node scripts/patch-v60-fair-dodge-boss-v606.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v606-fair-dodge-static-test.js",
+    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604-runner.js scripts/patch-v60-teacher-mode-v604.js && node scripts/run-v605-relentless-patch.js && node scripts/unpack-v606-fair-dodge-patch.js && node scripts/patch-v60-fair-dodge-boss-v606.js && node scripts/unpack-v607-mastery-patch.js && node scripts/patch-v60-mastery-boss-v607.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v607-mastery-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
@@ -16,13 +16,13 @@
   "engines": { "node": ">=22.12.0" },
   "devDependencies": { "electron": "43.2.0", "electron-builder": "26.9.1" },
   "build": {
-    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.fairdodgeboss",
-    "productName": "Math Tactical Classroom V60.6 Fair Dodge Boss Edition",
+    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.masteryboss",
+    "productName": "Math Tactical Classroom V60.7 Mastery Boss Edition",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "maximum",
     "electronLanguages": ["es", "en-US"],
-    "directories": { "output": "dist/math-factorization-v60-fair-dodge-windows", "buildResources": "desktop/assets" },
+    "directories": { "output": "dist/math-factorization-v60-mastery-windows", "buildResources": "desktop/assets" },
     "files": ["package.json", "school-game/v60/**/*", "school-game/assets/**/*"],
     "win": {
       "icon": "desktop/assets/icon.ico",
@@ -30,14 +30,14 @@
       "target": [{ "target": "nsis", "arch": ["x64"] }]
     },
     "nsis": {
-      "artifactName": "Math-Tactical-Classroom-V60.6-Fair-Dodge-Boss-Setup-${version}-Local-x64.${ext}",
+      "artifactName": "Math-Tactical-Classroom-V60.7-Mastery-Boss-Setup-${version}-Local-x64.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Math Tactical Classroom V60.6 Fair Dodge Boss Edition",
+      "shortcutName": "Math Tactical Classroom V60.7 Mastery Boss Edition",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "displayLanguageSelector": false

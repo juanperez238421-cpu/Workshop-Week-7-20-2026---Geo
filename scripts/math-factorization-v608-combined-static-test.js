@@ -1,0 +1,35 @@
+"use strict";
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.join(__dirname, "..");
+const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
+const game = read("school-game/v60/game.js");
+const html = read("school-game/v60/index.html");
+const css = read("school-game/v60/styles.css");
+const main = read("school-game/v60/main.js");
+const pkg = JSON.parse(read("package.json"));
+function assert(ok, message) { if (!ok) throw new Error(message); }
+
+assert(pkg.version === "60.8.0", "Package must be V60.8.0.");
+assert(pkg.name === "math-tactical-classroom-v60-combined-factorization", "Package identity mismatch.");
+assert(pkg.scripts.prepare.includes("patch-v60-math-verification-v6071.js") && pkg.scripts.prepare.includes("patch-v60-combined-factorization-v608.js"), "Prepare chain must preserve V60.7.1 then apply V60.8.");
+assert(game.includes('const VERSION = "60.8.0";') && game.includes('const EDITION = "math-factorization-combined-cases-v608";'), "Renderer identity incorrect.");
+assert(main.includes('const APP_VERSION = "60.8.0";') && main.includes('const EDITION = "math-factorization-combined-cases-v608";'), "Main identity incorrect.");
+assert(game.includes("const FIXED_MATCH_SECONDS = 2700") && game.includes("const QUESTION_SECONDS = 90"), "45-minute / 90-second timing regressed.");
+for (const type of ["common-difference-squares","common-perfect-square","common-general-trinomial","grouping-difference-squares","common-grouping"]) assert(game.includes(`\"${type}\"`), `Missing combined factorization type ${type}.`);
+assert(!game.includes('"common-factor",\n    "grouping",\n    "difference-squares"'), "Old single-case bank must not remain central.");
+assert(game.includes("function makeVerifiedOptions") && game.includes("new Set(result.map((entry) => normalizedVisibleText(entry.text))).size !== 4"), "Generation-time visible duplicate guard missing.");
+assert(game.includes("new Set(result.map((entry) => entry.signature)).size !== 4"), "Generation-time algebraic duplicate guard missing.");
+assert(game.includes("correctOptionId") && game.includes("option.isCorrect"), "Explicit correct option object contract missing.");
+assert(game.includes('button.dataset.optionId = option.id') && game.includes('button.addEventListener("click", () => answerQuestion(option.id, button))'), "DOM choice must bind by unique option ID.");
+assert(game.includes("V60.8 option integrity failure") && game.includes("renderedOptionIds.includes(state.currentQuestion.correctOptionId)"), "Runtime DOM integrity guard missing.");
+assert(game.includes("selectedOption?.isCorrect") && !game.includes("const correct = selected === state.currentQuestion.correct;"), "Answer evaluation must not depend on visible text equality.");
+assert(game.includes("questionRenderedUniqueOptionCount") && game.includes("questionRenderedCorrectOptionPresent"), "Question preview must expose rendered integrity markers.");
+assert(game.includes("combinedFactorizationCentral: true") && game.includes("strictOptionObjectIds: true") && game.includes("runtimeOptionIntegrityGuard: true"), "V60.8 readiness markers missing.");
+assert(html.includes("MATH TACTICAL · V60.8 · COMBINED FACTORIZATION") && html.includes("COMBINACIONES 1–3") && html.includes("COMBINACIONES 4–5"), "Combined-factorization briefing missing.");
+assert(css.includes("choice-key") && css.includes("choice-text"), "A-D multiple-choice readability styles missing.");
+assert(game.includes("BOSS_SHIELD_HITS_BY_PHASE = Object.freeze([6, 8, 10])") && game.includes("BOSS_CORE_HITS_BY_PHASE = Object.freeze([3, 4, 5])"), "Mastery boss durability regressed.");
+assert(game.includes("BOSS_DASHES_BY_PHASE = Object.freeze([4, 6, 8])") && game.includes("BOSS_DASH_STEER_BY_PHASE = Object.freeze([0, 0, 0])"), "Mastery boss dash contract regressed.");
+assert(game.includes("teacherModeAvailable: true") && game.includes('event.code === "F8"'), "Teacher mode regressed.");
+assert(main.includes('app.setName("Math Tactical Classroom V60.8 Combined Factorization")') && main.includes('"protected-results-v60-factorization-combined-v608"'), "V60.8 app/results isolation incorrect.");
+console.log("Math Tactical V60.8 static contracts passed: combined-case factorization is central, multiple-choice answers use unique option objects and runtime DOM validation, and the V60.7 Mastery boss + Teacher Mode are preserved.");

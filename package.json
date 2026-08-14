@@ -1,27 +1,27 @@
 {
-  "name": "math-tactical-classroom-v60-factorization-boss",
-  "version": "60.3.0",
+  "name": "math-tactical-classroom-v60-factorization-boss-teacher",
+  "version": "60.4.0",
   "private": true,
-  "description": "Offline Math Tactical classroom Windows installer based on the validated V60 five-room engine, with fast 1–2 hit normal enemies, a three-phase Dark-Souls-style Archive Warden using hit-based shield lives, predictive dashes and multiple attack patterns, permanent pickable floor weapons, five procedural factorization cases with initial-step help, controlled pauses, and encrypted PIN-protected local results.",
+  "description": "Offline Math Tactical classroom Windows installer based on the validated V60.3 Boss Edition, with 90-second factorization questions, a 45-minute mission, PIN-protected teacher direct access to all five rooms, F8 teacher room switching, fast 1–2 hit normal enemies, the three-phase Archive Warden, permanent pickable floor weapons, and encrypted local student results.",
   "main": "school-game/v60/main.js",
   "scripts": {
     "prepare:icons": "node scripts/prepare-desktop-assets.js",
-    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && npm run prepare:icons",
-    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v61-boss-static-test.js",
+    "prepare": "node scripts/prepare-classroom-v60.js && node scripts/patch-v60-factorization-workshop.js && node scripts/unpack-v61-boss-patch.js && node scripts/patch-v60-boss-v61.js && node scripts/patch-v60-teacher-mode-v604.js && npm run prepare:icons",
+    "test": "npm run prepare && node --check school-game/v60/main.js && node --check school-game/v60/preload.js && node --check school-game/v60/game.js && node scripts/math-factorization-v604-teacher-static-test.js",
     "start": "npm run prepare && electron .",
     "dist:win": "npm run prepare && electron-builder --win nsis --x64 --publish never",
     "dir:win": "npm run prepare && electron-builder --win dir --x64 --publish never"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "devDependencies": {
     "electron": "43.2.0",
     "electron-builder": "26.9.1"
   },
   "build": {
-    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.boss",
-    "productName": "Math Tactical Classroom V60.3 Boss Edition",
+    "appId": "co.jpanalyst.mathtactical.classroom.v60.factorization.boss.teacher",
+    "productName": "Math Tactical Classroom V60.4 Teacher Edition",
     "copyright": "Copyright © 2026 Juan Diego Pérez",
     "asar": true,
     "compression": "maximum",
@@ -30,7 +30,7 @@
       "en-US"
     ],
     "directories": {
-      "output": "dist/math-factorization-v60-boss-windows",
+      "output": "dist/math-factorization-v60-teacher-windows",
       "buildResources": "desktop/assets"
     },
     "files": [
@@ -51,14 +51,14 @@
       ]
     },
     "nsis": {
-      "artifactName": "Math-Tactical-Classroom-V60.3-Boss-Setup-${version}-Local-x64.${ext}",
+      "artifactName": "Math-Tactical-Classroom-V60.4-Teacher-Setup-${version}-Local-x64.${ext}",
       "oneClick": false,
       "perMachine": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Math Tactical Classroom V60.3 Boss Edition",
+      "shortcutName": "Math Tactical Classroom V60.4 Teacher Edition",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false,
       "displayLanguageSelector": false

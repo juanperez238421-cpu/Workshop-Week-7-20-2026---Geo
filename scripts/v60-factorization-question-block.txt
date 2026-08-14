@@ -24,6 +24,13 @@
   }
   function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
   function randomSigned(min = 1, max = 8) { return randomInt(min, max) * (Math.random() < 0.5 ? -1 : 1); }
+  function gcdInt(a, b) {
+    let x = Math.abs(Math.trunc(a));
+    let y = Math.abs(Math.trunc(b));
+    while (y) [x, y] = [y, x % y];
+    return x;
+  }
+  function coprime(a, b) { return gcdInt(a, b) === 1; }
   function rememberQuestion(question) {
     if (state.questionKeys.includes(question.key)) return false;
     state.questionKeys.push(question.key);
@@ -55,45 +62,78 @@
   }
   function factor(a, b) { return `(${formatLinear(a, b)})`; }
   function factoredPair(a, b, c, d) { return `${factor(a, b)}${factor(c, d)}`; }
-  function makeOptions(correct, candidates) {
-    const unique = [...new Set([correct, ...candidates].filter(Boolean))];
-    let guard = 0;
-    while (unique.length < 4 && guard < 20) {
-      guard++;
-      const fallback = `${factor(randomInt(1, 4), randomSigned(1, 7))}${factor(randomInt(1, 4), randomSigned(1, 7))}`;
-      if (!unique.includes(fallback)) unique.push(fallback);
+  function polynomialSignature(c2 = 0, c1 = 0, c0 = 0) {
+    return `${Number(c2)}|${Number(c1)}|${Number(c0)}`;
+  }
+  function pairCoefficients(a, b, c, d) { return [a * c, a * d + b * c, b * d]; }
+  function pairSignature(a, b, c, d) { return polynomialSignature(...pairCoefficients(a, b, c, d)); }
+  function optionEntry(text, signature) { return { text, signature }; }
+  function makeVerifiedOptions(correctText, correctSignature, candidates) {
+    const entries = [optionEntry(correctText, correctSignature)];
+    const seenText = new Set([correctText]);
+    const seenSignature = new Set([correctSignature]);
+    for (const candidate of candidates.filter(Boolean)) {
+      if (!candidate.text || !candidate.signature) continue;
+      if (seenText.has(candidate.text) || seenSignature.has(candidate.signature)) continue;
+      seenText.add(candidate.text);
+      seenSignature.add(candidate.signature);
+      entries.push(candidate);
+      if (entries.length >= 4) break;
     }
-    return shuffled(unique).slice(0, 4);
+    let guard = 0;
+    while (entries.length < 4 && guard++ < 120) {
+      const a = randomInt(1, 4), c = randomInt(1, 4);
+      const b = randomSigned(1, 7), d = randomSigned(1, 7);
+      const text = factoredPair(a, b, c, d);
+      const signature = pairSignature(a, b, c, d);
+      if (seenText.has(text) || seenSignature.has(signature)) continue;
+      seenText.add(text); seenSignature.add(signature);
+      entries.push(optionEntry(text, signature));
+    }
+    if (entries.length < 4) throw new Error("Could not build four algebraically distinct factorization options.");
+    return shuffled(entries).map((entry) => entry.text);
   }
 
   function createCommonFactorQuestion() {
     const g = randomInt(2, 9);
-    const a = randomInt(1, 7);
-    const b = randomSigned(1, 9);
-    const display = formatPolynomial([{ coef: g * a, power: 2 }, { coef: g * b, power: 1 }]);
+    let a, b;
+    do {
+      a = randomInt(1, 7);
+      b = randomSigned(1, 9);
+    } while (!coprime(a, b));
+    const coefficients = [g * a, g * b, 0];
+    const display = formatPolynomial([{ coef: coefficients[0], power: 2 }, { coef: coefficients[1], power: 1 }]);
     const correct = `${g}x${factor(a, b)}`;
+    const correctSignature = polynomialSignature(...coefficients);
     return {
       type: "common-factor",
       caseLabel: FACTORIZATION_CASE_LABELS["common-factor"],
       display,
+      coefficients,
+      correctSignature,
       rule: "Extrae el MCD y la menor potencia común de x.",
-      steps: ["Busca el factor numérico común.", "Extrae también x cuando aparece en todos los términos."],
+      steps: ["Calcula el máximo factor numérico común.", "Extrae también x porque aparece en todos los términos."],
       correct,
-      explanation: `El factor común completo es ${g}x; al dividir cada término queda ${formatLinear(a, b)}.`,
-      options: makeOptions(correct, [
-        `${g}${factor(a, b)}`,
-        `${g}x${factor(a + 1, b)}`,
-        `${g}x${factor(a, -b)}`,
-        `${g + 1}x${factor(a, b)}`
+      explanation: `El MCD de los coeficientes es ${g} y la menor potencia común es x; por eso el factor común completo es ${g}x y queda ${formatLinear(a, b)}.`,
+      options: makeVerifiedOptions(correct, correctSignature, [
+        optionEntry(`${g}${factor(a, b)}`, polynomialSignature(0, g * a, g * b)),
+        optionEntry(`${g}x${factor(a + 1, b)}`, polynomialSignature(g * (a + 1), g * b, 0)),
+        optionEntry(`${g}x${factor(a, -b)}`, polynomialSignature(g * a, -g * b, 0)),
+        optionEntry(`${g + 1}x${factor(a, b)}`, polynomialSignature((g + 1) * a, (g + 1) * b, 0))
       ])
     };
   }
 
   function createGroupingQuestion() {
-    const a = randomInt(1, 4);
-    const c = randomInt(1, 4);
-    const b = randomSigned(1, 7);
-    const d = randomSigned(1, 7);
+    let a, b, c, d, middle;
+    do {
+      a = randomInt(1, 4);
+      c = randomInt(1, 4);
+      b = randomSigned(1, 7);
+      d = randomSigned(1, 7);
+      middle = a * d + b * c;
+    } while (!coprime(a, b) || !coprime(c, d) || middle === 0 || (a === c && b === d) || (a === c && b === -d));
+    const coefficients = pairCoefficients(a, b, c, d);
     const display = formatPolynomial([
       { coef: a * c, power: 2 },
       { coef: a * d, power: 1 },
@@ -101,68 +141,86 @@
       { coef: b * d, power: 0 }
     ]);
     const correct = factoredPair(a, b, c, d);
+    const correctSignature = polynomialSignature(...coefficients);
     return {
       type: "grouping",
       caseLabel: FACTORIZATION_CASE_LABELS.grouping,
       display,
+      coefficients,
+      correctSignature,
       rule: "Agrupa los cuatro términos en dos pares con un binomio común.",
       steps: ["Factoriza el primer par.", "Factoriza el segundo par y verifica el mismo binomio."],
       correct,
-      explanation: `Al agrupar aparecen los factores ${factor(a, b)} y ${factor(c, d)}.`,
-      options: makeOptions(correct, [
-        factoredPair(a, -b, c, d),
-        factoredPair(a, b, c, -d),
-        factoredPair(a, d, c, b),
-        `${factor(a * c, b)}${factor(1, d)}`
+      explanation: `La expansión inversa de ${factor(a, b)}${factor(c, d)} produce exactamente los cuatro términos mostrados; ambos binomios son primitivos, así que la factorización ya está completa.`,
+      options: makeVerifiedOptions(correct, correctSignature, [
+        optionEntry(factoredPair(a, -b, c, d), pairSignature(a, -b, c, d)),
+        optionEntry(factoredPair(a, b, c, -d), pairSignature(a, b, c, -d)),
+        optionEntry(factoredPair(a, d, c, b), pairSignature(a, d, c, b)),
+        optionEntry(`${factor(a * c, b)}${factor(1, d)}`, pairSignature(a * c, b, 1, d))
       ])
     };
   }
 
   function createDifferenceSquaresQuestion() {
-    const a = randomInt(1, 7);
-    const b = randomInt(2, 12);
-    const display = formatPolynomial([{ coef: a * a, power: 2 }, { coef: -(b * b), power: 0 }]);
+    let a, b;
+    do {
+      a = randomInt(1, 7);
+      b = randomInt(2, 12);
+    } while (!coprime(a, b));
+    const coefficients = [a * a, 0, -(b * b)];
+    const display = formatPolynomial([{ coef: coefficients[0], power: 2 }, { coef: coefficients[2], power: 0 }]);
     const correct = `${factor(a, -b)}${factor(a, b)}`;
+    const correctSignature = polynomialSignature(...coefficients);
     return {
       type: "difference-squares",
       caseLabel: FACTORIZATION_CASE_LABELS["difference-squares"],
       display,
+      coefficients,
+      correctSignature,
       rule: "A² − B² = (A − B)(A + B).",
-      steps: ["Comprueba que ambos términos sean cuadrados perfectos.", "Usa binomios conjugados."],
+      steps: ["Comprueba que ambos términos sean cuadrados perfectos.", "Usa binomios conjugados y verifica que no quede factor común."],
       correct,
-      explanation: `${a * a}x² = (${a}x)² y ${b * b} = ${b}²; por eso se usan conjugados.`,
-      options: makeOptions(correct, [
-        `${factor(a, -b)}²`,
-        `${factor(a, b)}²`,
-        `${factor(a * a, -b)}${factor(1, b)}`,
-        `${factor(a, -b * b)}${factor(a, 1)}`
+      explanation: `${a * a}x² = (${a}x)² y ${b * b} = ${b}². Como ${a} y ${b} son coprimos, no queda un factor numérico común adicional.`,
+      options: makeVerifiedOptions(correct, correctSignature, [
+        optionEntry(`${factor(a, -b)}²`, pairSignature(a, -b, a, -b)),
+        optionEntry(`${factor(a, b)}²`, pairSignature(a, b, a, b)),
+        optionEntry(`${factor(a * a, -b)}${factor(1, b)}`, pairSignature(a * a, -b, 1, b)),
+        optionEntry(`${factor(a, -(b * b))}${factor(a, 1)}`, pairSignature(a, -(b * b), a, 1))
       ])
     };
   }
 
   function createPerfectSquareTrinomialQuestion() {
-    const a = randomInt(1, 6);
-    const b = randomInt(1, 9);
+    let a, b;
+    do {
+      a = randomInt(1, 6);
+      b = randomInt(1, 9);
+    } while (!coprime(a, b));
     const sign = Math.random() < 0.5 ? -1 : 1;
+    const signedB = sign * b;
+    const coefficients = [a * a, 2 * a * signedB, b * b];
     const display = formatPolynomial([
-      { coef: a * a, power: 2 },
-      { coef: sign * 2 * a * b, power: 1 },
-      { coef: b * b, power: 0 }
+      { coef: coefficients[0], power: 2 },
+      { coef: coefficients[1], power: 1 },
+      { coef: coefficients[2], power: 0 }
     ]);
-    const correct = `${factor(a, sign * b)}²`;
+    const correct = `${factor(a, signedB)}²`;
+    const correctSignature = polynomialSignature(...coefficients);
     return {
       type: "perfect-square-trinomial",
       caseLabel: FACTORIZATION_CASE_LABELS["perfect-square-trinomial"],
       display,
+      coefficients,
+      correctSignature,
       rule: "A² ± 2AB + B² = (A ± B)².",
-      steps: ["Verifica los cuadrados perfectos de los extremos.", "Confirma que el término medio sea ±2AB."],
+      steps: ["Verifica los cuadrados perfectos de los extremos.", "Confirma que el término medio sea ±2AB y que el binomio sea primitivo."],
       correct,
-      explanation: `Los extremos son (${a}x)² y ${b}², y el término medio coincide con ${sign < 0 ? "−" : "+"}2(${a}x)(${b}).`,
-      options: makeOptions(correct, [
-        `${factor(a, -sign * b)}²`,
-        `${factor(a, -b)}${factor(a, b)}`,
-        `${factor(a * a, sign * b)}²`,
-        factoredPair(a, sign * b, 1, sign * b)
+      explanation: `Los extremos son (${a}x)² y ${b}², el término medio es ${sign < 0 ? "−" : "+"}2(${a}x)(${b}) y MCD(${a}, ${b}) = 1.`,
+      options: makeVerifiedOptions(correct, correctSignature, [
+        optionEntry(`${factor(a, -signedB)}²`, pairSignature(a, -signedB, a, -signedB)),
+        optionEntry(`${factor(a, -b)}${factor(a, b)}`, pairSignature(a, -b, a, b)),
+        optionEntry(`${factor(a * a, signedB)}²`, pairSignature(a * a, signedB, a * a, signedB)),
+        optionEntry(factoredPair(a, signedB, 1, signedB), pairSignature(a, signedB, 1, signedB))
       ])
     };
   }
@@ -175,26 +233,30 @@
       b = randomSigned(1, 8);
       d = randomSigned(1, 8);
       middle = a * d + b * c;
-    } while ((a === c && b === d) || middle === 0);
+    } while (!coprime(a, b) || !coprime(c, d) || (a === c && b === d) || middle === 0);
+    const coefficients = pairCoefficients(a, b, c, d);
     const display = formatPolynomial([
-      { coef: a * c, power: 2 },
-      { coef: middle, power: 1 },
-      { coef: b * d, power: 0 }
+      { coef: coefficients[0], power: 2 },
+      { coef: coefficients[1], power: 1 },
+      { coef: coefficients[2], power: 0 }
     ]);
     const correct = factoredPair(a, b, c, d);
+    const correctSignature = polynomialSignature(...coefficients);
     return {
       type: "general-trinomial",
       caseLabel: FACTORIZATION_CASE_LABELS["general-trinomial"],
       display,
-      rule: "Reconstruye dos binomios cuyo producto produzca ax² + bx + c.",
-      steps: ["Relaciona el producto de los primeros términos con x².", "Verifica término medio y término independiente al multiplicar."],
+      coefficients,
+      correctSignature,
+      rule: "Reconstruye dos binomios primitivos cuyo producto produzca Ax² + Bx + C.",
+      steps: ["Relaciona el producto de los primeros términos con el coeficiente de x².", "Verifica término medio y término independiente al multiplicar."],
       correct,
-      explanation: `Al multiplicar ${factor(a, b)} por ${factor(c, d)} se recuperan los tres coeficientes del trinomio.`,
-      options: makeOptions(correct, [
-        factoredPair(a, -b, c, d),
-        factoredPair(a, b, c, -d),
-        factoredPair(a, d, c, b),
-        factoredPair(c, b, a, d)
+      explanation: `Al multiplicar ${factor(a, b)} por ${factor(c, d)} se recuperan exactamente ${coefficients[0]}x², ${coefficients[1]}x y ${coefficients[2]}; además, cada binomio es primitivo.`,
+      options: makeVerifiedOptions(correct, correctSignature, [
+        optionEntry(factoredPair(a, -b, c, d), pairSignature(a, -b, c, d)),
+        optionEntry(factoredPair(a, b, c, -d), pairSignature(a, b, c, -d)),
+        optionEntry(factoredPair(a, d, c, b), pairSignature(a, d, c, b)),
+        optionEntry(factoredPair(c, b, a, d), pairSignature(c, b, a, d))
       ])
     };
   }

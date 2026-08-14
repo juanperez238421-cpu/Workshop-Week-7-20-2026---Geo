@@ -1,0 +1,101 @@
+name: Build Math Tactical V60.4 Teacher Edition Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/math-tactical-v60-4-teacher-mode
+    paths:
+      - "scripts/prepare-classroom-v60.js"
+      - "scripts/v60-source/**"
+      - "scripts/patch-v60-factorization-workshop.js"
+      - "scripts/v60-factorization-question-block.txt"
+      - "scripts/unpack-v61-boss-patch.js"
+      - "scripts/v61-boss-patch.js.gz"
+      - "scripts/patch-v60-teacher-mode-v604.js"
+      - "scripts/patch-v60-teacher-mode-v604-runner.js"
+      - "scripts/math-factorization-v604-teacher-static-test.js"
+      - "scripts/validate-math-factorization-v604-windows.ps1"
+      - "desktop/assets/**"
+      - "package.json"
+      - ".github/workflows/build-math-factorization-v604-teacher.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: math-factorization-v604-teacher-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 70
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath math-v604-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate timers teacher mode boss AI and factorization contracts
+        shell: pwsh
+        run: |
+          npm test 2>&1 | Tee-Object -FilePath math-v604-validation.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build full local Windows installer
+        shell: pwsh
+        run: |
+          npm run dist:win 2>&1 | Tee-Object -FilePath math-v604-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install launch and validate V60.4 teacher runtime
+        shell: pwsh
+        run: ./scripts/validate-math-factorization-v604-windows.ps1
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.4-teacher-diagnostics
+          path: |
+            math-v604-install.log
+            math-v604-validation.log
+            math-v604-build.log
+            math-v604-startup.log
+            math-v604-installer.log
+            math-v604-ready-last.json
+            math-v604-teacher-last.json
+            math-v604-question-last.json
+            math-v604-boss-last.json
+            math-v604-vault-last.json
+            math-v604-stdout.log
+            math-v604-stderr.log
+            math-v604-validation-error.log
+            school-game/v60/game.js
+            school-game/v60/styles.css
+            school-game/v60/index.html
+            school-game/v60/main.js
+            school-game/v60/preload.js
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload final playable V60.4 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-tactical-v60.4-teacher-final-playable
+          path: dist/math-factorization-v60-teacher-windows/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

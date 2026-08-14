@@ -1,0 +1,31 @@
+  function drawDrops() {
+    for (const drop of state.drops) {
+      const pulse = 1 + Math.sin(drop.age * 5) * 0.06;
+      ctx.save();
+      ctx.translate(drop.x, drop.y);
+      ctx.globalAlpha = drop.persistent ? 1 : clamp(drop.age < 80 ? 1 : (90 - drop.age) / 10, 0, 1);
+      if (drop.roomWeapon) {
+        ctx.fillStyle = "rgba(20,32,48,.16)";
+        ctx.beginPath(); ctx.ellipse(0, 10, 38, 15, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,.97)";
+        roundedRect(ctx, -46, -25, 92, 45, 10); ctx.fill();
+        ctx.strokeStyle = WEAPONS[drop.weaponId].color;
+        ctx.lineWidth = 4;
+        roundedRect(ctx, -46, -25, 92, 45, 10); ctx.stroke();
+        drawWeaponShape(ctx, drop.weaponId, -16, -3, 0, 1.05);
+        ctx.fillStyle = "#172033";
+        ctx.font = "900 10px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillText(`FLOOR · E · x${drop.roomWeaponPower || 1}`, 0, 34);
+      } else {
+        ctx.rotate(drop.spin);
+        ctx.fillStyle = "rgba(255,255,255,.92)";
+        ctx.beginPath(); ctx.arc(0, 0, 25, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = WEAPONS[drop.weaponId].color;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(0, 0, 22 * pulse, 0, Math.PI * 2); ctx.stroke();
+        drawWeaponShape(ctx, drop.weaponId, -12, 0, 0, 0.82);
+      }
+      ctx.restore();
+    }
+  }

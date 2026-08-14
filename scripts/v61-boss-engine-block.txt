@@ -1,0 +1,192 @@
+  function bossShieldHitsForPhase(enemy) {
+    const phaseIndex = clamp((enemy?.bossPhase || 1) - 1, 0, BOSS_SHIELD_HITS_BY_PHASE.length - 1);
+    return BOSS_SHIELD_HITS_BY_PHASE[phaseIndex];
+  }
+
+  function resetBossShield(enemy, announce = false) {
+    if (!enemy || enemy.defeated) return;
+    const hits = bossShieldHitsForPhase(enemy);
+    enemy.bossShieldMaxHits = hits;
+    enemy.bossShieldHits = hits;
+    enemy.bossShieldActive = true;
+    enemy.bossVulnerableUntil = 0;
+    if (announce) banner(`WARDEN SHIELD RESTORED · ${hits} hits`, 1600);
+  }
+
+  function damageBossShield(enemy, amount = 1, sourceLabel = "HIT") {
+    if (!enemy || enemy.defeated || !enemy.bossShieldActive) return false;
+    const damage = Math.max(1, Math.floor(amount));
+    if (!Number.isFinite(enemy.bossShieldHits) || enemy.bossShieldHits <= 0) resetBossShield(enemy, false);
+    enemy.bossShieldHits = Math.max(0, enemy.bossShieldHits - damage);
+    state.screenShake = Math.max(state.screenShake, damage >= 2 ? 10 : 6);
+    for (let i = 0; i < 7 + damage * 3; i++) createParticle(enemy.x, enemy.y, "spark", "#16a4b8");
+    if (enemy.bossShieldHits <= 0) {
+      enemy.bossShieldActive = false;
+      enemy.bossVulnerableUntil = performance.now() / 1000 + BOSS_VULNERABLE_SECONDS;
+      enemy.bossHintCooldown = 0;
+      state.bossShieldBreaks++;
+      banner(`SHIELD BROKEN · CORE OPEN ${BOSS_VULNERABLE_SECONDS.toFixed(1)} s`, 2100);
+      tone(840, 0.16, 0.045, "triangle");
+    } else {
+      banner(`SHIELD HIT · ${enemy.bossShieldHits}/${enemy.bossShieldMaxHits} · ${sourceLabel}`, 950);
+      tone(260 + damage * 80, 0.055, 0.022, "square");
+    }
+    return true;
+  }
+
+  function damageBossCore(enemy, sourceLabel = "CORE HIT") {
+    if (!enemy || enemy.defeated || enemy.bossShieldActive) return false;
+    enemy.health = Math.max(0, enemy.health - 1);
+    state.hits++;
+    state.bossCoreHits++;
+    state.screenShake = Math.max(state.screenShake, 14);
+    for (let i = 0; i < 28; i++) createParticle(enemy.x, enemy.y, "pixel", "#d89000");
+    if (enemy.health <= 0) {
+      enemy.defeated = true;
+      enemy.defeatTimer = 0;
+      enemy.vx = 0; enemy.vy = 0;
+      state.tags++;
+      banner("FINAL BOSS DEFEATED · mission complete", 2800);
+      tone(960, 0.24, 0.055, "triangle");
+      return true;
+    }
+    enemy.bossPhase = Math.min(BOSS_PHASES, enemy.bossPhase + 1);
+    enemy.bossDashCooldown = 0.8;
+    enemy.bossSpecialCooldown = 0.45;
+    resetBossShield(enemy, false);
+    banner(`${sourceLabel} · PHASE ${enemy.bossPhase}/${BOSS_PHASES} · shield ${enemy.bossShieldHits} hits`, 2300);
+    tone(720 + enemy.bossPhase * 70, 0.14, 0.04, "sawtooth");
+    return true;
+  }
+
+  function bossPredictiveAngle(enemy, player, leadScale = 1) {
+    const phaseIndex = clamp(enemy.bossPhase - 1, 0, BOSS_PREDICTION_SECONDS_BY_PHASE.length - 1);
+    const lead = BOSS_PREDICTION_SECONDS_BY_PHASE[phaseIndex] * leadScale;
+    const px = clamp(player.x + player.vx * lead, 60, WORLD.width - 60);
+    const py = clamp(player.y + player.vy * lead, 60, WORLD.height - 60);
+    return Math.atan2(py - enemy.y, px - enemy.x);
+  }
+
+  function beginBossDash(enemy, player) {
+    const phaseIndex = clamp(enemy.bossPhase - 1, 0, BOSS_DASH_SPEED_BY_PHASE.length - 1);
+    const lead = 0.12 + enemy.bossPhase * 0.11;
+    enemy.bossDashTargetX = clamp(player.x + player.vx * lead, 70, WORLD.width - 70);
+    enemy.bossDashTargetY = clamp(player.y + player.vy * lead, 70, WORLD.height - 70);
+    enemy.bossDashTelegraph = Math.max(0.24, 0.48 - enemy.bossPhase * 0.06);
+    enemy.bossDashCooldown = BOSS_DASH_COOLDOWN_BY_PHASE[phaseIndex];
+    enemy.bossDashHitRegistered = false;
+    enemy.action = "charge";
+    enemy.actionTimer = enemy.bossDashTelegraph;
+    banner(`WARDEN DASH TELEGRAPH · PHASE ${enemy.bossPhase} · MOVE NOW`, 900);
+    for (let i = 0; i < 16; i++) createParticle(enemy.x, enemy.y, "spark", "#b6405b");
+    tone(150, 0.11, 0.03, "sawtooth");
+  }
+
+  function updateBossAI(enemy, dt, nowSeconds) {
+    const player = state.player;
+    if (!player || player.defeated) return;
+    enemy.px = enemy.x; enemy.py = enemy.y;
+    enemy.actionTimer = Math.max(0, enemy.actionTimer - dt);
+    enemy.bossSpecialCooldown = Math.max(0, enemy.bossSpecialCooldown - dt);
+    enemy.bossHintCooldown = Math.max(0, enemy.bossHintCooldown - dt);
+    enemy.bossDashCooldown = Math.max(0, enemy.bossDashCooldown - dt);
+    updateEnemyWeaponTimers(enemy, dt);
+
+    if (!enemy.bossShieldActive && nowSeconds >= enemy.bossVulnerableUntil) resetBossShield(enemy, true);
+
+    if (enemy.bossDashTimer > 0) {
+      enemy.bossDashTimer = Math.max(0, enemy.bossDashTimer - dt);
+      enemy.action = "dash";
+      enemy.vx = enemy.bossDashVX;
+      enemy.vy = enemy.bossDashVY;
+      moveCircle(enemy, enemy.vx * dt, enemy.vy * dt);
+      enemy.facing = Math.atan2(enemy.vy, enemy.vx);
+      if (!enemy.bossDashHitRegistered && Math.hypot(player.x - enemy.x, player.y - enemy.y) <= enemy.radius + player.radius + 16) {
+        enemy.bossDashHitRegistered = true;
+        registerPlayerStrike({ color: "#b6405b", weaponId: "boss-dash" });
+        banner("WARDEN DASH HIT", 900);
+      }
+      return;
+    }
+
+    if (enemy.bossDashTelegraph > 0) {
+      enemy.bossDashTelegraph = Math.max(0, enemy.bossDashTelegraph - dt);
+      enemy.vx = 0; enemy.vy = 0;
+      enemy.facing = Math.atan2(enemy.bossDashTargetY - enemy.y, enemy.bossDashTargetX - enemy.x);
+      enemy.action = "charge";
+      if (enemy.bossDashTelegraph <= 0) {
+        const phaseIndex = clamp(enemy.bossPhase - 1, 0, BOSS_DASH_SPEED_BY_PHASE.length - 1);
+        const direction = normalize(enemy.bossDashTargetX - enemy.x, enemy.bossDashTargetY - enemy.y);
+        const dashSpeed = BOSS_DASH_SPEED_BY_PHASE[phaseIndex];
+        enemy.bossDashVX = direction.x * dashSpeed;
+        enemy.bossDashVY = direction.y * dashSpeed;
+        enemy.bossDashTimer = 0.24 + enemy.bossPhase * 0.035;
+        enemy.bossDashHitRegistered = false;
+        tone(95, 0.08, 0.035, "square");
+      }
+      return;
+    }
+
+    if (enemy.bossDashCooldown <= 0 && state.deploymentGrace <= 0) {
+      beginBossDash(enemy, player);
+      return;
+    }
+
+    enemy.bossOrbit += dt * (0.42 + enemy.bossPhase * 0.12);
+    const orbitRadiusX = 155 + enemy.bossPhase * 18;
+    const orbitRadiusY = 130 + enemy.bossPhase * 12;
+    const targetX = 800 + Math.cos(enemy.bossOrbit) * orbitRadiusX;
+    const targetY = 500 + Math.sin(enemy.bossOrbit * 1.17) * orbitRadiusY;
+    const toTarget = normalize(targetX - enemy.x, targetY - enemy.y);
+    const movementScale = 1 + (enemy.bossPhase - 1) * 0.12;
+    enemy.vx = toTarget.x * enemy.speed * movementScale;
+    enemy.vy = toTarget.y * enemy.speed * movementScale;
+    moveCircle(enemy, enemy.vx * dt, enemy.vy * dt);
+    enemy.facing = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+    enemy.action = Math.hypot(enemy.vx, enemy.vy) > 5 ? "walk" : "idle";
+
+    if (enemy.bossSpecialCooldown <= 0 && state.deploymentGrace <= 0) {
+      const phase = clamp(enemy.bossPhase, 1, BOSS_PHASES);
+      const patternCount = phase === 1 ? 2 : phase === 2 ? 3 : 4;
+      const pattern = enemy.bossPatternIndex++ % patternCount;
+      const direct = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+      const predicted = bossPredictiveAngle(enemy, player, 1);
+
+      if (pattern === 0) {
+        enemy.weapon = createWeaponState("heavy");
+        const spokes = 5 + phase * 2;
+        for (let i = 0; i < spokes; i++) {
+          const angle = direct + (i - (spokes - 1) / 2) * (0.15 - phase * 0.012);
+          spawnProjectile("enemy", enemy.x + Math.cos(angle) * 58, enemy.y + Math.sin(angle) * 58, angle, "heavy", enemy.id);
+        }
+        banner("WARDEN PATTERN · HEAVY FAN", 700);
+      } else if (pattern === 1) {
+        enemy.weapon = createWeaponState("precision");
+        for (const offset of [-0.055, 0, 0.055]) {
+          const angle = predicted + offset;
+          spawnProjectile("enemy", enemy.x + Math.cos(angle) * 58, enemy.y + Math.sin(angle) * 58, angle, "precision", enemy.id);
+        }
+        banner("WARDEN PATTERN · PREDICTIVE TRIPLE", 700);
+      } else if (pattern === 2) {
+        enemy.weapon = createWeaponState("scatter");
+        const rays = 10 + phase * 2;
+        const offset = enemy.bossOrbit * 0.45;
+        for (let i = 0; i < rays; i++) {
+          const angle = offset + i * Math.PI * 2 / rays;
+          spawnProjectile("enemy", enemy.x + Math.cos(angle) * 58, enemy.y + Math.sin(angle) * 58, angle, "scatter", enemy.id);
+        }
+        banner("WARDEN PATTERN · RADIAL RING", 700);
+      } else {
+        enemy.weapon = createWeaponState("smg");
+        for (let i = -4; i <= 4; i++) {
+          const angle = bossPredictiveAngle(enemy, player, 1.25) + i * 0.07;
+          spawnProjectile("enemy", enemy.x + Math.cos(angle) * 58, enemy.y + Math.sin(angle) * 58, angle, "smg", enemy.id);
+        }
+        banner("WARDEN PATTERN · PREDICTIVE SWEEP", 700);
+      }
+
+      enemy.bossSpecialCooldown = phase === 1 ? 1.18 : phase === 2 ? 0.88 : 0.66;
+      enemy.action = "fire";
+      enemy.actionTimer = 0.18;
+    }
+  }

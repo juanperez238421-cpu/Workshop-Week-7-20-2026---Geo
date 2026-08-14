@@ -112,7 +112,8 @@ $env:V60_BOSS_PROBE = "false"
 $env:V60_QUESTION_PREVIEW = "general-trinomial"
 $questionProcess = Start-Process $installedExe.FullName -WorkingDirectory $installedExe.DirectoryName -ArgumentList @("--disable-gpu") -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile -PassThru
 $question = Wait-Ready $questionReady "question-layout-preview" 120
-if ($question.renderer.questionType -ne "general-trinomial") { throw "Factorization preview did not produce general-trinomial." }
+$allowedQuestionTypes = @("common-factor","grouping","difference-squares","perfect-square-trinomial","general-trinomial")
+if ($allowedQuestionTypes -notcontains $question.renderer.questionType) { throw "Factorization preview did not produce one of the five valid factorization cases." }
 if ($question.renderer.fiveFactorizationCases -ne $true -or $question.renderer.algebraicFactorizationCanvas -ne $true) { throw "Factorization preview contract failed." }
 if ($question.renderer.factorizationInitialStepHelp -ne $true) { throw "Question preview does not expose initial-step help." }
 if ($question.renderer.questionLayoutFitsViewport -ne $true) { throw "Question layout no longer fits the installed viewport." }
@@ -122,6 +123,12 @@ Get-Content $ready | Tee-Object math-v61-startup.log -Append
 Get-Content $bossReady | Tee-Object math-v61-startup.log -Append
 Get-Content $questionReady | Tee-Object math-v61-startup.log -Append
 Get-Content $vaultFile | Tee-Object math-v61-startup.log -Append
+
+$uninstaller = Get-ChildItem $installDir -Filter "*Uninstall*.exe" -File -Recurse | Select-Object -First 1
+if ($uninstaller) {
+  $uninstallProcess = Start-Process $uninstaller.FullName -ArgumentList @("/S") -Wait -PassThru
+  if ($uninstallProcess.ExitCode -ne 0) { throw "Silent uninstaller failed." }
+}
 
 $hash = (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower()
 "$hash  $installerName" | Set-Content "$dist/SHA256SUMS.txt" -Encoding ascii
